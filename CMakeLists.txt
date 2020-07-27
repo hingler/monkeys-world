@@ -4,7 +4,14 @@ project(screenspace-window-manager VERSION 0.1.0)
 include(CTest)
 enable_testing()
 
+set(INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(TST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)
+
 add_executable(screenspace-window-manager main.cpp)
+add_library(screenspace-window-manager-components ${SRC_DIR}/Font.cpp)
+
+target_include_directories(screenspace-window-manager-components PUBLIC ${INC_DIR})
 
 # more or less ripped from some gtest setup guide
 # copy the download file to another location
@@ -35,7 +42,7 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/glfw-src
   ${CMAKE_CURRENT_BINARY_DIR}/glfw-build
   EXCLUDE_FROM_ALL)
 
-target_link_libraries(screenspace-window-manager glfw)
+target_link_libraries(screenspace-window-manager-components glfw)
 
 
 configure_file(deps/CMakeLists-glad.txt glad-download/CMakeLists.txt)
@@ -59,7 +66,9 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/glad-src
   ${CMAKE_CURRENT_BINARY_DIR}/glad-build
   EXCLUDE_FROM_ALL)
 
-target_link_libraries(screenspace-window-manager glad)
+target_link_libraries(screenspace-window-manager-components glad)
+
+target_link_libraries(screenspace-window-manager screenspace-window-manager-components)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
