@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 2.8.12)
 include(ExternalProject)
 ExternalProject_Add(freetype
   URL               https://download.savannah.gnu.org/releases/freetype/freetype-2.10.0.tar.gz
-  SOURCE_DIR        "${CMAKE_CURRENT_BINARY_DIR}/glfw-src"
-  BINARY_DIR        "${CMAKE_CURRENT_BINARY_DIR}/glfw-build"
+  SOURCE_DIR        "${CMAKE_CURRENT_BINARY_DIR}/freetype-src"
+  BINARY_DIR        "${CMAKE_CURRENT_BINARY_DIR}/freetype-build"
   CONFIGURE_COMMAND ""
   BUILD_COMMAND     ""
   INSTALL_COMMAND   ""

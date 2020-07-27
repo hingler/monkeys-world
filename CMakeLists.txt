@@ -13,8 +13,7 @@ add_library(screenspace-window-manager-components ${SRC_DIR}/Font.cpp)
 
 target_include_directories(screenspace-window-manager-components PUBLIC ${INC_DIR})
 
-# more or less ripped from some gtest setup guide
-# copy the download file to another location
+### GLFW ###
 configure_file(deps/CMakeLists-glfw.txt glfw-download/CMakeLists.txt)
 
 # generate makefiles by running the cmake file in that directory
@@ -44,7 +43,7 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/glfw-src
 
 target_link_libraries(screenspace-window-manager-components glfw)
 
-
+### GLAD ###
 configure_file(deps/CMakeLists-glad.txt glad-download/CMakeLists.txt)
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
   RESULT_VARIABLE result
@@ -67,6 +66,30 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/glad-src
   EXCLUDE_FROM_ALL)
 
 target_link_libraries(screenspace-window-manager-components glad)
+
+### FREETYPE ###
+configure_file(deps/CMakeLists-freetype.txt freetype-download/CMakeLists.txt)
+execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+  RESULT_VARIABLE result
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/freetype-download )
+
+if(result)
+  message(FATAL_ERROR "CMake configuration for Freetype failed -- ${result}" )
+endif()
+
+execute_process(COMMAND ${CMAKE_COMMAND} --build .
+  RESULT_VARIABLE result
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/freetype-download )
+
+if (result)
+  message(FATAL_ERROR "Build for Freetype failed -- ${result}" )
+endif()
+
+add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/freetype-src
+  ${CMAKE_CURRENT_BINARY_DIR}/freetype-build
+  EXCLUDE_FROM_ALL)
+  
+target_link_libraries(screenspace-window-manager-components freetype)
 
 target_link_libraries(screenspace-window-manager screenspace-window-manager-components)
 
