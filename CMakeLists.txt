@@ -91,6 +91,30 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/freetype-src
 
 target_link_libraries(screenspace-window-manager-components freetype)
 
+### GTEST ###
+configure_file(deps/CMakeLists-gtest.txt googletest-download/CMakeLists.txt)
+execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+  RESULT_VARIABLE result
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
+
+if(result)
+  message(FATAL_ERROR "CMake configuration for gtest failed -- ${result}" )
+endif()
+
+execute_process(COMMAND ${CMAKE_COMMAND} --build .
+  RESULT_VARIABLE result
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
+
+if (result)
+  message(FATAL_ERROR "Build for gtest failed -- ${result}" )
+endif()
+
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
+                 ${CMAKE_CURRENT_BINARY_DIR}/googletest-build
+                 EXCLUDE_FROM_ALL)
+
 target_link_libraries(screenspace-window-manager screenspace-window-manager-components)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
