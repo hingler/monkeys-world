@@ -49,7 +49,7 @@ class Font {
    *    - 8 bytes -- XY position for vertex.
    *    - 8 bytes -- UV texCoords for vertex.
    */ 
-  std::vector<float> GenerateAttribArray(std::string input, );
+  std::vector<float> GenerateAttribArray(std::string input, float scale);
  private:
   /**
    *  Create a font object from an inputted font and char size
