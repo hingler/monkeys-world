@@ -117,6 +117,14 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
 
 target_link_libraries(screenspace-window-manager screenspace-window-manager-components)
 
+
+
+add_custom_command(TARGET screenspace-window-manager POST_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/resources $<TARGET_FILE_DIR:screenspace-window-manager>/resources)
+
+# file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/resources)
+# file(COPY "resources" DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
