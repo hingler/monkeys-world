@@ -10,7 +10,7 @@
 #include FT_FREETYPE_H
 
 struct FontGlyph {
-  float start;        // x position of the char's origin relative to the texture.
+  float start;        // x position of the char's origin relative to the texture [0 - 1)
 
   uint32_t width;     // bitmap width in px
   uint32_t height;    // bitmap height in px
@@ -51,7 +51,7 @@ class Font {
    *    - 8 bytes -- XY position for vertex.
    *    - 8 bytes -- UV texCoords for vertex.
    */ 
-  std::vector<float> GenerateAttribArray(std::string input, float scale);
+  std::vector<float> GenerateAttribArray(std::string input, float scale, float origin_x, float origin_y);
  private:
   /**
    *  Create a font object from an inputted font and char size
