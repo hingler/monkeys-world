@@ -81,7 +81,10 @@ Font::Font(std::string font, int char_size, FT_Face face) {
     }
   }
 
-  width = 0;
+  uint32_t write_x = 0;
+
+  tex_width_ = width;
+  tex_height_ = height;
 
   glGenTextures(1, &tex_);
   glActiveTexture(GL_TEXTURE0);
@@ -108,8 +111,9 @@ Font::Font(std::string font, int char_size, FT_Face face) {
         // this should be fine
         glTexSubImage2D(GL_TEXTURE_2D, 0, width, 0, glyph->bitmap.width, glyph->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, glyph->bitmap.buffer);
         glyphs_[index - INDEX_START] = {
-          glyph->bitmap.width,
-          glyph->bitmap.rows,
+          static_cast<float>(write_x) / width,
+          glyph->bitmap.width / width,
+          glyph->bitmap.rows / height,
           glyph->bitmap_left,   // these are usable for bearing for now
           glyph->bitmap_top,
           glyph->advance.x
@@ -120,6 +124,48 @@ Font::Font(std::string font, int char_size, FT_Face face) {
         break;   
     }
   }
+}
 
-  tex_width_ = width;
+
+
+float Font::GenerateCharAttribArray(char c, std::vector<float>& data, float origin_x, float origin_y, float scale) {
+  if (c < INDEX_START || c >= INDEX_END) {
+    // invalid character.
+  } else {
+    FontGlyph glyph = glyphs_[c - INDEX_START];
+    // position: need to pass that
+
+    // origin + (bearing x - bearing y [ + width] [ + height]) * scale 
+    // tx: 0, (width / tex_height_)
+
+    // top left
+    data.push_back(origin_x + (glyph.bearing_x * scale));
+    data.push_back(origin_y - (glyph.bearing_y * scale));
+    data.push_back(glyph.start);
+    data.push_back(0);
+
+    // bottom left
+    data.push_back(origin_x + (glyph.bearing_x * scale));
+    data.push_back(origin_y + ((glyph.height - glyph.bearing_y) * scale));
+    data.push_back(glyph.start);
+    data.push_back(glyph.height / static_cast<float>(tex_height_));
+
+    // top right
+    data.push_back(origin_x + ((glyph.bearing_x + glyph.width) * scale));
+    data.push_back(origin_y - (glyph.bearing_y * scale));
+    data.push_back(glyph.start + (glyph.width / static_cast<float>(tex_height_)));
+    data.push_back(0);
+
+    // bottom right
+    data.push_back(origin_x + ((glyph.bearing_x + glyph.width) * scale));
+    data.push_back(origin_y - (glyph.bearing_y * scale));
+    data.push_back(glyph.start + (glyph.width / static_cast<float>(tex_height_)));
+    data.push_back(glyph.height / static_cast<float>(tex_height_));
+
+    return origin_x + glyph.advance * scale;
+
+    // 0, 1, 2
+    // 1, 3, 2
+
+  }
 }
