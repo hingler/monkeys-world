@@ -18,12 +18,11 @@ target_include_directories(screenspace-window-manager-components PUBLIC ${INC_DI
 ### GLFW ###
 configure_file(deps/CMakeLists-glfw.txt glfw-download/CMakeLists.txt)
 
-# generate makefiles by running the cmake file in that directory
+# it looks like these lines are here to ensure that linters and shit work properly.
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
   RESULT_VARIABLE result
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/glfw-download )
 
-# result populated if fails
 if(result)
   message(FATAL_ERROR "CMake configuration for GLFW failed -- ${result}" )
 endif()
@@ -39,8 +38,9 @@ endif()
 
 # the external project add should build those files in those
 # directories, so we add both now
+
+#if problems arise add build dirs to subdirectory commands :-)
 add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/glfw-src
-  ${CMAKE_CURRENT_BINARY_DIR}/glfw-build
   EXCLUDE_FROM_ALL)
 
 target_link_libraries(screenspace-window-manager-components glfw)
@@ -64,7 +64,6 @@ if(result)
 endif()
 
 add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/glad-src
-  ${CMAKE_CURRENT_BINARY_DIR}/glad-build
   EXCLUDE_FROM_ALL)
 
 target_link_libraries(screenspace-window-manager-components glad)
@@ -87,7 +86,9 @@ if (result)
   message(FATAL_ERROR "Build for Freetype failed -- ${result}" )
 endif()
 
-add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/freetype-src)
+add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/freetype-src
+  EXCLUDE_FROM_ALL)
+
 target_link_libraries(screenspace-window-manager-components freetype)
 
 target_link_libraries(screenspace-window-manager screenspace-window-manager-components)
