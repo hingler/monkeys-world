@@ -4,6 +4,8 @@ project(screenspace-window-manager VERSION 0.1.0)
 include(CTest)
 enable_testing()
 
+# linting
+
 set(INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(TST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)
@@ -85,10 +87,7 @@ if (result)
   message(FATAL_ERROR "Build for Freetype failed -- ${result}" )
 endif()
 
-add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/freetype-src
-  ${CMAKE_CURRENT_BINARY_DIR}/freetype-build
-  EXCLUDE_FROM_ALL)
-  
+add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/freetype-src)
 target_link_libraries(screenspace-window-manager-components freetype)
 
 target_link_libraries(screenspace-window-manager screenspace-window-manager-components)
