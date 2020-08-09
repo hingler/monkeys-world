@@ -1,3 +1,6 @@
+#ifndef FONT_H_
+#define FONT_H_
+
 #include <string>
 
 #include <glad/glad.h>
@@ -80,3 +83,5 @@ class Font {
   const static int INDEX_START = 32;
   const static int INDEX_END = 256;
 };
+
+#endif
