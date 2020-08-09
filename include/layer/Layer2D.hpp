@@ -1,28 +1,14 @@
+#ifndef CANVAS_LAYER_H_
+#define CANVAS_LAYER_H_
+
 #include "Font.hpp"
 #include "Paint.hpp"
+#include "Layer.hpp"
 
-class Layer {
- public:
-  /**
-   *  Create a new independent layer instance. Initializes dimensions at 128x128.
-   */ 
-  Layer();
-
-  /**
-   * Creates a new independent layer instance with the provided dimensions.
-   */ 
-  Layer(int width, int height);
-
-  /**
-   *  Set the size of this layer.
-   */ 
-  void SetDimensions(int width, int height);
-
-  /**
-   *  Erases the canvas and lets you start from scratch :)
-   */ 
-  void Clear();
-
+/**
+ *  Type of layer which is specialized for drawing content onto the screen.
+ */ 
+class Layer2D : public Layer {
 
   // DRAW COMMNADS
 
@@ -54,18 +40,6 @@ class Layer {
    */ 
   void DrawText(int x, int y, Font font, Paint brush);
 
-
- private:
-
-  // Recreates all textures associated with framebuffer (on resize, for instance)
-  void GenerateFramebufferTextures();
-
-  GLuint framebuffer_;                  // descriptor for frame buffer
-  GLuint framebuffer_color_;            // descriptor for color component of frame buffer
-  GLuint framebuffer_depth_stencil_;    // descriptor for depth + stencil of frame buffer
-
-  int width_;                           // frame buffer dimensions
-  int height_;
-
-
 };
+
+#endif

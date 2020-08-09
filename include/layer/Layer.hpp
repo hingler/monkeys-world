@@ -1,0 +1,86 @@
+
+#ifndef LAYER_H_
+#define LAYER_H_
+
+#include <glad/glad.h>
+#include <string>
+
+struct Point {
+  int x;
+  int y;
+};
+
+class Layer {
+ public:
+  /**
+   *  Create a new independent layer instance. Initializes dimensions at 128x128.
+   */ 
+  Layer();
+
+  /**
+   * Creates a new independent layer instance with the provided dimensions.
+   */ 
+  Layer(int width, int height);
+
+  /**
+   *  Set the size of this layer.
+   */ 
+  void SetDimensions(int width, int height);
+  void SetDimensions(Point dims);
+
+  /**
+   *  Set the position of this layer.
+   */ 
+  void SetPosition(int x, int y);
+  void SetPosition(Point coords);
+
+  /**
+   *  Set the dimensions.
+   */ 
+  Point GetDimensions();
+
+  /**
+   *  Binds the internal framebuffer and calls Render
+   */ 
+  void BindFramebufferAndRender();
+
+  /**
+   *  Returns the unique identifier assigned to this layer.
+   */ 
+  void GetLayerId();
+
+  /**
+   *  Returns a layer whose ID matches the passed parameter.
+   */ 
+  void FindLayerById(std::string id);
+
+  /**
+   *  Renders the layer onto the internal framebuffer.
+   *  Must be overwritten by class implementation.
+   */ 
+  virtual void Render() = 0;
+
+  /**
+   *  Returns the framebuffer associated with this layer.
+   */ 
+  GLuint GetFramebuffer();
+
+  /**
+   *  Erases the canvas and lets you start from scratch :)
+   */ 
+  void Clear();
+
+ private:
+
+  // Recreates all textures associated with framebuffer (on resize, for instance)
+  void GenerateFramebufferTextures();
+
+  GLuint framebuffer_;                  // descriptor for frame buffer
+  GLuint framebuffer_color_;            // descriptor for color component of frame buffer
+  GLuint framebuffer_depth_stencil_;    // descriptor for depth + stencil of frame buffer
+
+  Point dims_;                          // dimensions
+
+};
+
+#endif
