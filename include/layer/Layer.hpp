@@ -2,6 +2,8 @@
 #ifndef LAYER_H_
 #define LAYER_H_
 
+#include "utils/IDGenerator.hpp"
+
 #include <glad/glad.h>
 #include <string>
 
@@ -35,24 +37,19 @@ class Layer {
   void SetPosition(Point coords);
 
   /**
-   *  Set the dimensions.
+   *  Get the dimensions.
    */ 
-  Point GetDimensions();
+  const Point* GetDimensions();
+
+  /**
+   *  Get the position.
+   */ 
+  const Point* GetPosition();
 
   /**
    *  Binds the internal framebuffer and calls Render
    */ 
   void BindFramebufferAndRender();
-
-  /**
-   *  Returns the unique identifier assigned to this layer.
-   */ 
-  void GetLayerId();
-
-  /**
-   *  Returns a layer whose ID matches the passed parameter.
-   */ 
-  void FindLayerById(std::string id);
 
   /**
    *  Renders the layer onto the internal framebuffer.
@@ -61,9 +58,24 @@ class Layer {
   virtual void Render() = 0;
 
   /**
+   *  Returns the unique identifier assigned to this layer.
+   */ 
+  int GetLayerId();
+
+  /**
+   *  Changes the layer id to a passed in string
+   */ 
+  void SetLayerId(int id);
+
+  /**
+   *  Returns a layer whose ID matches the passed parameter.
+   */ 
+  virtual std::shared_ptr<Layer> FindLayerById(int id) = 0;
+
+  /**
    *  Returns the framebuffer associated with this layer.
    */ 
-  GLuint GetFramebuffer();
+  GLuint GetFramebufferColor();
 
   /**
    *  Erases the canvas and lets you start from scratch :)
@@ -75,11 +87,21 @@ class Layer {
   // Recreates all textures associated with framebuffer (on resize, for instance)
   void GenerateFramebufferTextures();
 
+  /**
+   *  Compiles a shader program from vertex and fragment shader paths.
+   */ 
+  GLuint CompileShader(std::string vertex_path, std::string fragment_path);
+
   GLuint framebuffer_;                  // descriptor for frame buffer
   GLuint framebuffer_color_;            // descriptor for color component of frame buffer
   GLuint framebuffer_depth_stencil_;    // descriptor for depth + stencil of frame buffer
 
   Point dims_;                          // dimensions
+  Point coords_;                        // x/y coordinates.
+
+  static IDGenerator id_generator_;     // used to generate unique IDs when created.
+
+  int id_;                      // Identifier associated with this layer.
 
 };
 
