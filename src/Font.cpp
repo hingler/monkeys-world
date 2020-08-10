@@ -125,14 +125,27 @@ Font::Font(std::string font, int char_size, FT_Face face) {
   }
 }
 
-std::vector<float> Font::GenerateAttribArray(std::string input, float scale, float origin_x, float origin_y) {
+std::vector<float> Font::GenerateAttribArray(std::string input, float scale, float origin_x, float origin_y, std::vector<uint32_t>* indices) {
   std::vector<float> data;
+  int counter = 0;
   for (char c : input) {
     // pass to charattribarray
     // it does all the work lol
     origin_x = GenerateCharAttribArray(c, data, origin_x, origin_y, scale);
+
+    // push indices list
+    indices->push_back(4 * counter);
+    indices->push_back(4 * counter + 1);
+    indices->push_back(4 * counter + 2);
+
+    indices->push_back(4 * counter + 1);
+    indices->push_back(4 * counter + 3);
+    indices->push_back(4 * counter + 2);
+
+    counter++;
   } 
 
+  // how to return indices list? or should this method save it for later?
   return data;
 }
 
