@@ -1,9 +1,11 @@
-#ifndef CANVAS_LAYER_H_
-#define CANVAS_LAYER_H_
+#ifndef LAYER_2D_H_
+#define LAYER_2D_H_
 
 #include "Font.hpp"
 #include "Paint.hpp"
-#include "Layer.hpp"
+#include "layer/Layer.hpp"
+
+#include <vector>
 
 /**
  *  Type of layer which is specialized for drawing content onto the screen.
@@ -11,9 +13,24 @@
 class Layer2D : public Layer {
 
   // DRAW COMMNADS
+ public:
+
+  /**
+   *  Create a new Layer2D -- 128 x 128.
+   */ 
+  Layer2D();
+
+  /**
+   *  Create a new Layer2D with predetermined dimensions.
+   */ 
+  Layer2D(int width, int height);
+
+  
+  std::shared_ptr<Layer> FindLayerById(int id) override;
 
   /**
    *  Draw a circle onto this layer.
+   *  All of these methods assume that the frame buffer has already been bound.
    *  @param x - the x coordinate of the circle's center.
    *  @param y - the y coordinate of the circle's center.
    *  @param radius - the radius of the circle.
@@ -39,6 +56,9 @@ class Layer2D : public Layer {
    *  @param brush - The paint object used to draw the text.
    */ 
   void DrawText(int x, int y, Font font, Paint brush);
+
+ private:
+  std::vector<float> GenerateBoundingBox(int xMin, int yMin, int xMax, int yMax, std::vector<uint32_t>* indices);
 
 };
 
