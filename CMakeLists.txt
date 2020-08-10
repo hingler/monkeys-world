@@ -11,7 +11,14 @@ set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(TST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)
 
 add_executable(screenspace-window-manager main.cpp)
-add_library(screenspace-window-manager-components ${SRC_DIR}/Font.cpp)
+
+add_library(screenspace-window-manager-components ${SRC_DIR}/Font.cpp
+                                                  ${SRC_DIR}/layer/Layer2D.cpp
+                                                  ${SRC_DIR}/layer/LayerGroup.cpp
+                                                  ${SRC_DIR}/layer/Layer.cpp
+                                                  ${SRC_DIR}/Paint.cpp
+                                                  
+                                                  ${SRC_DIR}/utils/IDGenerator.cpp)
 
 target_include_directories(screenspace-window-manager-components PUBLIC ${INC_DIR})
 
@@ -41,6 +48,7 @@ endif()
 
 #if problems arise add build dirs to subdirectory commands :-)
 add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/glfw-src
+                 ${CMAKE_CURRENT_BINARY_DIR}/glfw-build
   EXCLUDE_FROM_ALL)
 
 target_link_libraries(screenspace-window-manager-components glfw)
@@ -64,7 +72,8 @@ if(result)
 endif()
 
 add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/glad-src
-  EXCLUDE_FROM_ALL)
+                 ${CMAKE_CURRENT_BINARY_DIR}/glad-build
+                 EXCLUDE_FROM_ALL)
 
 target_link_libraries(screenspace-window-manager-components glad)
 
@@ -87,7 +96,7 @@ if (result)
 endif()
 
 add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/freetype-src
-  EXCLUDE_FROM_ALL)
+                 EXCLUDE_FROM_ALL)
 
 target_link_libraries(screenspace-window-manager-components freetype)
 
