@@ -17,7 +17,6 @@ add_library(screenspace-window-manager-components ${SRC_DIR}/Font.cpp
                                                   ${SRC_DIR}/layer/LayerGroup.cpp
                                                   ${SRC_DIR}/layer/Layer.cpp
                                                   ${SRC_DIR}/Paint.cpp
-                                                  
                                                   ${SRC_DIR}/utils/IDGenerator.cpp)
 
 target_include_directories(screenspace-window-manager-components PUBLIC ${INC_DIR})
@@ -126,7 +125,9 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
 
 target_link_libraries(screenspace-window-manager screenspace-window-manager-components)
 
-
+add_executable(thetest test/babytest.cpp)
+target_include_directories(thetest PRIVATE ${INC_DIR})
+target_link_libraries(thetest gtest_main glad)
 
 add_custom_command(TARGET screenspace-window-manager POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/resources $<TARGET_FILE_DIR:screenspace-window-manager>/resources)

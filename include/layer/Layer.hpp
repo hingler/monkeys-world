@@ -87,11 +87,6 @@ class Layer {
   // Recreates all textures associated with framebuffer (on resize, for instance)
   void GenerateFramebufferTextures();
 
-  /**
-   *  Compiles a shader program from vertex and fragment shader paths.
-   */ 
-  GLuint CompileShader(std::string vertex_path, std::string fragment_path);
-
   GLuint framebuffer_;                  // descriptor for frame buffer
   GLuint framebuffer_color_;            // descriptor for color component of frame buffer
   GLuint framebuffer_depth_stencil_;    // descriptor for depth + stencil of frame buffer
@@ -103,6 +98,18 @@ class Layer {
 
   int id_;                      // Identifier associated with this layer.
 
+ protected:
+  /**
+   *  Compiles a shader program from vertex and fragment shader paths.
+   *  For utility -- we'll almost definitely need this all over the place.
+   */ 
+  static bool CompileProgram(std::string vertex_path, std::string fragment_path, GLuint* output);
+
+  /**
+   *  Compiles a single shader from a file.
+   */ 
+  static bool CompileShader(std::string shader_path, GLuint type, GLuint* output);
 };
+
 
 #endif

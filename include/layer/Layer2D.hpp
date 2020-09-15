@@ -58,7 +58,7 @@ class Layer2D : public Layer {
   void DrawText(int x, int y, Font font, Paint brush);
 
  private:
-  std::vector<float> GenerateBoundingBox(int xMin, int yMin, int xMax, int yMax, std::vector<uint32_t>* indices);
+  std::vector<float> GenerateBoundingBox(float xMin, float yMin, float xMax, float yMax, std::vector<uint32_t>* indices);
 
 };
 

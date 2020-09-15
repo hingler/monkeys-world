@@ -17,5 +17,4 @@ std::shared_ptr<Layer> Layer2D::FindLayerById(int id) {
 
 void Layer2D::DrawCircle(int x, int y, int radius, Paint brush) {
   std::vector<uint32_t> indices;
-  std::vector<float> vertices = GenerateBoundingBox(x - radius, y - radius, x + radius, y + radius, &indices);
 }

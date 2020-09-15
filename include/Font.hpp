@@ -53,8 +53,14 @@ class Font {
    *  Returned format:
    *    - 8 bytes -- XY position for vertex.
    *    - 8 bytes -- UV texCoords for vertex.
+   *  @param input - the string we are generating geometry for.
+   *  @param scale - the relative scale of the font -- no standard yet.
+   *  @param origin_x - the x coordinate of the origin point.
+   *  @param origin_y - the y coordinate of the origin point.
+   *  @param indices - output parameter for font indices.
    */ 
-  std::vector<float> GenerateAttribArray(std::string input, float scale, float origin_x, float origin_y);
+  std::vector<float> GenerateAttribArray(const std::string& input, float scale, float origin_x, float origin_y, std::vector<uint32_t>* indices);
+ 
  private:
   /**
    *  Create a font object from an inputted font and char size

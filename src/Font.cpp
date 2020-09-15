@@ -125,7 +125,7 @@ Font::Font(std::string font, int char_size, FT_Face face) {
   }
 }
 
-std::vector<float> Font::GenerateAttribArray(std::string input, float scale, float origin_x, float origin_y, std::vector<uint32_t>* indices) {
+std::vector<float> Font::GenerateAttribArray(const std::string& input, float scale, float origin_x, float origin_y, std::vector<uint32_t>* indices) {
   std::vector<float> data;
   int counter = 0;
   for (char c : input) {
