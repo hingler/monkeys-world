@@ -6,7 +6,8 @@
 #include <vector>
 
 // from https://stackoverflow.com/questions/87372/check-if-a-class-has-a-member-function-of-a-given-signature/10707822#10707822
-
+namespace screenspacemanager {
+namespace storage {
 /**
  *  Represents the data associated with the vertices which comprise a model.
  *  @tparam Packet - the specification for the vertex data which will be passed in.
@@ -182,5 +183,8 @@ class VertexData {
   // true if the buffer data needs to be updated, false if not.
   bool dirty_;
 };
+
+};  // namespace storage
+};  // namespace screenspacemanager
 
 #endif  // VERTEX_DATA_H_

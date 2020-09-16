@@ -7,6 +7,9 @@
 #include <glad/glad.h>
 #include <string>
 
+namespace screenspacemanager {
+namespace layer {
+
 struct Point {
   int x;
   int y;
@@ -110,6 +113,9 @@ class Layer {
    */ 
   static bool CompileShader(std::string shader_path, GLuint type, GLuint* output);
 };
+
+};  // namespace layer
+};  // namespace screenspacemanager
 
 
 #endif

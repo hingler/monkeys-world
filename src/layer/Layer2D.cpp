@@ -1,5 +1,7 @@
 #include "layer/Layer2D.hpp"
 
+namespace screenspacemanager {
+namespace layer {
 Layer2D::Layer2D() : Layer2D(128, 128) { }
 
 Layer2D::Layer2D(int width, int height) : Layer(width, height) {
@@ -18,3 +20,6 @@ std::shared_ptr<Layer> Layer2D::FindLayerById(int id) {
 void Layer2D::DrawCircle(int x, int y, int radius, Paint brush) {
   std::vector<uint32_t> indices;
 }
+
+};  // namespace layer
+};  // namespace screenspacemanager

@@ -12,6 +12,8 @@
 
 #include FT_FREETYPE_H
 
+namespace screenspacemanager {
+
 struct FontGlyph {
   float start;        // x position of the char's origin relative to the texture [0 - 1)
 
@@ -89,5 +91,7 @@ class Font {
   const static int INDEX_START = 32;
   const static int INDEX_END = 256;
 };
+
+};  // namespace screenspacemanager
 
 #endif

@@ -5,9 +5,8 @@
 #include <iostream>
 #include <sstream>
 
-// it would make sense for there to be some "rendering context" to which these layers are bound, thereby ensuring
-// that they don't exist out in space without being initialized
-
+namespace screenspacemanager {
+namespace layer {
 Layer::Layer() : Layer(128, 128) { }
 
 Layer::Layer(int width, int height) {
@@ -165,4 +164,6 @@ bool Layer::CompileShader(std::string shader_path, GLuint type, GLuint* output) 
   }
 
   return true;
-}
+};
+};  // namespace layer
+};  // namespace screenspacemanager

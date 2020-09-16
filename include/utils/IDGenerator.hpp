@@ -9,6 +9,8 @@
 #include <cinttypes>
 #include <mutex>
 
+namespace screenspacemanager {
+
 class IDGenerator {
 
  public:
@@ -37,5 +39,7 @@ class IDGenerator {
   uint64_t counter_;
   std::mutex id_lock_;
 };
+
+};  // namespace screenspacemanager
 
 #endif  // ID_GENERATOR_H_

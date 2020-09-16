@@ -7,6 +7,9 @@
 
 #include <vector>
 
+namespace screenspacemanager {
+namespace layer {
+  
 /**
  *  Type of layer which is specialized for drawing content onto the screen.
  */ 
@@ -61,5 +64,7 @@ class Layer2D : public Layer {
   std::vector<float> GenerateBoundingBox(float xMin, float yMin, float xMax, float yMax, std::vector<uint32_t>* indices);
 
 };
+};  // namespace layer
+};  // namespace screenspacemanager
 
 #endif

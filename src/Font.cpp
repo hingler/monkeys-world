@@ -8,6 +8,7 @@
 
 #include <iostream>
 
+namespace screenspacemanager {
 int Font::InitializeFont(Font** font, std::string font_name) {
   return InitializeFont(font, font_name, 128);
 }
@@ -198,4 +199,6 @@ float Font::GenerateCharAttribArray(char c, std::vector<float>& data, float orig
     // 1, 3, 2
 
   }
-}
+};
+
+};  // namespace screenspacemanager

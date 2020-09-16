@@ -3,6 +3,9 @@
 
 #include <glm/glm.hpp>
 
+namespace screenspacemanager {
+namespace storage {
+
 /**
  *  A vertex packet containing two position dimensions and two texture dimensions.
  *  Intended for UI geometry, for instance on-screen text.
@@ -35,6 +38,7 @@ struct VertexPacket3D {
   static void Bind();
 };
 
-
+};  // namespace storage
+};  // namespace screenspacemanager
 
 #endif  // VERTEX_PACKET_TYPES_H_

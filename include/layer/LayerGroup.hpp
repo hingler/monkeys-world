@@ -4,6 +4,8 @@
 #include "layer/Layer.hpp"
 #include <memory>
 
+namespace screenspacemanager {
+namespace layer {
 /**
  *  Layer groups contain several layers
  */ 
@@ -25,5 +27,8 @@ class LayerGroup : Layer {
    */ 
   void RemoveChild(std::string layerId);
 };
+
+};  // namespace layer
+};  // namespace screenspacemanager
 
 #endif
