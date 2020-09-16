@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(screenspace-window-manager VERSION 0.1.0)
+project(screenspace-window-manager VERSION 0.0.1)
 
 include(CTest)
 enable_testing()
@@ -12,6 +12,7 @@ set(TST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)
 
 add_executable(screenspace-window-manager main.cpp)
 
+# separate out a bit better for testing
 add_library(screenspace-window-manager-components ${SRC_DIR}/Font.cpp
                                                   ${SRC_DIR}/layer/Layer2D.cpp
                                                   ${SRC_DIR}/layer/LayerGroup.cpp
@@ -113,7 +114,7 @@ execute_process(COMMAND ${CMAKE_COMMAND} --build .
   RESULT_VARIABLE result
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
 
-if (result)
+if(result)
   message(FATAL_ERROR "Build for gtest failed -- ${result}" )
 endif()
 
@@ -123,11 +124,33 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
                  ${CMAKE_CURRENT_BINARY_DIR}/googletest-build
                  EXCLUDE_FROM_ALL)
 
+### GLM ###
+configure_file(deps/CMakeLists-glm.txt glm-download/CMakeLists.txt)
+execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+  RESULT_VARIABLE result
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/glm-download )
+
+if(result)
+  message(FATAL_ERROR "CMake configuration for glm failed -- ${result}" )
+endif()
+
+execute_process(COMMAND ${CMAKE_COMMAND} --build .
+  RESULT_VARIABLE result
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/glm-download )
+
+if(result)
+  message(FATAL_ERROR "Build for glm failed -- ${result}")
+endif()
+
+add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/glm-src
+                 ${CMAKE_CURRENT_BINARY_DIR}/glm-build
+                 EXCLUDE_FROM_ALL)
+
 target_link_libraries(screenspace-window-manager screenspace-window-manager-components)
 
-add_executable(thetest test/babytest.cpp)
+add_executable(thetest test/VertexDataTest.cpp)
 target_include_directories(thetest PRIVATE ${INC_DIR})
-target_link_libraries(thetest gtest_main glad)
+target_link_libraries(thetest gtest_main glad glm)
 
 add_custom_command(TARGET screenspace-window-manager POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/resources $<TARGET_FILE_DIR:screenspace-window-manager>/resources)

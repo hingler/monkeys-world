@@ -39,7 +39,7 @@ class VertexData {
    *  Stores a new vertex based on the contents of the data packet.
    *  @param packet - data packet containing vertex data.
    */ 
-  void AddVertex(const T& packet) {
+  void AddVertex(const Packet& packet) {
     vertex_buffer_.push_back(packet);
   }
 
@@ -88,7 +88,6 @@ class VertexData {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_);
     glBindVertexArray(vao_);
     // if dirty, repopulate and call T bind
-
     if (dirty_) {
       glBufferData(GL_ARRAY_BUFFER, vertex_buffer_.size() * sizeof(Packet), vertex_buffer_.data, GL_STATIC_DRAW);
       glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_buffer_.size() * sizeof(int), index_buffer_.data, GL_STATIC_DRAW);
@@ -96,6 +95,20 @@ class VertexData {
 
       dirty_ = false;
     }
+  }
+
+  /**
+   *  Returns a read-only pointer to the underlying vertex data.
+   */ 
+  const Packet* GetVertexData() {
+    return vertex_buffer_.data;
+  }
+
+  /**
+   *  Returns a read-only pointer to the underlying index data.
+   */ 
+  const Packet* GetIndexData() {
+    return index_buffer_.data;
   }
 
   ~VertexData() {
@@ -130,7 +143,12 @@ class VertexData {
   /**
    *  Assign copy
    */ 
-  VertexData& operator=(const VertexData& other);
+  VertexData& operator=(const VertexData& other) {
+    data_ = other.data_;
+    indices_ = other.indices_;
+
+    dirty_ = true;
+  }
 
   /**
    *  Assign move
@@ -147,7 +165,7 @@ class VertexData {
 
  private:
   // the underlying data stored.
-  std::vector<T> data_;
+  std::vector<Packet> data_;
 
   // list of indices representing polygons formed from our vertices. must be triangles
   std::vector<int> indices_;
