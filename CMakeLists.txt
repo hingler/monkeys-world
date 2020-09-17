@@ -18,7 +18,8 @@ add_library(screenspace-window-manager-components ${SRC_DIR}/Font.cpp
                                                   ${SRC_DIR}/layer/LayerGroup.cpp
                                                   ${SRC_DIR}/layer/Layer.cpp
                                                   ${SRC_DIR}/Paint.cpp
-                                                  ${SRC_DIR}/utils/IDGenerator.cpp)
+                                                  ${SRC_DIR}/utils/IDGenerator.cpp
+                                                  ${SRC_DIR}/storage/VertexPacketTypes.cpp)
 
 target_include_directories(screenspace-window-manager-components PUBLIC ${INC_DIR})
 
@@ -145,6 +146,8 @@ endif()
 add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/glm-src
                  ${CMAKE_CURRENT_BINARY_DIR}/glm-build
                  EXCLUDE_FROM_ALL)
+
+target_link_libraries(screenspace-window-manager-components glm)
 
 target_link_libraries(screenspace-window-manager screenspace-window-manager-components)
 
