@@ -1,9 +1,10 @@
 #ifndef VERTEX_DATA_H_
 #define VERTEX_DATA_H_
 
-#include "glad/glad.h"
 #include <algorithm>
 #include <vector>
+
+#include <glad/glad.h>
 
 // from https://stackoverflow.com/questions/87372/check-if-a-class-has-a-member-function-of-a-given-signature/10707822#10707822
 namespace screenspacemanager {
@@ -16,8 +17,11 @@ namespace storage {
 template <typename Packet>
 class VertexData {
  private:
-  template <typename T>
-  struct HasBind {
+
+  /**
+   *  Test struct used to verify that bind method exists
+   */ 
+  template <typename T> struct HasBind {
     template <typename U, typename void (*)()> struct Tester {};
     template <typename U> static char Test(Tester<U, &U::Bind> *);
     template <typename U> static int Test(...);
@@ -92,7 +96,7 @@ class VertexData {
     if (dirty_) {
       glBufferData(GL_ARRAY_BUFFER, vertex_buffer_.size() * sizeof(Packet), vertex_buffer_.data, GL_STATIC_DRAW);
       glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_buffer_.size() * sizeof(int), index_buffer_.data, GL_STATIC_DRAW);
-      T::Bind();
+      Packet::Bind();
 
       dirty_ = false;
     }
