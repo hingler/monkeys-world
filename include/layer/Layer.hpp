@@ -6,6 +6,7 @@
 
 #include <glad/glad.h>
 #include <string>
+#include <cinttypes>
 
 namespace screenspacemanager {
 namespace layer {
@@ -99,7 +100,7 @@ class Layer {
 
   static IDGenerator id_generator_;     // used to generate unique IDs when created.
 
-  int id_;                      // Identifier associated with this layer.
+  uint64_t id_;                      // Identifier associated with this layer.
 
  protected:
   /**
