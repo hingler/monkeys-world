@@ -96,7 +96,7 @@ if (result)
   message(FATAL_ERROR "Build for Freetype failed -- ${result}" )
 endif()
 
-add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/freetype-src
+add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/freetype-src build
                  EXCLUDE_FROM_ALL)
 
 target_link_libraries(screenspace-window-manager-components freetype)
@@ -151,15 +151,13 @@ target_link_libraries(screenspace-window-manager-components glm)
 
 target_link_libraries(screenspace-window-manager screenspace-window-manager-components)
 
-add_executable(thetest test/VertexDataTest.cpp)
-target_include_directories(thetest PRIVATE ${INC_DIR})
-target_link_libraries(thetest gtest_main glad glm)
+add_executable(vertex-data-test test/VertexDataTest.cpp)
+target_include_directories(vertex-data-test PRIVATE ${INC_DIR})
+target_link_libraries(vertex-data-test gtest_main gmock_main glad glm screenspace-window-manager-components)
+add_test(NAME vertex-data-test COMMAND vertex-data-test)
 
 add_custom_command(TARGET screenspace-window-manager POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/resources $<TARGET_FILE_DIR:screenspace-window-manager>/resources)
-
-# file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/resources)
-# file(COPY "resources" DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
