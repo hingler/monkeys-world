@@ -6,9 +6,12 @@
 
 #include <glad/glad.h>
 
+#include "opengl/VertexDataContext.hpp"
+
 // from https://stackoverflow.com/questions/87372/check-if-a-class-has-a-member-function-of-a-given-signature/10707822#10707822
 namespace screenspacemanager {
 namespace storage {
+
 /**
  *  Represents the data associated with the vertices which comprise a model.
  *  @tparam Packet - the specification for the vertex data which will be passed in.
@@ -23,7 +26,7 @@ class VertexData {
    */ 
   template <typename T> struct HasBind {
     template <typename U, typename void (*)()> struct Tester {};
-    template <typename U> static char Test(Tester<U, &U::Bind> *);
+    template <typename U> static char Test(Tester<U, &U::Bind>*);
     template <typename U> static int Test(...);
 
     // true if `Bind` method is available, false otherwise
@@ -35,17 +38,16 @@ class VertexData {
   /**
    *  Constructs a new VertexData object.
    */ 
-  VertexData() : dirty_(true) {
-    glGenBuffers(2, &vertex_buffer_);
-    glGenVertexArrays(1, &vao_);
-  }
+  VertexData() : VertexData(::screenspacemanager::opengl::VertexDataContext<Packet>()) { }
+
+  VertexData(::screenspacemanager::opengl::VertexDataContext<Packet> context) : context_(context) { }
 
   /**
    *  Stores a new vertex based on the contents of the data packet.
    *  @param packet - data packet containing vertex data.
    */ 
   void AddVertex(const Packet& packet) {
-    vertex_buffer_.push_back(packet);
+    data_.push_back(packet);
   }
 
   /**
@@ -60,7 +62,7 @@ class VertexData {
     std::initializer_list<int> vert_list({vertA, vertB, vertC});
     int min_value = std::min(vert_list);
     int max_value = std::max(vert_list);
-    if (min_value > 0 && max_value < getVertexCount()) {
+    if (min_value >= 0 && max_value < getVertexCount()) {
       indices_.push_back(vertA);
       indices_.push_back(vertB);
       indices_.push_back(vertC);
@@ -71,102 +73,55 @@ class VertexData {
   }
 
   /**
+   *  Provides a wrapper for Packet::Bind so that methods working with this data class
+   *  need not deduce the template type to bind attributes
+   */ 
+  void PointToVertexAttribs() {
+    context_.PopulateBuffersAndBind(data_, indices_);
+  }
+
+  /**
    *  Returns number of vertices stored here.
    */ 
-  size_t getVertexCount() const {
+  size_t GetVertexCount() const {
     return data_.size();
   }
 
   /**
    *  Returns number of polygons stored in indices.
    */ 
-  size_t getPolyCount() const {
-    return indices_.size() / 3;
-  }
-
-  /**
-   *  Binds the vertex data to the GL context based on template specification.
-   */ 
-  void Bind() {
-    // bind buffers and vao
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_);
-    glBindVertexArray(vao_);
-    // if dirty, repopulate and call T bind
-    if (dirty_) {
-      glBufferData(GL_ARRAY_BUFFER, vertex_buffer_.size() * sizeof(Packet), vertex_buffer_.data, GL_STATIC_DRAW);
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_buffer_.size() * sizeof(int), index_buffer_.data, GL_STATIC_DRAW);
-      Packet::Bind();
-
-      dirty_ = false;
-    }
+  size_t GetIndexCount() const {
+    return indices_.size();
   }
 
   /**
    *  Returns a read-only pointer to the underlying vertex data.
    */ 
   const Packet* GetVertexData() {
-    return vertex_buffer_.data;
+    return data_.data();
   }
 
   /**
    *  Returns a read-only pointer to the underlying index data.
    */ 
-  const Packet* GetIndexData() {
-    return index_buffer_.data;
-  }
-
-  ~VertexData() {
-    glDeleteBuffers(2, &vertex_buffer_);
-    glDeleteVertexArrays(1, &vao_);
+  const int* GetIndexData() {
+    return indices_.data();
   }
 
   /**
-   *  Copy ctor
+   *  Concatenates the passed VertexData object onto `this`.
+   *  @param other - the other VertexData being merged.
    */ 
-  VertexData(const VertexData& other) : dirty_(true) {
-    data_ = other.data_;
-    indices_ = other.indices_;
+  void Concatenate(const VertexData<Packet>& other) {
+    int index_offset = other.indices_.size();
+    for (Packet packet : other.data_) {
+      data_.push_back(packet);
+    }
 
-    // recreate the data fields in case we intend to modify
-    glGenBuffers(2, &vertex_buffer_);
-    glGenVertexArrays(1, &vao_);
+    for (int index : other.indices_) {
+      indices_.push_back(index + index_offset);
+    }
   }
-
-  /**
-   *  Move ctor
-   */ 
-  VertexData(VertexData&& other) :
-    data_(std::move(other.data_)),
-    indices_(std::move(other.indices_)),
-    vertex_buffer_(other.vertex_buffer_),
-    index_buffer_(other.index_buffer_),
-    vao_(other.vao_),
-    dirty_(other.dirty_) {
-  }
-
-  /**
-   *  Assign copy
-   */ 
-  VertexData& operator=(const VertexData& other) {
-    data_ = other.data_;
-    indices_ = other.indices_;
-
-    dirty_ = true;
-  }
-
-  /**
-   *  Assign move
-   */ 
-  VertexData& operator=(VertexData&& other) {
-    data_ = std::move(other.data_);
-    indices_ = std::move(other.indices_);
-    vertex_buffer_ = other.vertex_buffer_;
-    index_buffer_ = other.index_buffer_;
-    vao_ = other.vao_;
-    dirty_ = other.dirty_;
-  }
-
 
  private:
   // the underlying data stored.
@@ -175,17 +130,10 @@ class VertexData {
   // list of indices representing polygons formed from our vertices. must be triangles
   std::vector<int> indices_;
 
-  // gl buffer for vertices
-  GLuint vertex_buffer_;
+  // context used to make opengl calls
+  ::screenspacemanager::opengl::VertexDataContext<Packet> context_;
 
-  // gl buffer for indices
-  GLuint index_buffer_;
-
-  // stores attribute bindings
-  GLuint vao_;
-
-  // true if the buffer data needs to be updated, false if not.
-  bool dirty_;
+  
 };
 
 };  // namespace storage
