@@ -1,7 +1,7 @@
 #include "storage/VertexData.hpp"
 #include "storage/VertexPacketTypes.hpp"
-#include "opengl/VertexDataContext.hpp"
-#include "opengl/VertexDataContextGL.hpp"
+#include "model/VertexDataContext.hpp"
+#include "model/VertexDataContextGL.hpp"
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -20,7 +20,7 @@
 
 namespace screenspacemanagertest {
 using ::screenspacemanager::storage::VertexData;
-using ::screenspacemanager::opengl::VertexDataContext;
+using ::screenspacemanager::model::VertexDataContext;
 
 struct DummyPacket {
   int data;
@@ -63,5 +63,7 @@ TEST_F(VertexDataTests, CreateDummyPacket) {
   ASSERT_EQ(3, contents[2]);
 
   data.PointToVertexAttribs();
-}
 };
+
+
+};  // namespace screenspacemanagertests

@@ -2,7 +2,7 @@
 #define VERTEX_DATA_CONTEXT_H_
 
 namespace screenspacemanager {
-namespace opengl {
+namespace model {
 
 /**
  *  Interface used for the VertexDataContext.

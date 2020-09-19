@@ -8,9 +8,11 @@
 
 #include <glad/glad.h>
 
-#include "opengl/VertexDataContext.hpp"
+#include "model/VertexDataContext.hpp"
 
 // from https://stackoverflow.com/questions/87372/check-if-a-class-has-a-member-function-of-a-given-signature/10707822#10707822
+// todo: enable some R/W on attributes (not sure how yet lol)
+
 namespace screenspacemanager {
 namespace storage {
 
@@ -41,14 +43,14 @@ class VertexData {
    *  Constructs a new VertexData object.
    */ 
   VertexData() {
-    context_ = std::make_unique<::screenspacemanager::opengl::VertexDataContextGL<Packet>>();
+    context_ = std::make_unique<::screenspacemanager::model::VertexDataContextGL<Packet>>();
    }
 
   /**
    *  Constructs a new VertexData object from a preallocated context object.
    *  The new object assumes ownership of the passed-in context.
    */ 
-  VertexData(std::unique_ptr<::screenspacemanager::opengl::VertexDataContext<Packet>> context) :
+  VertexData(std::unique_ptr<::screenspacemanager::model::VertexDataContext<Packet>> context) :
     context_(std::move(context)) { }
 
   /**
@@ -140,7 +142,7 @@ class VertexData {
   std::vector<int> indices_;
 
   // context used to make opengl calls
-  std::unique_ptr<::screenspacemanager::opengl::VertexDataContext<Packet>> context_;
+  std::unique_ptr<::screenspacemanager::model::VertexDataContext<Packet>> context_;
 
   
 };
@@ -148,4 +150,4 @@ class VertexData {
 };  // namespace storage
 };  // namespace screenspacemanager
 
-#endif  // VERTEX_DATA_H_
+#endif  // VERTEX_DATA_H_ 

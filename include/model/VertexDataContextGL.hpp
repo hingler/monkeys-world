@@ -8,10 +8,10 @@
 
 #include <glad/glad.h>
 
-#include "opengl/VertexDataContext.hpp"
-
+#include "model/VertexDataContext.hpp"
+ 
 namespace screenspacemanager {
-namespace opengl {
+namespace model {
 
 /**
  *  Provides a rendering context for the VertexData class, allowing it to make calls to GL.
