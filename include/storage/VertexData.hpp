@@ -2,6 +2,8 @@
 #define VERTEX_DATA_H_
 
 #include <algorithm>
+#include <iostream>
+#include <memory>
 #include <vector>
 
 #include <glad/glad.h>
@@ -38,9 +40,16 @@ class VertexData {
   /**
    *  Constructs a new VertexData object.
    */ 
-  VertexData() : VertexData(::screenspacemanager::opengl::VertexDataContext<Packet>()) { }
+  VertexData() {
+    context_ = std::make_unique<::screenspacemanager::opengl::VertexDataContextGL<Packet>>();
+   }
 
-  VertexData(::screenspacemanager::opengl::VertexDataContext<Packet> context) : context_(context) { }
+  /**
+   *  Constructs a new VertexData object from a preallocated context object.
+   *  The new object assumes ownership of the passed-in context.
+   */ 
+  VertexData(std::unique_ptr<::screenspacemanager::opengl::VertexDataContext<Packet>> context) :
+    context_(std::move(context)) { }
 
   /**
    *  Stores a new vertex based on the contents of the data packet.
@@ -77,7 +86,7 @@ class VertexData {
    *  need not deduce the template type to bind attributes
    */ 
   void PointToVertexAttribs() {
-    context_.PopulateBuffersAndBind(data_, indices_);
+    context_->PopulateBuffersAndBind(data_, indices_);
   }
 
   /**
@@ -131,7 +140,7 @@ class VertexData {
   std::vector<int> indices_;
 
   // context used to make opengl calls
-  ::screenspacemanager::opengl::VertexDataContext<Packet> context_;
+  std::unique_ptr<::screenspacemanager::opengl::VertexDataContext<Packet>> context_;
 
   
 };
