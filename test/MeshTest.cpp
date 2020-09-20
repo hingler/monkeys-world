@@ -1,4 +1,4 @@
-#include "storage/VertexData.hpp"
+#include "model/Mesh.hpp"
 #include "storage/VertexPacketTypes.hpp"
 #include "model/VertexDataContext.hpp"
 #include "model/VertexDataContextGL.hpp"
@@ -19,7 +19,7 @@
 
 
 namespace screenspacemanagertest {
-using ::screenspacemanager::storage::VertexData;
+using ::screenspacemanager::model::Mesh;
 using ::screenspacemanager::model::VertexDataContext;
 
 struct DummyPacket {
@@ -52,7 +52,7 @@ class VertexDataTests : public ::testing::Test {
 
 TEST_F(VertexDataTests, CreateDummyPacket) {
 	std::cout << "testing123" << std::endl;
-  VertexData<DummyPacket> data(std::make_unique<MockVertexContext<DummyPacket>>());
+  Mesh<DummyPacket> data(std::make_unique<MockVertexContext<DummyPacket>>());
   data.AddVertex({1});
   data.AddVertex({2});
   data.AddVertex({3});

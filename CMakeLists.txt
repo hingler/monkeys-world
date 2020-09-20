@@ -151,10 +151,10 @@ target_link_libraries(screenspace-window-manager-components glm)
 
 target_link_libraries(screenspace-window-manager screenspace-window-manager-components)
 
-add_executable(vertex-data-test test/VertexDataTest.cpp)
-target_include_directories(vertex-data-test PRIVATE ${INC_DIR})
-target_link_libraries(vertex-data-test gtest_main gmock_main glad glm screenspace-window-manager-components)
-add_test(NAME vertex-data-test COMMAND vertex-data-test)
+add_executable(mesh-test test/MeshTest.cpp)
+target_include_directories(mesh-test PRIVATE ${INC_DIR})
+target_link_libraries(mesh-test gtest_main gmock_main glad glm screenspace-window-manager-components)
+add_test(NAME mesh-test COMMAND mesh-test)
 
 add_custom_command(TARGET screenspace-window-manager POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/resources $<TARGET_FILE_DIR:screenspace-window-manager>/resources)

@@ -1,33 +1,193 @@
 #ifndef MESH_H_
 #define MESH_H_
 
+#include <algorithm>
+#include <iostream>
+#include <memory>
+#include <vector>
+
+#include <glad/glad.h>
+
+#include "model/VertexDataContext.hpp"
+
+// from https://stackoverflow.com/questions/87372/check-if-a-class-has-a-member-function-of-a-given-signature/10707822#10707822
+// todo: enable some R/W on attributes (not sure how yet lol)
+
 namespace screenspacemanager {
 namespace model {
 
-  // mesh -> model -> game-specific handling
+/**
+ *  Represents all attributes required to reconstruct a mesh.
+ *  @tparam Packet - the specification for the vertex data which will be passed in.
+ *                   this encompasses data types, and locations.
+ */ 
+template <typename Packet>
+class Mesh {
+ private:
 
   /**
-   *  A mesh constitutes some piece of geometry which contributes, or constitutes, a full-fledged model.
-   *  It contains all static resources required to draw the mesh, which includes GLSL attributes as well as textures.
+   *  Test struct used to verify that bind method exists
    */ 
-  class Mesh {
-    /**
-     *  figure out some basic features
-     *    - loading a mesh from file seems obvious
-     *    - merge meshes together?
-     *      - is rendering something which **needs** to be done on a per-mesh basis?
-     *      - probably not, but leave it off for now
-     *    - figure out how textures are linked, and then provide those
-     *      - need a data thing for those as well
-     *    - allow for some uniform editing (attributes will be locked in the vertex data)
-     *    - provide some method which binds this mesh's contents as active
-     *      - these can then be called by the `Model` to draw it on-screen with all uniforms set
-     *      - 
-     *    - enable access to the vertex data (see that class for another note lol)
-     */ 
+  template <typename T> struct HasBind {
+    template <typename U, typename void (*)()> struct Tester {};
+    template <typename U> static char Test(Tester<U, &U::Bind>*);
+    template <typename U> static int Test(...);
+
+    // true if `Bind` method is available, false otherwise
+    static constexpr bool Has = (sizeof(Test<T>(NULL)) == sizeof(char));
   };
 
-};  // namespace gl
+  static_assert(HasBind<Packet>::Has, "Bind method not available for templated class");
+ public:
+  /**
+   *  Constructs a new VertexData object.
+   */ 
+  Mesh() {
+    context_ = std::make_unique<::screenspacemanager::model::VertexDataContextGL<Packet>>();
+   }
+
+  /**
+   *  Constructs a new VertexData object from a preallocated context object.
+   *  The new object assumes ownership of the passed-in context.
+   */ 
+  Mesh(std::unique_ptr<::screenspacemanager::model::VertexDataContext<Packet>> context) :
+    context_(std::move(context)) { }
+
+  /**
+   *  Stores a new vertex based on the contents of the data packet.
+   *  @param packet - data packet containing vertex data.
+   */ 
+  void AddVertex(const Packet& packet) {
+    data_.push_back(packet);
+  }
+
+  /**
+   *  Stores a new triangle based on the described indices.
+   *  @param vertA - First vertex
+   *  @param vertB - Second vertex
+   *  @param vertC - third vertex
+   * 
+   *  @return true if the vertices are in-bounds, and false otherwise.
+   */ 
+  bool AddPolygon(int vertA, int vertB, int vertC) {
+    std::initializer_list<int> vert_list({vertA, vertB, vertC});
+    int min_value = std::min(vert_list);
+    int max_value = std::max(vert_list);
+    if (min_value >= 0 && max_value < getVertexCount()) {
+      indices_.push_back(vertA);
+      indices_.push_back(vertB);
+      indices_.push_back(vertC);
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   *  Provides a wrapper for Packet::Bind so that methods working with this data class
+   *  need not deduce the template type to bind attributes
+   */ 
+  void PointToVertexAttribs() {
+    context_->PopulateBuffersAndBind(data_, indices_);
+  }
+
+  /**
+   *  Returns number of vertices stored here.
+   */ 
+  size_t GetVertexCount() const {
+    return data_.size();
+  }
+
+  /**
+   *  Returns number of polygons stored in indices.
+   */ 
+  size_t GetIndexCount() const {
+    return indices_.size();
+  }
+
+  /**
+   *  Returns a read-only pointer to the underlying vertex data.
+   */ 
+  const Packet* GetVertexData() {
+    return data_.data();
+  }
+
+  /**
+   *  Returns a read-only pointer to the underlying index data.
+   */ 
+  const int* GetIndexData() {
+    return indices_.data();
+  }
+
+  /**
+   *  Concatenates the passed Mesh object onto `this`.
+   *  @param other - the other Mesh being merged.
+   */ 
+  void Concatenate(const Mesh<Packet>& other) {
+    int index_offset = other.indices_.size();
+    for (Packet packet : other.data_) {
+      data_.push_back(packet);
+    }
+
+    for (int index : other.indices_) {
+      indices_.push_back(index + index_offset);
+    }
+  }
+
+ private:
+  // the underlying data stored.
+  std::vector<Packet> data_;
+
+  // list of indices representing polygons formed from our vertices. must be triangles
+  std::vector<int> indices_;
+
+  // context used to make opengl calls
+  std::unique_ptr<::screenspacemanager::model::VertexDataContext<Packet>> context_;
+
+  
+};
+
+};  // namespace storage
 };  // namespace screenspacemanager
 
-#endif  // MESH_H_
+#endif  // MESH_H_ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
