@@ -33,7 +33,7 @@ class VertexDataContextGL : public VertexDataContext<Packet> {
    *  @param data - the vertex data being populated.
    *  @param indices - the associated indices.
    */ 
-  void PopulateBuffersAndBind(const std::vector<Packet>& data, const std::vector<int>& indices) override {
+  void PopulateBuffersAndPoint(const std::vector<Packet>& data, const std::vector<int>& indices) override {
     glBindBuffer(array_buffer_, GL_ARRAY_BUFFER);
     glBufferData(GL_ARRAY_BUFFER,
                  sizeof(Packet) * data.size(),

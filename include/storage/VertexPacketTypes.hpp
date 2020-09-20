@@ -11,10 +11,10 @@ namespace storage {
  *  Intended for UI geometry, for instance on-screen text.
  */ 
 struct VertexPacket2D {
-  // 2D position
+  // 2D position (location = 0)
   glm::vec2 position;
 
-  // 2D tex coords
+  // 2D tex coords (location = 1)
   glm::vec2 texcoords;
 
   /**
@@ -28,8 +28,13 @@ struct VertexPacket2D {
  *  Contains three position dimensions, two texture dimensions, and three normal dimensions.
  */ 
 struct VertexPacket3D {
+  // 3D position (location = 0)
   glm::vec3 position;
+  
+  // 3D normals (location = 1)
   glm::vec3 normals;
+
+  // 2D texcoords (location = 2)
   glm::vec2 coords;
 
   /**

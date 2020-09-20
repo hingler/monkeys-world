@@ -10,7 +10,11 @@ namespace model {
 template <typename Packet>
 class VertexDataContext {
  public:
-  virtual void PopulateBuffersAndBind(const std::vector<Packet>& data, const std::vector<int>& indices) = 0;
+
+  /**
+   *  
+   */ 
+  virtual void PopulateBuffersAndPoint(const std::vector<Packet>& data, const std::vector<int>& indices) = 0;
 };
 
 };  // namespace opengl

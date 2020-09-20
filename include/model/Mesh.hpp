@@ -88,7 +88,7 @@ class Mesh {
    *  need not deduce the template type to bind attributes
    */ 
   void PointToVertexAttribs() {
-    context_->PopulateBuffersAndBind(data_, indices_);
+    context_->PopulateBuffersAndPoint(data_, indices_);
   }
 
   /**
