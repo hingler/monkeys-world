@@ -35,7 +35,7 @@ struct DummyPacket {
 template <typename Packet>
 class MockVertexContext : public VertexDataContext<Packet> {
  public:
-  MOCK_METHOD(void, PopulateBuffersAndBind, (const std::vector<Packet>& data, const std::vector<int>& indices), (override));
+  MOCK_METHOD(void, PopulateBuffersAndPoint, (const std::vector<Packet>& data, const std::vector<int>& indices), (override));
 };
 
 
