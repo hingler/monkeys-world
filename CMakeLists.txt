@@ -27,6 +27,8 @@ target_include_directories(screenspace-window-manager-components PUBLIC ${INC_DI
 configure_file(deps/CMakeLists-glfw.txt glfw-download/CMakeLists.txt)
 
 # it looks like these lines are here to ensure that linters and shit work properly.
+# build works fine W/O some of the unnecessary steps (just the build folder)
+# but the linter does not pick up on the build folders otherwise.
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
   RESULT_VARIABLE result
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/glfw-download )

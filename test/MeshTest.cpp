@@ -65,5 +65,9 @@ TEST_F(VertexDataTests, CreateDummyPacket) {
   data.PointToVertexAttribs();
 };
 
+TEST_F(VertexDataTests, CreateMock2DPacket) {
+  
+}
+
 
 };  // namespace screenspacemanagertests
