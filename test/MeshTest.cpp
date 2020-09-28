@@ -8,8 +8,12 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <glm/glm.hpp>
+
 #include <iostream>
 #include <memory>
+
+#define DEBUG_EPS 0.0001
 
 // TODO: add tests for vertex data
 //  - verify contents
@@ -26,7 +30,15 @@ struct DummyPacket {
   int data;
   static void Bind() {
 
-  };
+  }
+};
+
+struct Dummy2DPacket {
+  glm::vec2 position;
+  glm::vec2 normals;
+  static void Bind() {
+
+  }
 };
 
 /**
@@ -51,7 +63,6 @@ class VertexDataTests : public ::testing::Test {
 
 
 TEST_F(VertexDataTests, CreateDummyPacket) {
-	std::cout << "testing123" << std::endl;
   Mesh<DummyPacket> data(std::make_unique<MockVertexContext<DummyPacket>>());
   data.AddVertex({1});
   data.AddVertex({2});
@@ -61,12 +72,34 @@ TEST_F(VertexDataTests, CreateDummyPacket) {
   ASSERT_EQ(1, contents[0]);
   ASSERT_EQ(2, contents[1]);
   ASSERT_EQ(3, contents[2]);
+  ASSERT_EQ(0, data.GetIndexCount());
+  ASSERT_EQ(3, data.GetVertexCount());
+
+  data.AddPolygon(0, 1, 2);
+  ASSERT_EQ(3, data.GetIndexCount());
 
   data.PointToVertexAttribs();
 };
 
 TEST_F(VertexDataTests, CreateMock2DPacket) {
-  
+  Mesh<Dummy2DPacket> data(std::make_unique<MockVertexContext<Dummy2DPacket>>());
+  data.AddVertex({{0.0, 1.0}, {2.0, 3.0}});
+  data.AddVertex({{4.0, 5.0}, {6.0, 7.0}});
+
+  const float* contents = reinterpret_cast<const float*>(data.GetVertexData());
+  ASSERT_NEAR(0.0, contents[0], DEBUG_EPS);
+  ASSERT_NEAR(1.0, contents[1], DEBUG_EPS);
+  ASSERT_NEAR(2.0, contents[2], DEBUG_EPS);
+  ASSERT_NEAR(3.0, contents[3], DEBUG_EPS);
+  ASSERT_NEAR(4.0, contents[4], DEBUG_EPS);
+  ASSERT_NEAR(5.0, contents[5], DEBUG_EPS);
+  ASSERT_NEAR(6.0, contents[6], DEBUG_EPS);
+  ASSERT_NEAR(7.0, contents[7], DEBUG_EPS);
+
+  ASSERT_EQ(2, data.GetVertexCount());
+  ASSERT_EQ(0, data.GetIndexCount());
+
+  data.PointToVertexAttribs();
 }
 
 
