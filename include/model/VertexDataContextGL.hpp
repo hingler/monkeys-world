@@ -26,6 +26,9 @@ class VertexDataContextGL : public VertexDataContext<Packet> {
   VertexDataContextGL() {
     glGenBuffers(2, &array_buffer_);
     glGenVertexArrays(1, &vao_);
+
+    glBindVertexArray(vao_);
+    Packet::Bind();
   }
 
   /**
@@ -47,9 +50,6 @@ class VertexDataContextGL : public VertexDataContext<Packet> {
                  GL_STATIC_DRAW);
 
     glBindVertexArray(vao_);
-
-    // should only do this for ctor
-    Packet::Bind();
   }
 
  private:
