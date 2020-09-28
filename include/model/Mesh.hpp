@@ -73,7 +73,7 @@ class Mesh {
     std::initializer_list<int> vert_list({vertA, vertB, vertC});
     int min_value = std::min(vert_list);
     int max_value = std::max(vert_list);
-    if (min_value >= 0 && max_value < getVertexCount()) {
+    if (min_value >= 0 && max_value < GetVertexCount()) {
       indices_.push_back(vertA);
       indices_.push_back(vertB);
       indices_.push_back(vertC);
@@ -99,7 +99,8 @@ class Mesh {
   }
 
   /**
-   *  Returns number of polygons stored in indices.
+   *  Returns number of indices currently stored.
+   *  (modify: store `polygon` objects instead? and add some functions which can do some quick maths)
    */ 
   size_t GetIndexCount() const {
     return indices_.size();
