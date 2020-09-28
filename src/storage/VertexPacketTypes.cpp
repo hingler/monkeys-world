@@ -16,6 +16,7 @@ void VertexPacket2D::Bind() {
   glEnableVertexAttribArray(1);
 }
 
+// enablevertexattribarray for all kinda sucks maybe?
 void VertexPacket3D::Bind() {
   // position data (position 0)
   glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(VertexPacket3D), (void*)0);
@@ -26,7 +27,7 @@ void VertexPacket3D::Bind() {
   glEnableVertexAttribArray(1);
 
   // tex data (position 2)
-  glVertexAttribPointer(2, 3, GL_FLOAT, false, sizeof(VertexPacket3D), (void*)(6 * sizeof(float)));
+  glVertexAttribPointer(2, 2, GL_FLOAT, false, sizeof(VertexPacket3D), (void*)(6 * sizeof(float)));
   glEnableVertexAttribArray(2);
 }
 
