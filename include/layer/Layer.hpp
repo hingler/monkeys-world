@@ -64,7 +64,7 @@ class Layer {
   /**
    *  Returns the unique identifier assigned to this layer.
    */ 
-  int GetLayerId();
+  uint64_t GetLayerId();
 
   /**
    *  Changes the layer id to a passed in string

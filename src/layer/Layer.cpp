@@ -59,7 +59,7 @@ void Layer::BindFramebufferAndRender() {
   glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
 }
 
-int Layer::GetLayerId() {
+uint64_t Layer::GetLayerId() {
   return id_;
 }
 
