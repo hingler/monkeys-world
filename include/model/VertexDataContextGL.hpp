@@ -28,6 +28,8 @@ class VertexDataContextGL : public VertexDataContext<Packet> {
     glGenVertexArrays(1, &vao_);
 
     glBindVertexArray(vao_);
+
+    // vao now maps to attribute type
     Packet::Bind();
   }
 
@@ -49,6 +51,10 @@ class VertexDataContextGL : public VertexDataContext<Packet> {
                  reinterpret_cast<const void*>(indices.data()),
                  GL_STATIC_DRAW);
 
+    Point();
+  }
+
+  void Point() override {
     glBindVertexArray(vao_);
   }
 

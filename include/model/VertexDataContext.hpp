@@ -17,6 +17,11 @@ class VertexDataContext {
    *  @param indices - triplets of indices representing triangles.
    */ 
   virtual void PopulateBuffersAndPoint(const std::vector<Packet>& data, const std::vector<int>& indices) = 0;
+
+  /**
+   *  If no attributes have been modified, then we can simply bind the VAO.
+   */ 
+  virtual void Point() = 0;
 };
 
 };  // namespace opengl
