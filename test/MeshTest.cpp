@@ -48,6 +48,7 @@ template <typename Packet>
 class MockVertexContext : public VertexDataContext<Packet> {
  public:
   MOCK_METHOD(void, PopulateBuffersAndPoint, (const std::vector<Packet>& data, const std::vector<int>& indices), (override));
+  MOCK_METHOD(void, Point, (), (override));
 };
 
 
@@ -87,14 +88,15 @@ TEST_F(VertexDataTests, CreateMock2DPacket) {
   data.AddVertex({{4.0, 5.0}, {6.0, 7.0}});
 
   const float* contents = reinterpret_cast<const float*>(data.GetVertexData());
+  const float* contents_second = reinterpret_cast<const float*>(data.GetVertexData() + 1);
   ASSERT_NEAR(0.0, contents[0], DEBUG_EPS);
   ASSERT_NEAR(1.0, contents[1], DEBUG_EPS);
   ASSERT_NEAR(2.0, contents[2], DEBUG_EPS);
   ASSERT_NEAR(3.0, contents[3], DEBUG_EPS);
-  ASSERT_NEAR(4.0, contents[4], DEBUG_EPS);
-  ASSERT_NEAR(5.0, contents[5], DEBUG_EPS);
-  ASSERT_NEAR(6.0, contents[6], DEBUG_EPS);
-  ASSERT_NEAR(7.0, contents[7], DEBUG_EPS);
+  ASSERT_NEAR(4.0, contents_second[0], DEBUG_EPS);
+  ASSERT_NEAR(5.0, contents_second[1], DEBUG_EPS);
+  ASSERT_NEAR(6.0, contents_second[2], DEBUG_EPS);
+  ASSERT_NEAR(7.0, contents_second[3], DEBUG_EPS);
 
   ASSERT_EQ(2, data.GetVertexCount());
   ASSERT_EQ(0, data.GetIndexCount());
