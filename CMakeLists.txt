@@ -14,9 +14,6 @@ add_executable(screenspace-window-manager main.cpp)
 
 # separate out a bit better for testing
 add_library(screenspace-window-manager-components ${SRC_DIR}/Font.cpp
-                                                  ${SRC_DIR}/layer/Layer2D.cpp
-                                                  ${SRC_DIR}/layer/LayerGroup.cpp
-                                                  ${SRC_DIR}/layer/Layer.cpp
                                                   ${SRC_DIR}/Paint.cpp
                                                   ${SRC_DIR}/utils/IDGenerator.cpp
                                                   ${SRC_DIR}/storage/VertexPacketTypes.cpp)
