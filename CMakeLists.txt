@@ -46,7 +46,7 @@ endif()
 # the external project add should build those files in those
 # directories, so we add both now
 
-#if problems arise add build dirs to subdirectory commands :-)
+# if problems arise add build dirs to subdirectory commands :-)
 add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/glfw-src
                  ${CMAKE_CURRENT_BINARY_DIR}/glfw-build
   EXCLUDE_FROM_ALL)
@@ -146,13 +146,22 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/glm-src
                  ${CMAKE_CURRENT_BINARY_DIR}/glm-build
                  EXCLUDE_FROM_ALL)
 
+### BOOST ###
+set(BOOST_ROOT "C:/Program Files/boost_1_74_0")
+set(BOOST_USE_STATIC_LIBS ON)
+set(BOOST_USE_RELEASE_LIBS ON)
+set(BOOST_USE_MULTITHREADED ON)
+find_package(Boost REQUIRED)
+# download correct ver based on plat
+
 target_link_libraries(screenspace-window-manager-components glm)
 
 target_link_libraries(screenspace-window-manager screenspace-window-manager-components)
 
 add_executable(mesh-test test/MeshTest.cpp)
 target_include_directories(mesh-test PRIVATE ${INC_DIR})
-target_link_libraries(mesh-test gtest_main gmock_main glad glm screenspace-window-manager-components)
+target_link_libraries(mesh-test gtest_main gmock_main glad glm screenspace-window-manager-components ${Boost_LIBRARIES})
+target_include_directories(mesh-test PRIVATE ${Boost_INCLUDE_DIRS})
 add_test(NAME mesh-test COMMAND mesh-test)
 
 add_custom_command(TARGET screenspace-window-manager POST_BUILD
