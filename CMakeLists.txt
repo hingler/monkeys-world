@@ -16,7 +16,8 @@ add_executable(screenspace-window-manager main.cpp)
 add_library(screenspace-window-manager-components ${SRC_DIR}/Font.cpp
                                                   ${SRC_DIR}/Paint.cpp
                                                   ${SRC_DIR}/utils/IDGenerator.cpp
-                                                  ${SRC_DIR}/storage/VertexPacketTypes.cpp)
+                                                  ${SRC_DIR}/storage/VertexPacketTypes.cpp
+                                                  ${SRC_DIR}/shader/ShaderProgramFactory.cpp)
 
 target_include_directories(screenspace-window-manager-components PUBLIC ${INC_DIR})
 
@@ -147,7 +148,8 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/glm-src
                  EXCLUDE_FROM_ALL)
 
 ### BOOST ###
-set(BOOST_ROOT "C:/Program Files/boost_1_74_0")
+
+# BOOST_ROOT needs to be defined on my end but it might not need to be on yours :)
 set(BOOST_USE_STATIC_LIBS ON)
 set(BOOST_USE_RELEASE_LIBS ON)
 set(BOOST_USE_MULTITHREADED ON)
