@@ -1,4 +1,4 @@
-#include <shader/ShaderProgramFactory.hpp>
+#include <shader/ShaderProgramBuilder.hpp>
 #include <shader/InvalidShaderException.hpp>
 #include <shader/LinkFailedException.hpp>
 #include <glad/glad.h>
@@ -35,9 +35,9 @@ ShaderProgram ShaderProgramBuilder::Build() {
   glGetProgramiv(prog_, GL_LINK_STATUS, &success);
   if (!success) {
     std::string error_msg;
-
     error_msg.reserve(512);
-    glGetProgramInfoLog(prog_, 512, NULL, error_msg.data());
+    glGetProgramInfoLog(prog_, 512, NULL, &error_msg[0]); 
+    // contiguous memory guaranteed in c++11 and later
     throw LinkFailedException(error_msg);
   }
 }
@@ -55,10 +55,10 @@ void ShaderProgramBuilder::CreateShaderFromFile(const std::string& shader_path, 
 
   std::string contents;
   shader_file.seekg(0, ios_base::end);
-  int file_size = shader_file.tellg();
+  std::streamoff file_size = shader_file.tellg();
   shader_file.seekg(0, ios_base::beg);
   contents.resize(file_size);
-  shader_file.read(contents.data(), file_size);
+  shader_file.read(&contents[0], file_size);
 
   shader_file.close();
 
@@ -74,7 +74,7 @@ void ShaderProgramBuilder::CreateShaderFromFile(const std::string& shader_path, 
 
     // attempt to allocate sufficient space
     error_msg.reserve(512);
-    glGetShaderInfoLog(shader, 512, NULL, error_msg.data());
+    glGetShaderInfoLog(shader, 512, NULL, &error_msg[0]);
     throw InvalidShaderException(error_msg);
   }
 
