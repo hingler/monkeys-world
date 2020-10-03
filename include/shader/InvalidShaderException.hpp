@@ -6,6 +6,7 @@
 namespace screenspacemanager {
 namespace shader {
 
+// separate "exception" namespace?
 class InvalidShaderException : public std::runtime_error {
  public:
   InvalidShaderException(const std::string& arg) : runtime_error(arg) {}
