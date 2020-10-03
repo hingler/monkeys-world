@@ -45,6 +45,7 @@ class VertexDataContextGL : public VertexDataContext<Packet> {
                  reinterpret_cast<const void*>(data.data()),
                  GL_STATIC_DRAW);
     
+    // use unsigned int instead?
     glBindBuffer(element_buffer_, GL_ELEMENT_ARRAY_BUFFER);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,
                  sizeof(int) * indices.size(),
