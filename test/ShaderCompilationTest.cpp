@@ -7,7 +7,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-
 namespace screenspacemanagertest {
 
 using screenspacemanager::shader::ShaderProgramBuilder;
@@ -50,7 +49,6 @@ class ShaderBuilderTests : public ::testing::Test {
   void TearDown() override {
     glfwDestroyWindow(test_window);
     glfwTerminate();
-    exit(EXIT_FAILURE);
   }
 
  private:
@@ -62,7 +60,6 @@ TEST_F(ShaderBuilderTests, CreateEmptyShader) {
                         .WithVertexShader("resources/test/dummy-shader.vert")
                         .WithFragmentShader("resources/test/dummy-shader.frag")
                         .Build();
-  
 }
 
-}  // namespace screenspacemanagertest
+}
