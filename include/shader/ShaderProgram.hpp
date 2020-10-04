@@ -16,6 +16,7 @@ class ShaderProgram {
  
   /**
    *  Constructs a new shader program from a GL program descriptor.
+   *  @param prog - Shader passed in. This class assumes ownership.
    */ 
   ShaderProgram(GLuint prog);
 
@@ -24,21 +25,13 @@ class ShaderProgram {
    */ 
   GLuint GetProgramDescriptor();
 
-  // dtor
   ~ShaderProgram();
-  // cctor
   ShaderProgram(const ShaderProgram& other) = delete;
-  // move ctor
   ShaderProgram(ShaderProgram&& other);
-  // assignment copy
   ShaderProgram& operator=(const ShaderProgram& other) = delete;
-  // assignment move
   ShaderProgram& operator=(ShaderProgram&& other);
 
  private:
-
-  // this is better suited for an assert statement, probably
-
   // descriptor for program
   GLuint prog_;
 };
