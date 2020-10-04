@@ -1,3 +1,6 @@
+# todo: this looks like a mess and VS2017 doesn't like it.
+# do some comment cleanup here lol
+
 cmake_minimum_required(VERSION 3.0.0)
 project(screenspace-window-manager VERSION 0.0.1)
 
@@ -17,7 +20,8 @@ add_library(screenspace-window-manager-components ${SRC_DIR}/Font.cpp
                                                   ${SRC_DIR}/Paint.cpp
                                                   ${SRC_DIR}/utils/IDGenerator.cpp
                                                   ${SRC_DIR}/storage/VertexPacketTypes.cpp
-                                                  ${SRC_DIR}/shader/ShaderProgramFactory.cpp)
+                                                  ${SRC_DIR}/shader/ShaderProgramBuilder.cpp
+                                                  ${SRC_DIR}/shader/ShaderProgram.cpp)
 
 target_include_directories(screenspace-window-manager-components PUBLIC ${INC_DIR})
 
@@ -68,7 +72,7 @@ execute_process(COMMAND ${CMAKE_COMMAND} --build .
   RESULT_VARIABLE result
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/glad-download )
 
-if(result)
+if(result) 
   message(FATAL_ERROR "Build for GLAD failed -- ${result}" )
 endif()
 
@@ -164,7 +168,13 @@ add_executable(mesh-test test/MeshTest.cpp)
 target_include_directories(mesh-test PRIVATE ${INC_DIR})
 target_link_libraries(mesh-test gtest_main gmock_main glad glm screenspace-window-manager-components ${Boost_LIBRARIES})
 target_include_directories(mesh-test PRIVATE ${Boost_INCLUDE_DIRS})
-add_test(NAME mesh-test COMMAND mesh-test)
+add_test(NAME mesh-test COMMAND mesh-test WORKING_DIRECTORY $<TARGET_FILE_DIR:screenspace-window-manager>)
+
+add_executable(shader-compile-test test/ShaderCompilationTest.cpp)
+target_include_directories(shader-compile-test PRIVATE ${INC_DIR})
+target_link_libraries(shader-compile-test gtest_main gmock_main glad glm screenspace-window-manager-components)
+add_test(NAME shader-compile-test COMMAND shader-compile-test
+            WORKING_DIRECTORY $<TARGET_FILE_DIR:screenspace-window-manager>)
 
 add_custom_command(TARGET screenspace-window-manager POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/resources $<TARGET_FILE_DIR:screenspace-window-manager>/resources)
