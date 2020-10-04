@@ -11,46 +11,74 @@ namespace shader {
 using std::ios_base;
 
 ShaderProgramBuilder::ShaderProgramBuilder() {
-  prog_ = glCreateProgram();
+  shaders_ = ShaderPacket();
 }
 
 ShaderProgramBuilder& ShaderProgramBuilder::WithVertexShader(const std::string& vertex_path) {
-  CreateShaderFromFile(vertex_path, GL_VERTEX_SHADER);
+  shaders_.vertex_shader = CreateShaderFromFile(vertex_path, GL_VERTEX_SHADER);
   return *this;
 }
 
 ShaderProgramBuilder& ShaderProgramBuilder::WithGeometryShader(const std::string& geometry_path) {
-  CreateShaderFromFile(geometry_path, GL_GEOMETRY_SHADER);
+  shaders_.geometry_shader = CreateShaderFromFile(geometry_path, GL_GEOMETRY_SHADER);
   return *this;
 }
 
 ShaderProgramBuilder& ShaderProgramBuilder::WithFragmentShader(const std::string& fragment_path) {
-  CreateShaderFromFile(fragment_path, GL_FRAGMENT_SHADER);
+  shaders_.fragment_shader = CreateShaderFromFile(fragment_path, GL_FRAGMENT_SHADER);
   return *this;
 }
 
 ShaderProgram ShaderProgramBuilder::Build() {
-  glLinkProgram(prog_);
+  GLuint prog = glCreateProgram();
+
+  AttachIfNonZero(prog, shaders_.vertex_shader);
+  AttachIfNonZero(prog, shaders_.fragment_shader);
+  AttachIfNonZero(prog, shaders_.geometry_shader);
+  glLinkProgram(prog);
+
   GLint success;
-  glGetProgramiv(prog_, GL_LINK_STATUS, &success);
+  glGetProgramiv(prog, GL_LINK_STATUS, &success);
   if (!success) {
     std::string error_msg;
     error_msg.reserve(512);
-    glGetProgramInfoLog(prog_, 512, NULL, &error_msg[0]); 
-    // contiguous memory guaranteed in c++11 and later
-    throw LinkFailedException(error_msg);
+    glGetProgramInfoLog(prog, 512, NULL, &error_msg[0]); 
+
+    throw LinkFailedException("Link failed: " + error_msg);
+  }
+
+  return ShaderProgram(prog);
+}
+
+ShaderProgramBuilder::~ShaderProgramBuilder() {
+  DeleteIfNonZero(shaders_.vertex_shader);
+  DeleteIfNonZero(shaders_.fragment_shader);
+  DeleteIfNonZero(shaders_.geometry_shader);
+}
+
+void ShaderProgramBuilder::AttachIfNonZero(GLuint prog, GLuint shader) {
+  // docs: valid shader is non 0
+  if (shader != 0) {
+    glAttachShader(prog, shader);
   }
 }
 
-void ShaderProgramBuilder::CreateShaderFromFile(const std::string& shader_path, GLenum shader_type) {
+void ShaderProgramBuilder::DeleteIfNonZero(GLuint shader) {
+  if (shader != 0) {
+    glDeleteShader(shader);
+  }
+}
+
+// todo: separate file reading into a separate class? it's a bit trivial though :/
+GLuint ShaderProgramBuilder::CreateShaderFromFile(const std::string& shader_path, GLenum shader_type) {
   GLuint shader = glCreateShader(shader_type);
   std::ifstream shader_file(shader_path);
-
+  
   if (shader_file.fail()) {
     // could not read file path
     shader_file.close();
     glDeleteShader(shader);
-    throw std::invalid_argument("Invalid shader path.");
+    throw InvalidShaderException("Invalid shader path " + shader_path);
   }
 
   std::string contents;
@@ -75,10 +103,10 @@ void ShaderProgramBuilder::CreateShaderFromFile(const std::string& shader_path, 
     // attempt to allocate sufficient space
     error_msg.reserve(512);
     glGetShaderInfoLog(shader, 512, NULL, &error_msg[0]);
-    throw InvalidShaderException(error_msg);
+    throw InvalidShaderException("Shader failed to compile: " + error_msg);
   }
 
-  glAttachShader(prog_, shader);
+  return shader;
 }
 
 } // namespace shader
