@@ -62,4 +62,4 @@ TEST_F(ShaderBuilderTests, CreateEmptyShader) {
                         .Build();
 }
 
-}
+} // namespace screenspacemanagertests

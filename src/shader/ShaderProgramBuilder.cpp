@@ -78,7 +78,7 @@ GLuint ShaderProgramBuilder::CreateShaderFromFile(const std::string& shader_path
     // could not read file path
     shader_file.close();
     glDeleteShader(shader);
-    throw InvalidShaderException("Invalid shader path " + shader_path);
+    throw std::invalid_argument("Invalid shader path " + shader_path);
   }
 
   std::string contents;
