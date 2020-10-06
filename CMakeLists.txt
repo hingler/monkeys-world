@@ -21,12 +21,15 @@ add_library(screenspace-window-manager-components ${SRC_DIR}/Font.cpp
                                                   ${SRC_DIR}/utils/IDGenerator.cpp
                                                   ${SRC_DIR}/storage/VertexPacketTypes.cpp
                                                   ${SRC_DIR}/shader/ShaderProgramBuilder.cpp
-                                                  ${SRC_DIR}/shader/ShaderProgram.cpp)
+                                                  ${SRC_DIR}/shader/ShaderProgram.cpp
+                                                  ${SRC_DIR}/shader/materials/MatteMaterial.cpp)
 
 target_include_directories(screenspace-window-manager-components PUBLIC ${INC_DIR})
 
 ### GLFW ###
 configure_file(deps/CMakeLists-glfw.txt glfw-download/CMakeLists.txt)
+
+# these download commands are fucked im pretty sure lmao
 
 # it looks like these lines are here to ensure that linters and shit work properly.
 # build works fine W/O some of the unnecessary steps (just the build folder)
