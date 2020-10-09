@@ -2,10 +2,14 @@
 #define LINK_FAILED_EXCEPTION_H_
 
 #include <string>
+#include <exception>
 
 namespace screenspacemanager {
 namespace shader {
 
+/**
+ *  Used when linking a program fails
+ */ 
 class LinkFailedException : public std::runtime_error {
  public:
   LinkFailedException(const std::string& arg) : runtime_error(arg) {}
