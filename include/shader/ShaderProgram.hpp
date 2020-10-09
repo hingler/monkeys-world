@@ -13,6 +13,11 @@ namespace shader {
  */ 
 class ShaderProgram {
  public:
+
+  /**
+   *  Default 0-arg constructor.
+   */ 
+  ShaderProgram();
  
   /**
    *  Constructs a new shader program from a GL program descriptor.
