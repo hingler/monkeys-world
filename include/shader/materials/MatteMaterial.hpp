@@ -35,9 +35,11 @@ class MatteMaterial : ::screenspacemanager::shader::Material {
   void SetLightPosition(const glm::vec3& pos);      // light position
 
  private:
-  ShaderP
+  ShaderProgram matte_prog_;
 };
 
 }
 }
 }
+
+#endif  // MATTE_MATERIAL_H_
