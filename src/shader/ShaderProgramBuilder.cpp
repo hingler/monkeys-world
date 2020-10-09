@@ -1,6 +1,6 @@
 #include <shader/ShaderProgramBuilder.hpp>
-#include <shader/InvalidShaderException.hpp>
-#include <shader/LinkFailedException.hpp>
+#include <shader/exception/InvalidShaderException.hpp>
+#include <shader/exception/LinkFailedException.hpp>
 #include <glad/glad.h>
 
 #include <fstream>
@@ -9,6 +9,9 @@ namespace screenspacemanager {
 namespace shader {
 
 using std::ios_base;
+using exception::InvalidShaderException;
+using exception::LinkFailedException;
+
 
 ShaderProgramBuilder::ShaderProgramBuilder() {
   shaders_ = ShaderPacket();

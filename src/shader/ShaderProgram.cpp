@@ -1,7 +1,14 @@
 #include <shader/ShaderProgram.hpp>
+#include <shader/exception/UninitializedShaderException.hpp>
+
 #include <glad/glad.h>
+
+
+
 namespace screenspacemanager {
 namespace shader {
+
+using exception::UninitializedShaderException;
 
 ShaderProgram::ShaderProgram() {
   prog_ = 0;
@@ -13,7 +20,7 @@ ShaderProgram::ShaderProgram(GLuint prog) {
 
 GLuint ShaderProgram::GetProgramDescriptor() {
   if (!prog_) {
-    // throw some sort of exception -- we should never see this
+    throw UninitializedShaderException("Shader was never initialized");
   }
 
   return prog_;
