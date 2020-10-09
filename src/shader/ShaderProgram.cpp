@@ -3,11 +3,19 @@
 namespace screenspacemanager {
 namespace shader {
 
+ShaderProgram::ShaderProgram() {
+  prog_ = 0;
+}
+
 ShaderProgram::ShaderProgram(GLuint prog) {
   prog_ = prog;
 }
 
 GLuint ShaderProgram::GetProgramDescriptor() {
+  if (!prog_) {
+    // throw some sort of exception -- we should never see this
+  }
+
   return prog_;
 }
 
