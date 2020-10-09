@@ -6,6 +6,7 @@
 
 namespace screenspacemanager {
 namespace shader {
+namespace exception {
 
 /**
  *  Used when linking a program fails
@@ -17,6 +18,8 @@ class LinkFailedException : public std::runtime_error {
 
 };
 
+
+}   // namespace exception
 }   // namespace shader
 }   // namespace screenspacemanager
 

@@ -6,6 +6,7 @@
 
 namespace screenspacemanager {
 namespace shader {
+namespace exception {
 
 /**
  *  Used when a program descriptor is fetched for a shader whose program ID is still invalid
@@ -17,7 +18,8 @@ class UninitializedShaderException : public std::runtime_error {
 
 };
 
-}   // namespace 
-}
+}   // namespace exception
+}   // namespace shader
+}   // namespace screenspacemanager
 
 #endif  // UNINITIALIZED_SHADER_EXCEPTION_H_
