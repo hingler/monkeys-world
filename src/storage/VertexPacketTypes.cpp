@@ -21,13 +21,13 @@ void VertexPacket3D::Bind() {
   glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(VertexPacket3D), (void*)0);
   glEnableVertexAttribArray(0);
 
-  // normal data (position 1)
-  glVertexAttribPointer(1, 3, GL_FLOAT, false, sizeof(VertexPacket3D), (void*)(3 * sizeof(float)));
-  glEnableVertexAttribArray(1);
-
-  // tex data (position 2)
-  glVertexAttribPointer(2, 2, GL_FLOAT, false, sizeof(VertexPacket3D), (void*)(6 * sizeof(float)));
+  // tex data (position 1)
+  glVertexAttribPointer(1, 2, GL_FLOAT, false, sizeof(VertexPacket3D), (void*)(6 * sizeof(float)));
   glEnableVertexAttribArray(2);
+
+  // normal data (position 2)
+  glVertexAttribPointer(2, 3, GL_FLOAT, false, sizeof(VertexPacket3D), (void*)(3 * sizeof(float)));
+  glEnableVertexAttribArray(1);
 }
 
 };  // namespace storage
