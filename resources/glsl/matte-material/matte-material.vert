@@ -3,11 +3,11 @@
 // vertex position
 layout (location = 0) in vec4 position;
 
-// normals
-layout (location = 1) in vec3 normal;
-
 // texture coordinates
-layout (location = 2) in vec2 texcoord;
+layout (location = 1) in vec2 texcoord;
+
+// normals
+layout (location = 2) in vec3 normal;
 
 // model transformation matrix
 layout (location = 0) uniform mat4 model_matrix;
