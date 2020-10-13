@@ -1,7 +1,11 @@
 #ifndef MATERIAL_H_
 #define MATERIAL_H_
 
+#include <shader/light/LightDataTemp.hpp>
+
 #include <glm/glm.hpp>
+
+#include <vector>
 
 namespace screenspacemanager {
 namespace shader {
@@ -22,6 +26,12 @@ class Material {
    *  @param vp_matrix - View * Projection.
    */ 
   virtual void SetCameraTransforms(const glm::mat4& vp_matrix) = 0;
+
+  /**
+   *  Passes light data to the material.
+   *  @param lights - a list containing all lights in the scene, in global coords.
+   */ 
+  virtual void SetLights(const std::vector<light::LightData>& lights) = 0;
 
   
 };
