@@ -52,11 +52,18 @@ class VertexDataContextGL : public VertexDataContext<Packet> {
                  reinterpret_cast<const void*>(indices.data()),
                  GL_STATIC_DRAW);
 
-    Point();
+    glBindVertexArray(vao_);
   }
 
+  /**
+   *  If the vertex data has not changed, then bind the buffers and the VAO
+   *  so that we can draw.
+   */ 
   void Point() override {
+    glBindBuffer(array_buffer_, GL_ARRAY_BUFFER);
+    glBindBuffer(element_buffer_, GL_ELEMENT_ARRAY_BUFFER);
     glBindVertexArray(vao_);
+    // buffers are bound, data is 
   }
 
  private:
