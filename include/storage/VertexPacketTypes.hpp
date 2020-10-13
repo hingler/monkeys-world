@@ -30,12 +30,13 @@ struct VertexPacket2D {
 struct VertexPacket3D {
   // 3D position (location = 0)
   glm::vec3 position;
+
+  // 2D texcoords (location = 1)
+  glm::vec2 coords;
   
-  // 3D normals (location = 1)
+  // 3D normals (location = 2)
   glm::vec3 normals;
 
-  // 2D texcoords (location = 2)
-  glm::vec2 coords;
 
   /**
    *  Points to own vertex attributes.
