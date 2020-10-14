@@ -157,10 +157,10 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/glm-src
 ### BOOST ###
 
 # BOOST_ROOT needs to be defined on my end but it might not need to be on yours :)
-set(BOOST_USE_STATIC_LIBS ON)
-set(BOOST_USE_RELEASE_LIBS ON)
-set(BOOST_USE_MULTITHREADED ON)
-find_package(Boost REQUIRED)
+# set(BOOST_USE_STATIC_LIBS ON)
+# set(BOOST_USE_RELEASE_LIBS ON)
+# set(BOOST_USE_MULTITHREADED ON)
+# find_package(Boost REQUIRED)
 # download correct ver based on plat
 
 target_link_libraries(screenspace-window-manager-components glm)
@@ -169,8 +169,8 @@ target_link_libraries(screenspace-window-manager screenspace-window-manager-comp
 
 add_executable(mesh-test test/MeshTest.cpp)
 target_include_directories(mesh-test PRIVATE ${INC_DIR})
-target_link_libraries(mesh-test gtest_main gmock_main glad glm screenspace-window-manager-components ${Boost_LIBRARIES})
-target_include_directories(mesh-test PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(mesh-test gtest_main gmock_main glad glm screenspace-window-manager-components) # ${Boost_LIBRARIES}
+# target_include_directories(mesh-test PRIVATE ${Boost_INCLUDE_DIRS})
 add_test(NAME mesh-test COMMAND mesh-test WORKING_DIRECTORY $<TARGET_FILE_DIR:screenspace-window-manager>)
 
 add_executable(shader-compile-test test/ShaderCompilationTest.cpp)
