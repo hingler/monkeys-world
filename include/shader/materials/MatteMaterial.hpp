@@ -3,6 +3,8 @@
 
 #include <shader/Material.hpp>
 #include <shader/ShaderProgram.hpp>
+#include <shader/light/LightDataTemp.hpp>
+#include <glm/glm.hpp>
 
 namespace screenspacemanager {
 namespace shader {
@@ -21,18 +23,31 @@ class MatteMaterial : ::screenspacemanager::shader::Material {
   void UseMaterial() override;
 
   /**
-   *  Passes transform data to the respective uniforms
+   *  Passes transform data to the respective uniforms.
+   *  @param vp_matrix - The view + projection matrices drawn for this
    */ 
   void SetCameraTransforms(const glm::mat4& vp_matrix) override;
 
   /**
-   * Set various uniform values.
+   *  For passing model matrix.
    */ 
-  void SetColor(const glm::vec4& color);            // surface color
-  void SetAmbient(const glm::vec4& ambient_color);  // ambient color
-  void SetDiffuse(const glm::vec4& diffuse_color);  // diffuse color
-  // super temporary!!!
-  void SetLightPosition(const glm::vec3& pos);      // light position
+  void SetModelTransforms(const glm::mat4& model_matrix) override;
+
+  /**
+   *  Passes light data to its respective uniforms. 
+   */ 
+  void SetLights(const std::vector<light::LightData>& lights) override;
+
+  /**
+   *  Sets the color associated with the material.
+   */ 
+  void SetSurfaceColor(const glm::vec4& color);
+  // everything requires caches
+  // the program already stores uniform assigns, so we can use the struct to let us know whether
+  // the value has changed since the last invocation (since the same thing should be passed)
+  // create some system so that we can only isolate the lights which have moved since the last call?
+  // add a simple bit to the shaders which is reset on each frame (has the light moved since last round of invocs?)
+  // new materials load all, old ones avoid population if it's not necessary
 
  private:
   ShaderProgram matte_prog_;
