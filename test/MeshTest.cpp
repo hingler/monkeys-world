@@ -64,6 +64,8 @@ class VertexDataTests : public ::testing::Test {
 
 
 TEST_F(VertexDataTests, CreateDummyPacket) {
+  // https://stackoverflow.com/questions/8114276/how-do-i-pass-a-unique-ptr-argument-to-a-constructor-or-a-function
+  // inline instantiation or std move existing
   Mesh<DummyPacket> data(std::make_unique<MockVertexContext<DummyPacket>>());
   data.AddVertex({1});
   data.AddVertex({2});
