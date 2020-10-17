@@ -3,6 +3,8 @@
 #include <shader/exception/LinkFailedException.hpp>
 #include <glad/glad.h>
 
+#include <boost/log/trivial.hpp>
+
 #include <fstream>
 
 namespace screenspacemanager {
@@ -46,7 +48,7 @@ ShaderProgram ShaderProgramBuilder::Build() {
     std::string error_msg;
     error_msg.reserve(512);
     glGetProgramInfoLog(prog, 512, NULL, &error_msg[0]); 
-
+    BOOST_LOG_TRIVIAL(error) << error_msg;
     throw LinkFailedException("Link failed: " + error_msg);
   }
 
@@ -81,6 +83,7 @@ GLuint ShaderProgramBuilder::CreateShaderFromFile(const std::string& shader_path
     // could not read file path
     shader_file.close();
     glDeleteShader(shader);
+    BOOST_LOG_TRIVIAL(error) << "Invalid shader path " << shader_path;
     throw std::invalid_argument("Invalid shader path " + shader_path);
   }
 
@@ -106,6 +109,7 @@ GLuint ShaderProgramBuilder::CreateShaderFromFile(const std::string& shader_path
     // attempt to allocate sufficient space
     error_msg.reserve(512);
     glGetShaderInfoLog(shader, 512, NULL, &error_msg[0]);
+    BOOST_LOG_TRIVIAL(error) << "Shader failed to compile: " << error_msg;
     throw InvalidShaderException("Shader failed to compile: " + error_msg);
   }
 

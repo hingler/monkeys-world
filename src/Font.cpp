@@ -6,6 +6,7 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+#include <boost/log/trivial.hpp>
 #include <iostream>
 
 namespace screenspacemanager {
@@ -16,21 +17,21 @@ int Font::InitializeFont(Font** font, std::string font_name) {
 int Font::InitializeFont(Font** font, std::string font_name, int char_size) {
   FT_Library lib;
 
-  FT_Int error = FT_Init_FreeType(&lib);
-  if (error) {
+  FT_Int err = FT_Init_FreeType(&lib);
+  if (err) {
     // non-ideal :/
     // move this over to another logging solution later
-    std::cout << "Error encountered while creating FT_Lib!" << std::endl;
-    std::cout << FT_Error_String(error) << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "Error encountered while creating FT_Lib!\n" <<
+      FT_Error_String(err);
     return -1;
   }
 
   FT_Face face;
-  error = FT_New_Face(lib, font_name.c_str(), 0, &face);
+  err = FT_New_Face(lib, font_name.c_str(), 0, &face);
 
-  if (error) {
-    std::cout << "Error encountered while instantiating new face for " << face << std::endl;
-    std::cout << FT_Error_String(error) << std::endl;
+  if (err) {
+    BOOST_LOG_TRIVIAL(error) << "Error encountered while instantiating new face for " << face << "\n" <<
+      FT_Error_String(err);
     return -1;
   }
 
@@ -49,7 +50,7 @@ int Font::InitializeFont(Font** font, std::string font_name, int char_size) {
 }
 
 Font::Font(std::string font, int char_size, FT_Face face) {
-  FT_Int error;
+  FT_Int err;
 
   uint32_t width = 0;
   uint32_t height = 0;
@@ -66,9 +67,9 @@ Font::Font(std::string font, int char_size, FT_Face face) {
         continue;
         break;
       default:
-        error = FT_Load_Char(face, index, FT_LOAD_RENDER);
-        if (error) {
-          std::cout << "Skipping character " << index << std::endl;
+        err = FT_Load_Char(face, index, FT_LOAD_RENDER);
+        if (err) {
+          BOOST_LOG_TRIVIAL(warning) << "Skipping character " << (char)index;
           continue;
         }
 
@@ -76,7 +77,7 @@ Font::Font(std::string font, int char_size, FT_Face face) {
         width += glyph->bitmap.width + 1;
         height = (glyph->bitmap.rows > height ? glyph->bitmap.rows : height);
         // debug
-        std::cout << (char)index << ": " << glyph->bitmap.width << " x " << glyph->bitmap.rows << std::endl;
+        BOOST_LOG_TRIVIAL(debug) << (char)index << ": " << glyph->bitmap.width << " x " << glyph->bitmap.rows;
         break;
     }
   }
@@ -103,8 +104,8 @@ Font::Font(std::string font, int char_size, FT_Face face) {
         break;
       default:
         FT_Load_Char(face, index, FT_LOAD_RENDER);
-        if (error) {
-          std::cout << "Skipping character " << index << std::endl;
+        if (err) {
+          BOOST_LOG_TRIVIAL(warning) << "Skipping character " << (char)index;
           continue;
         }
 

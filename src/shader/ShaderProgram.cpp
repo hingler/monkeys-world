@@ -3,7 +3,7 @@
 
 #include <glad/glad.h>
 
-
+#include <boost/log/trivial.hpp>
 
 namespace screenspacemanager {
 namespace shader {
@@ -20,6 +20,7 @@ ShaderProgram::ShaderProgram(GLuint prog) {
 
 GLuint ShaderProgram::GetProgramDescriptor() {
   if (!prog_) {
+    BOOST_LOG_TRIVIAL(error) << "ShaderProgram was never initialized!";
     throw UninitializedShaderException("Shader was never initialized");
   }
 

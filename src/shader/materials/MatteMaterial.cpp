@@ -6,6 +6,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <boost/log/trivial.hpp>
+
 namespace screenspacemanager {
 namespace shader {
 namespace materials {
@@ -20,6 +22,8 @@ MatteMaterial::MatteMaterial() {
 // GL 4.1 provides glProgramUniform which allows us to bind uniforms
 // without having to worry about rebinding the old program
 void MatteMaterial::UseMaterial() {
+  BOOST_LOG_TRIVIAL(debug) << "New material bound to GL: ";
+  BOOST_LOG_TRIVIAL(debug) << matte_prog_.GetProgramDescriptor();
   glUseProgram(matte_prog_.GetProgramDescriptor());
 }
 
