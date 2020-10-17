@@ -1,7 +1,7 @@
 # todo: this looks like a mess and VS2017 doesn't like it.
 # do some comment cleanup here lol
 
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.18.0)
 project(screenspace-window-manager VERSION 0.0.1)
 
 include(CTest)
@@ -157,20 +157,23 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/glm-src
 ### BOOST ###
 
 # BOOST_ROOT needs to be defined on my end but it might not need to be on yours :)
-# set(BOOST_USE_STATIC_LIBS ON)
-# set(BOOST_USE_RELEASE_LIBS ON)
-# set(BOOST_USE_MULTITHREADED ON)
-# find_package(Boost REQUIRED)
+set(BOOST_USE_MULTITHREADED ON)
+set(Boost_DEBUG 1)
+set(BOOST_LIBRARYDIR "${BOOST_ROOT}")
+# the fix: needed to build with prefix of ${BOOST_ROOT}
+find_package(Boost 1.72.0 COMPONENTS log REQUIRED)
 # download correct ver based on plat
 
 target_link_libraries(screenspace-window-manager-components glm)
+target_include_directories(screenspace-window-manager-components PUBLIC ${Boost_INCLUDE_DIRS})
+target_link_libraries(screenspace-window-manager-components ${Boost_LIBRARIES})
 
 target_link_libraries(screenspace-window-manager screenspace-window-manager-components)
 
 add_executable(mesh-test test/MeshTest.cpp)
 target_include_directories(mesh-test PRIVATE ${INC_DIR})
 target_link_libraries(mesh-test gtest_main gmock_main glad glm screenspace-window-manager-components) # ${Boost_LIBRARIES}
-# target_include_directories(mesh-test PRIVATE ${Boost_INCLUDE_DIRS})
+target_include_directories(mesh-test PRIVATE ${Boost_INCLUDE_DIRS})
 add_test(NAME mesh-test COMMAND mesh-test WORKING_DIRECTORY $<TARGET_FILE_DIR:screenspace-window-manager>)
 
 add_executable(shader-compile-test test/ShaderCompilationTest.cpp)
