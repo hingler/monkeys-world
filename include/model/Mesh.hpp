@@ -42,7 +42,7 @@ class Mesh {
   /**
    *  Constructs a new VertexData object.
    */ 
-  Mesh() {
+  Mesh() : dirty_(true) {
     context_ = std::make_unique<::screenspacemanager::model::VertexDataContextGL<Packet>>();
    }
 
@@ -51,6 +51,7 @@ class Mesh {
    *  The new object assumes ownership of the passed-in context.
    */ 
   Mesh(std::unique_ptr<::screenspacemanager::model::VertexDataContext<Packet>> context) :
+    dirty_(true),
     context_(std::move(context)) { }
 
   /**
@@ -59,6 +60,7 @@ class Mesh {
    */ 
   void AddVertex(const Packet& packet) {
     data_.push_back(packet);
+    dirty_ = true;
   }
 
   /**
@@ -77,6 +79,7 @@ class Mesh {
       indices_.push_back(vertA);
       indices_.push_back(vertB);
       indices_.push_back(vertC);
+      dirty_ = true;
       return true;
     }
 
@@ -88,7 +91,13 @@ class Mesh {
    *  need not deduce the template type to bind attributes
    */ 
   void PointToVertexAttribs() {
-    context_->UpdateBuffersAndPoint(data_, indices_);
+    if (dirty_) {
+      context_->UpdateBuffersAndPoint(data_, indices_);
+    } else {
+      context_->Point();
+    }
+
+    dirty_ = false;
   }
 
   /**
@@ -133,6 +142,8 @@ class Mesh {
     for (int index : other.indices_) {
       indices_.push_back(index + index_offset);
     }
+
+    dirty_ = true;
   }
 
  private:
@@ -144,6 +155,9 @@ class Mesh {
 
   // context used to make opengl calls
   std::unique_ptr<::screenspacemanager::model::VertexDataContext<Packet>> context_;
+
+  // tracks whether we need to update our buffers.
+  bool dirty_;
 
   
 };

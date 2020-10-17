@@ -34,7 +34,7 @@ class VertexDataContextGL : public VertexDataContext<Packet> {
   }
 
   /**
-   *  Populate a passed-in array buffer and element buffer, then point to their attributes.
+   *  Populates the array+element buffers, as well as pointing the state machine at their contents.
    *  @param data - the vertex data being populated.
    *  @param indices - the associated indices.
    */ 
@@ -56,8 +56,7 @@ class VertexDataContextGL : public VertexDataContext<Packet> {
   }
 
   /**
-   *  If the vertex data has not changed, then bind the buffers and the VAO
-   *  so that we can draw.
+   *  Points the state machine at the array + element buffers.
    */ 
   void Point() override {
     glBindBuffer(array_buffer_, GL_ARRAY_BUFFER);
