@@ -47,7 +47,7 @@ struct Dummy2DPacket {
 template <typename Packet>
 class MockVertexContext : public VertexDataContext<Packet> {
  public:
-  MOCK_METHOD(void, UpdateBuffersAndPoint, (const std::vector<Packet>& data, const std::vector<int>& indices), (override));
+  MOCK_METHOD(void, UpdateBuffersAndPoint, (const std::vector<Packet>& data, const std::vector<unsigned int>& indices), (override));
   MOCK_METHOD(void, Point, (), (override));
 };
 
@@ -71,7 +71,7 @@ TEST_F(VertexDataTests, CreateDummyPacket) {
   data.AddVertex({2});
   data.AddVertex({3});
 
-  const int* contents = reinterpret_cast<const int*>(data.GetVertexData());
+  const unsigned int* contents = reinterpret_cast<const unsigned int*>(data.GetVertexData());
   ASSERT_EQ(1, contents[0]);
   ASSERT_EQ(2, contents[1]);
   ASSERT_EQ(3, contents[2]);

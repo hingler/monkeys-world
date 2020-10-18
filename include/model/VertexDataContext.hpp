@@ -16,7 +16,7 @@ class VertexDataContext {
    *  @param data - The vertex attribute data.
    *  @param indices - triplets of indices representing triangles.
    */ 
-  virtual void UpdateBuffersAndPoint(const std::vector<Packet>& data, const std::vector<int>& indices) = 0;
+  virtual void UpdateBuffersAndPoint(const std::vector<Packet>& data, const std::vector<unsigned int>& indices) = 0;
 
   /**
    *  If no attributes have been modified, then we can simply bind the VAO.

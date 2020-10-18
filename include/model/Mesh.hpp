@@ -71,8 +71,8 @@ class Mesh {
    * 
    *  @return true if the vertices are in-bounds, and false otherwise.
    */ 
-  bool AddPolygon(int vertA, int vertB, int vertC) {
-    std::initializer_list<int> vert_list({vertA, vertB, vertC});
+  bool AddPolygon(unsigned int vertA, unsigned int vertB, unsigned int vertC) {
+    std::initializer_list<unsigned int> vert_list({vertA, vertB, vertC});
     int min_value = std::min(vert_list);
     int max_value = std::max(vert_list);
     if (min_value >= 0 && max_value < GetVertexCount()) {
@@ -125,7 +125,7 @@ class Mesh {
   /**
    *  Returns a read-only pointer to the underlying index data.
    */ 
-  const int* GetIndexData() {
+  const unsigned int* GetIndexData() {
     return indices_.data();
   }
 
@@ -151,7 +151,7 @@ class Mesh {
   std::vector<Packet> data_;
 
   // list of indices representing polygons formed from our vertices. must be triangles
-  std::vector<int> indices_;
+  std::vector<unsigned int> indices_;
 
   // context used to make opengl calls
   std::unique_ptr<::screenspacemanager::model::VertexDataContext<Packet>> context_;

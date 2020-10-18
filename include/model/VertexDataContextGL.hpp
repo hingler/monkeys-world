@@ -8,8 +8,8 @@
 
 #include <glad/glad.h>
 
-#include "model/VertexDataContext.hpp"
- 
+#include <model/VertexDataContext.hpp>
+
 namespace screenspacemanager {
 namespace model {
 
@@ -38,7 +38,7 @@ class VertexDataContextGL : public VertexDataContext<Packet> {
    *  @param data - the vertex data being populated.
    *  @param indices - the associated indices.
    */ 
-  void UpdateBuffersAndPoint(const std::vector<Packet>& data, const std::vector<int>& indices) override {
+  void UpdateBuffersAndPoint(const std::vector<Packet>& data, const std::vector<unsigned int>& indices) override {
     glBindBuffer(array_buffer_, GL_ARRAY_BUFFER);
     glBufferData(GL_ARRAY_BUFFER,
                  sizeof(Packet) * data.size(),
