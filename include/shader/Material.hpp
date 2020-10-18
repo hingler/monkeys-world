@@ -5,6 +5,8 @@
 
 #include <glm/glm.hpp>
 
+#include <glad/glad.h>
+
 #include <vector>
 
 namespace screenspacemanager {
@@ -38,6 +40,8 @@ class Material {
    *  @param lights - a list containing all lights in the scene, in global coords.
    */ 
   virtual void SetLights(const std::vector<light::LightData>& lights) = 0;
+
+  virtual GLuint GetProgramDescriptor() = 0;
 };
 
 } // namespace shader
