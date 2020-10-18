@@ -15,8 +15,22 @@ using exception::InvalidShaderException;
 using exception::LinkFailedException;
 
 
+static std::string GetShaderType(GLint type) {
+  switch (type) {
+  case GL_VERTEX_SHADER:
+    return "Vertex Shader";
+    break;
+  case GL_FRAGMENT_SHADER:
+    return "Fragment Shader";
+    break;
+  default:
+    return "Something else";
+  }
+}
+
 ShaderProgramBuilder::ShaderProgramBuilder() {
   shaders_ = ShaderPacket();
+  prog_ = 0;
 }
 
 ShaderProgramBuilder& ShaderProgramBuilder::WithVertexShader(const std::string& vertex_path) {
@@ -44,11 +58,11 @@ ShaderProgram ShaderProgramBuilder::Build() {
 
   GLint success;
   glGetProgramiv(prog, GL_LINK_STATUS, &success);
-  if (!success) {
+  if (success != GL_TRUE) {
     std::string error_msg;
-    error_msg.reserve(512);
+    error_msg.resize(512);
     glGetProgramInfoLog(prog, 512, NULL, &error_msg[0]); 
-    BOOST_LOG_TRIVIAL(error) << error_msg;
+    BOOST_LOG_TRIVIAL(error) << "Shader link failed: " << error_msg;
     throw LinkFailedException("Link failed: " + error_msg);
   }
 
@@ -64,6 +78,7 @@ ShaderProgramBuilder::~ShaderProgramBuilder() {
 void ShaderProgramBuilder::AttachIfNonZero(GLuint prog, GLuint shader) {
   // docs: valid shader is non 0
   if (shader != 0) {
+    BOOST_LOG_TRIVIAL(debug) << "Attached shader to prog " << prog;
     glAttachShader(prog, shader);
   }
 }
@@ -103,13 +118,14 @@ GLuint ShaderProgramBuilder::CreateShaderFromFile(const std::string& shader_path
   GLint success;
   glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 
-  if (!success) {
+  if (success != GL_TRUE) {
     std::string error_msg;
-
-    // attempt to allocate sufficient space
-    error_msg.reserve(512);
-    glGetShaderInfoLog(shader, 512, NULL, &error_msg[0]);
-    BOOST_LOG_TRIVIAL(error) << "Shader failed to compile: " << error_msg;
+    GLint log_size;
+    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_size);
+    BOOST_LOG_TRIVIAL(debug) << "ERROR CODE: " << std::to_string(success);
+    error_msg.resize(std::string::size_type(log_size));
+    glGetShaderInfoLog(shader, log_size, NULL, &error_msg[0]);
+    BOOST_LOG_TRIVIAL(error) << GetShaderType(shader_type) << " failed to compile: " << error_msg;
     throw InvalidShaderException("Shader failed to compile: " + error_msg);
   }
 
