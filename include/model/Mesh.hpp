@@ -8,7 +8,9 @@
 
 #include <glad/glad.h>
 
-#include "model/VertexDataContext.hpp"
+#include <boost/log/trivial.hpp>
+
+#include <model/VertexDataContext.hpp>
 
 // from https://stackoverflow.com/questions/87372/check-if-a-class-has-a-member-function-of-a-given-signature/10707822#10707822
 // todo: enable some R/W on attributes (not sure how yet lol)
@@ -92,8 +94,10 @@ class Mesh {
    */ 
   void PointToVertexAttribs() {
     if (dirty_) {
+      BOOST_LOG_TRIVIAL(debug) << "Updating GPU buffers";
       context_->UpdateBuffersAndPoint(data_, indices_);
     } else {
+      BOOST_LOG_TRIVIAL(debug) << "Pointing only";
       context_->Point();
     }
 
@@ -166,43 +170,3 @@ class Mesh {
 };  // namespace screenspacemanager
 
 #endif  // MESH_H_ 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
