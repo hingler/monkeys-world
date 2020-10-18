@@ -19,6 +19,7 @@ ShaderProgram::ShaderProgram(GLuint prog) {
 }
 
 GLuint ShaderProgram::GetProgramDescriptor() {
+
   if (!prog_) {
     BOOST_LOG_TRIVIAL(error) << "ShaderProgram was never initialized!";
     throw UninitializedShaderException("Shader was never initialized");
@@ -28,15 +29,21 @@ GLuint ShaderProgram::GetProgramDescriptor() {
 }
 
 ShaderProgram::~ShaderProgram() {
-  glDeleteProgram(prog_);
+  if (prog_) {
+    glDeleteProgram(prog_);
+  }
+  
 }
 
 ShaderProgram::ShaderProgram(ShaderProgram&& other) {
   prog_ = other.prog_;
+  other.prog_ = 0;
 }
 
 ShaderProgram& ShaderProgram::operator=(ShaderProgram&& other) {
   prog_ = other.prog_;
+  other.prog_ = 0;
+  // other was being dtor'd and thus the program disappeared
   return *this;
 }
 
