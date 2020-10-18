@@ -2,7 +2,7 @@
 #define UNINITIALIZED_SHADER_EXCEPTION_H_
 
 #include <string>
-#include <exception>
+#include <stdexcept>
 
 namespace screenspacemanager {
 namespace shader {

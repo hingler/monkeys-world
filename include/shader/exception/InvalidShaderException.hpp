@@ -2,6 +2,7 @@
 #define INVALID_SHADER_EXCEPTION_H_
 
 #include <string>
+#include <stdexcept>
 
 namespace screenspacemanager {
 namespace shader {
