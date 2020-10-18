@@ -9,6 +9,7 @@
 #include <glad/glad.h>
 
 #include <model/VertexDataContext.hpp>
+#include <boost/log/trivial.hpp>
 
 namespace screenspacemanager {
 namespace model {
@@ -24,13 +25,10 @@ class VertexDataContextGL : public VertexDataContext<Packet> {
    *  Creates a new VertexDataContext.
    */ 
   VertexDataContextGL() {
-    glGenBuffers(2, &array_buffer_);
+    glGenBuffers(1, &array_buffer_);
+    glGenBuffers(1, &element_buffer_);
     glGenVertexArrays(1, &vao_);
-
-    glBindVertexArray(vao_);
-
     // vao now maps to attribute type
-    Packet::Bind();
   }
 
   /**
@@ -39,28 +37,30 @@ class VertexDataContextGL : public VertexDataContext<Packet> {
    *  @param indices - the associated indices.
    */ 
   void UpdateBuffersAndPoint(const std::vector<Packet>& data, const std::vector<unsigned int>& indices) override {
-    glBindBuffer(array_buffer_, GL_ARRAY_BUFFER);
+    glBindVertexArray(vao_);
+    glBindBuffer(GL_ARRAY_BUFFER, array_buffer_);
+    BOOST_LOG_TRIVIAL(debug) << "Adding " << data.size() << " vertices";
     glBufferData(GL_ARRAY_BUFFER,
                  sizeof(Packet) * data.size(),
-                 reinterpret_cast<const void*>(data.data()),
-                 GL_STATIC_DRAW);
-    
-    // use unsigned int instead?
-    glBindBuffer(element_buffer_, GL_ELEMENT_ARRAY_BUFFER);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                 sizeof(int) * indices.size(),
-                 reinterpret_cast<const void*>(indices.data()),
+                 data.data(),
                  GL_STATIC_DRAW);
 
-    glBindVertexArray(vao_);
+    
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_);
+    BOOST_LOG_TRIVIAL(debug) << "Adding " << indices.size() << " indices";
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                 sizeof(unsigned int) * indices.size(),
+                reinterpret_cast<const void*>(indices.data()),
+                 GL_STATIC_DRAW);
+
+    Packet::Bind();
+
   }
 
   /**
    *  Points the state machine at the array + element buffers.
    */ 
   void Point() override {
-    glBindBuffer(array_buffer_, GL_ARRAY_BUFFER);
-    glBindBuffer(element_buffer_, GL_ELEMENT_ARRAY_BUFFER);
     glBindVertexArray(vao_);
     // buffers are bound, data has not changed
   }
