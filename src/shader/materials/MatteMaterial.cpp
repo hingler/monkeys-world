@@ -5,6 +5,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_inverse.hpp>
 
 #include <boost/log/trivial.hpp>
 
@@ -14,15 +15,15 @@ namespace materials {
 
 MatteMaterial::MatteMaterial() {
   matte_prog_ = ShaderProgramBuilder()
-                .WithVertexShader("glsl/matte-material/matte-material.vert")
-                .WithFragmentShader("glsl/matte-material/matte-material.frag")
+                .WithVertexShader("resources/glsl/matte-material/matte-material.vert")
+                .WithFragmentShader("resources/glsl/matte-material/matte-material.frag")
                 .Build();
 }
 
 // GL 4.1 provides glProgramUniform which allows us to bind uniforms
 // without having to worry about rebinding the old program
 void MatteMaterial::UseMaterial() {
-  BOOST_LOG_TRIVIAL(debug) << "New material bound to GL: ";
+  BOOST_LOG_TRIVIAL(debug) << "New shader bound to GL: ";
   BOOST_LOG_TRIVIAL(debug) << matte_prog_.GetProgramDescriptor();
   glUseProgram(matte_prog_.GetProgramDescriptor());
 }
@@ -41,6 +42,13 @@ void MatteMaterial::SetModelTransforms(const glm::mat4& model_matrix) {
                             1,
                             GL_FALSE,
                             glm::value_ptr(model_matrix));
+  glm::mat3 normal_matrix = glm::inverseTranspose(glm::mat3(model_matrix));
+  glProgramUniformMatrix3fv(matte_prog_.GetProgramDescriptor(),
+                            2,
+                            1,
+                            GL_FALSE,
+                            glm::value_ptr(normal_matrix));
+  BOOST_LOG_TRIVIAL(error) << glGetError();
 }
 
 void MatteMaterial::SetLights(const std::vector<light::LightData>& lights) {
@@ -55,7 +63,12 @@ void MatteMaterial::SetLights(const std::vector<light::LightData>& lights) {
 }
 
 void MatteMaterial::SetSurfaceColor(const glm::vec4& color) {
-  glProgramUniform4fv(matte_prog_.GetProgramDescriptor(), 4, 1, glm::value_ptr(color));
+  // glProgramUniform4fv(matte_prog_.GetProgramDescriptor(), 3, 1, glm::value_ptr(color));
+  glProgramUniform4f(matte_prog_.GetProgramDescriptor(), 3, color.r, color.g, color.b, color.a);
+}
+
+GLuint MatteMaterial::GetProgramDescriptor() {
+  return matte_prog_.GetProgramDescriptor();
 }
 
 } // namespace materials
