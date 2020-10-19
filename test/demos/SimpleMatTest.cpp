@@ -14,6 +14,7 @@
 
 #include <storage/VertexPacketTypes.hpp>
 
+#include <boost/math/constants/constants.hpp>
 
 #include <memory>
 #include <vector>
@@ -29,6 +30,10 @@ using ::screenspacemanager::shader::ShaderProgram;
 using ::screenspacemanager::shader::ShaderProgramBuilder;
 
 using ::screenspacemanager::storage::VertexPacket3D;
+
+static float deg_to_rad(float f) {
+  return f * boost::math::constants::pi<float>() / 180.0f;
+}
 
 void main(int argc, char** argv) {
 
@@ -95,7 +100,7 @@ void main(int argc, char** argv) {
   std::vector<LightData> lights;
   // creates a new white light at -1, -1, -1
   lights.push_back({
-    {0.0f, 0.0f, -4.0f, 1.0f},
+    {-1.0f, 1.0f, 0.0f, 1.0f},
       1.0f,
     { 0.9f,  0.9f,  0.9f, 1.0f},
     { 0.1f,  0.1f,  0.1f, 1.0f}
@@ -114,11 +119,12 @@ void main(int argc, char** argv) {
     glViewport(0, 0, 800, 800);
     glm::mat4 model_matrix = glm::mat4(1.0);
     glm::mat4 vp_matrix = glm::mat4(1.0);
-    glm::mat4 persp = glm::perspective(15.0f, 1.0f, 0.01f, 100.0f);
+    // glm::perspective now takes a radians arg
+    glm::mat4 persp = glm::perspective(deg_to_rad(45.0f), 1.0f, 0.01f, 100.0f);
     vp_matrix = persp * vp_matrix;
     test_material.SetSurfaceColor(glm::vec4(1.0, 0.6, glm::fract(rot), 1.0)) ;
 
-    model_matrix = glm::translate(model_matrix, glm::vec3(0, -3, -4));
+    model_matrix = glm::translate(model_matrix, glm::vec3(0, 0, -4));
     model_matrix = glm::rotate(model_matrix, rot, glm::vec3(0.707));
     test_material.SetModelTransforms(model_matrix);
     test_material.SetCameraTransforms(vp_matrix);
