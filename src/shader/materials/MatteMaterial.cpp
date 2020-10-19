@@ -23,8 +23,6 @@ MatteMaterial::MatteMaterial() {
 // GL 4.1 provides glProgramUniform which allows us to bind uniforms
 // without having to worry about rebinding the old program
 void MatteMaterial::UseMaterial() {
-  BOOST_LOG_TRIVIAL(debug) << "New shader bound to GL: ";
-  BOOST_LOG_TRIVIAL(debug) << matte_prog_.GetProgramDescriptor();
   glUseProgram(matte_prog_.GetProgramDescriptor());
 }
 
@@ -48,7 +46,6 @@ void MatteMaterial::SetModelTransforms(const glm::mat4& model_matrix) {
                             1,
                             GL_FALSE,
                             glm::value_ptr(normal_matrix));
-  BOOST_LOG_TRIVIAL(error) << glGetError();
 }
 
 void MatteMaterial::SetLights(const std::vector<light::LightData>& lights) {
