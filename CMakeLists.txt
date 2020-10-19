@@ -29,13 +29,6 @@ set_property(TARGET screenspace-window-manager-components PROPERTY CXX_STANDARD 
 target_include_directories(screenspace-window-manager-components PUBLIC ${INC_DIR})
 
 ### GLFW ###
-# configure_file(deps/CMakeLists-glfw.txt glfw-download/CMakeLists.txt)
-
-# these download commands are fucked im pretty sure lmao
-
-# it looks like these lines are here to ensure that linters and shit work properly.
-# build works fine W/O some of the unnecessary steps (just the build folder)
-# but the linter does not pick up on the build folders otherwise.
 
 find_package(glfw3 CONFIG REQUIRED)
 
