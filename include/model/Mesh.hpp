@@ -75,8 +75,10 @@ class Mesh {
    */ 
   bool AddPolygon(unsigned int vertA, unsigned int vertB, unsigned int vertC) {
     std::initializer_list<unsigned int> vert_list({vertA, vertB, vertC});
-    int min_value = std::min(vert_list);
-    int max_value = std::max(vert_list);
+    unsigned int min_value = (vertA < vertB ? vertA : vertB);
+    unsigned int max_value = (vertA < vertB ? vertB : vertA);
+    min_value = (vertC < min_value ? vertC : min_value);
+    max_value = (vertC > max_value ? vertC : max_value);
     if (min_value >= 0 && max_value < GetVertexCount()) {
       indices_.push_back(vertA);
       indices_.push_back(vertB);
@@ -84,6 +86,8 @@ class Mesh {
       dirty_ = true;
       return true;
     }
+
+    
 
     return false;
   }
@@ -94,10 +98,9 @@ class Mesh {
    */ 
   void PointToVertexAttribs() {
     if (dirty_) {
-      BOOST_LOG_TRIVIAL(debug) << "Updating GPU buffers";
+
       context_->UpdateBuffersAndPoint(data_, indices_);
     } else {
-      BOOST_LOG_TRIVIAL(debug) << "Pointing only";
       context_->Point();
     }
 
