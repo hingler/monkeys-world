@@ -52,7 +52,7 @@ void main(int argc, char** argv) {
 
   BOOST_LOG_TRIVIAL(debug) << "GLFW initialized.";
 
-  GLFWwindow* test_window = glfwCreateWindow(800, 800, "when im smoking crack", NULL, NULL);
+  GLFWwindow* test_window = glfwCreateWindow(1600, 900, "when im smoking crack", NULL, NULL);
   if (!test_window) { 
     BOOST_LOG_TRIVIAL(error) << "Window creation failed!";
     glfwTerminate();
@@ -116,11 +116,11 @@ void main(int argc, char** argv) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
-    glViewport(0, 0, 800, 800);
+    glViewport(0, 0, 1600, 900);
     glm::mat4 model_matrix = glm::mat4(1.0);
     glm::mat4 vp_matrix = glm::mat4(1.0);
     // glm::perspective now takes a radians arg
-    glm::mat4 persp = glm::perspective(deg_to_rad(45.0f), 1.0f, 0.01f, 100.0f);
+    glm::mat4 persp = glm::perspective(deg_to_rad(45.0f), 1.85f, 0.01f, 100.0f);
     vp_matrix = persp * vp_matrix;
     test_material.SetSurfaceColor(glm::vec4(1.0, 0.6, glm::fract(rot), 1.0)) ;
 
