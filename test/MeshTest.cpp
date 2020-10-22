@@ -15,12 +15,6 @@
 
 #define DEBUG_EPS 0.0001
 
-// TODO: add tests for vertex data
-//  - verify contents
-//  - verify packet strides ig
-//      - go in as void and extract specific expected params
-//  - verify accurate size, etc
-
 
 namespace screenspacemanagertest {
 using ::screenspacemanager::model::Mesh;
