@@ -16,13 +16,11 @@ set(TST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)
 add_executable(screenspace-window-manager main.cpp)
 
 # separate out a bit better for testing
-add_library(screenspace-window-manager-components ${SRC_DIR}/Font.cpp
-                                                  ${SRC_DIR}/Paint.cpp
-                                                  ${SRC_DIR}/utils/IDGenerator.cpp
-                                                  ${SRC_DIR}/storage/VertexPacketTypes.cpp
+add_library(screenspace-window-manager-components ${SRC_DIR}/storage/VertexPacketTypes.cpp
                                                   ${SRC_DIR}/shader/ShaderProgramBuilder.cpp
                                                   ${SRC_DIR}/shader/ShaderProgram.cpp
-                                                  ${SRC_DIR}/shader/materials/MatteMaterial.cpp)
+                                                  ${SRC_DIR}/shader/materials/MatteMaterial.cpp
+                                                  ${SRC_DIR}/file/CacheStreambuf.cpp)
 
 set_property(TARGET screenspace-window-manager-components PROPERTY CXX_STANDARD 14)
 
@@ -41,7 +39,6 @@ target_link_libraries(screenspace-window-manager-components glad::glad)
 
 ### FREETYPE ###
 find_package(freetype CONFIG REQUIRED)
-target_link_libraries(screenspace-window-manager-components freetype)
 
 ### GTEST ###
 find_package(GTest CONFIG REQUIRED)
@@ -63,7 +60,7 @@ target_link_libraries(screenspace-window-manager screenspace-window-manager-comp
 
 add_executable(mesh-test test/MeshTest.cpp)
 target_include_directories(mesh-test PRIVATE ${INC_DIR})
-target_link_libraries(mesh-test GTest::gtest_main GTest::gmock_main screenspace-window-manager-components) # ${Boost_LIBRARIES}
+target_link_libraries(mesh-test GTest::gtest_main GTest::gmock_main screenspace-window-manager-components)
 target_include_directories(mesh-test PRIVATE ${Boost_INCLUDE_DIRS})
 add_test(NAME mesh-test COMMAND mesh-test WORKING_DIRECTORY $<TARGET_FILE_DIR:screenspace-window-manager>)
 
@@ -76,6 +73,12 @@ add_test(NAME shader-compile-test COMMAND shader-compile-test
 add_executable(mat-test test/demos/SimpleMatTest.cpp)
 target_include_directories(mat-test PRIVATE ${INC_DIR})
 target_link_libraries(mat-test glad::glad glm screenspace-window-manager-components)
+
+add_executable(streambuf-test test/CacheStreambufTest.cpp)
+target_include_directories(streambuf-test PRIVATE ${INC_DIR})
+target_link_libraries(streambuf-test GTest::gtest_main screenspace-window-manager-components)
+add_test(NAME streambuf-test COMMAND streambuf-test
+            WORKING_DIRECTORY $<TARGET_FILE_DIR:screenspace-window-manager>)
 
 add_custom_command(TARGET mat-test POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/resources $<TARGET_FILE_DIR:screenspace-window-manager>/resources)
