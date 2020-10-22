@@ -1,11 +1,55 @@
 #include <file/CacheStreambuf.hpp>
 
+#include <iostream>
+
 namespace screenspacemanager {
 namespace file {
 
-// TODO: swap out getc with raw data ptrs and keep shared ptr to data for ownership
-CacheStreambuf::CacheStreambuf(const std::shared_ptr<const std::vector<char>>& data) : data_(data), getc_(0) {
+using std::ios_base;
+
+CacheStreambuf::CacheStreambuf(const std::shared_ptr<std::vector<char>>& data) : data_(data), getc_(0) {
   const char* cache_data = data->data();
+}
+
+std::streampos CacheStreambuf::seekoff(std::streamoff off, ios_base::seekdir way, ios_base::openmode which) {
+  // shouldn't do anything
+  if (which == ios_base::out) {
+    return -1;
+  }
+
+  char* data_head = const_cast<char*>(data_->data());
+
+  switch (way) {
+    case ios_base::beg:
+      if (off >= data_->size()) {
+        // failure case?
+        std::streampos(std::streamoff(-1));
+      }
+      getc_ = off;
+      break;
+    case ios_base::cur:
+      if (getc_ + off >= data_->size()) {
+        std::streampos(std::streamoff(-1));
+      }
+      getc_ += off;
+      break;
+    case ios_base::end:
+      if (data_->size() - off < 0) {
+        std::streampos(std::streamoff(-1));
+      }
+
+      getc_ = data_->size() - off;
+  }
+
+  setg(data_head, data_head + getc_, data_head + data_->size());
+  return std::streampos(getc_);
+}
+
+std::streampos CacheStreambuf::seekpos(std::streampos sp, ios_base::openmode which) {
+  if (which == ios_base::out) {
+    return -1;
+  }
+  return seekoff(std::streamoff(sp), ios_base::beg, which);
 }
 
 std::streamsize CacheStreambuf::showmanyc() {
@@ -33,11 +77,16 @@ CacheStreambuf::int_type CacheStreambuf::underflow() {
   
   char* last_accessed = const_cast<char*>(&data_->operator[](getc_));
   setg(last_accessed, last_accessed, last_accessed + (data_->size() - getc_));
+  
   getc_ = data_->size();
   return traits_type::to_int_type(*last_accessed);
 }
 
 CacheStreambuf::int_type CacheStreambuf::uflow() {
+  if (getc_ >= data_->size()) {
+    return traits_type::to_int_type(EOF);
+  }
+
   getc_++;
   if (underflow() == traits_type::to_int_type(EOF)) {
     return traits_type::to_int_type(EOF);
