@@ -7,9 +7,8 @@ namespace file {
 
 using std::ios_base;
 
-CacheStreambuf::CacheStreambuf(const std::shared_ptr<std::vector<char>>& data) : data_(data), getc_(0) {
-  const char* cache_data = data->data();
-}
+CacheStreambuf::CacheStreambuf(const std::shared_ptr<std::vector<char>>& data) : data_(data), getc_(0) {}
+
 
 std::streampos CacheStreambuf::seekoff(std::streamoff off, ios_base::seekdir way, ios_base::openmode which) {
   // shouldn't do anything
