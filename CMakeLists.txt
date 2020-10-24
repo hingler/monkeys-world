@@ -20,7 +20,8 @@ add_library(screenspace-window-manager-components ${SRC_DIR}/storage/VertexPacke
                                                   ${SRC_DIR}/shader/ShaderProgramBuilder.cpp
                                                   ${SRC_DIR}/shader/ShaderProgram.cpp
                                                   ${SRC_DIR}/shader/materials/MatteMaterial.cpp
-                                                  ${SRC_DIR}/file/CacheStreambuf.cpp)
+                                                  ${SRC_DIR}/file/CacheStreambuf.cpp
+                                                  ${SRC_DIR}/file/CachedFileLoader.cpp)
 
 set_property(TARGET screenspace-window-manager-components PROPERTY CXX_STANDARD 14)
 
