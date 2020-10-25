@@ -21,7 +21,8 @@ add_library(screenspace-window-manager-components ${SRC_DIR}/storage/VertexPacke
                                                   ${SRC_DIR}/shader/ShaderProgram.cpp
                                                   ${SRC_DIR}/shader/materials/MatteMaterial.cpp
                                                   ${SRC_DIR}/file/CacheStreambuf.cpp
-                                                  ${SRC_DIR}/file/CachedFileLoader.cpp)
+                                                  ${SRC_DIR}/file/CachedFileLoader.cpp
+                                                  ${SRC_DIR}/utils/FileUtils.cpp)
 
 set_property(TARGET screenspace-window-manager-components PROPERTY CXX_STANDARD 14)
 
@@ -84,6 +85,11 @@ add_test(NAME streambuf-test COMMAND streambuf-test
 add_custom_command(TARGET mat-test POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/resources $<TARGET_FILE_DIR:screenspace-window-manager>/resources)
 
+add_executable(loader-test test/CacheFileLoaderTest.cpp)
+target_include_directories(loader-test PRIVATE ${INC_DIR})
+target_link_libraries(loader-test GTest::gtest_main screenspace-window-manager-components)
+add_test(NAME loader-test COMMAND loader-test
+            WORKING_DIRECTORY $<TARGET_FILE_DIR:screenspace-window-manager>)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
