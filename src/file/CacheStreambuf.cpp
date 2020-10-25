@@ -71,7 +71,7 @@ std::streamsize CacheStreambuf::xsgetn(char* s, std::streamsize n) {
 
 CacheStreambuf::int_type CacheStreambuf::underflow() {
   if (getc_ >= data_->size()) {
-    return traits_type::to_int_type(EOF);
+    return traits_type::eof();
   }
   
   char* last_accessed = const_cast<char*>(&data_->operator[](getc_));
@@ -83,12 +83,12 @@ CacheStreambuf::int_type CacheStreambuf::underflow() {
 
 CacheStreambuf::int_type CacheStreambuf::uflow() {
   if (getc_ >= data_->size()) {
-    return traits_type::to_int_type(EOF);
+    return traits_type::eof();
   }
 
   getc_++;
-  if (underflow() == traits_type::to_int_type(EOF)) {
-    return traits_type::to_int_type(EOF);
+  if (underflow() == traits_type::eof()) {
+    return traits_type::eof();
   }
 
   // underflow, in success case, will set gptr to char ahead of desired
@@ -97,7 +97,7 @@ CacheStreambuf::int_type CacheStreambuf::uflow() {
 
 CacheStreambuf::int_type CacheStreambuf::pbackfail(int_type c) {
   if (getc_ <= 0) {
-    return traits_type::to_int_type(EOF);
+    return traits_type::eof();
   }
 
   return traits_type::to_int_type(data_->operator[](--getc_));
@@ -108,7 +108,7 @@ std::streamsize CacheStreambuf::xsputn(const char* s, std::streamsize n) {
 }
 
 CacheStreambuf::int_type CacheStreambuf::overflow(CacheStreambuf::int_type c) {
-  return CacheStreambuf::traits_type::to_int_type(EOF);
+  return traits_type::eof();
 }
 
 } // namespace file
