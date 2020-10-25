@@ -44,13 +44,15 @@ std::unique_ptr<CacheStreambuf> CachedFileLoader::LoadFile(const std::string& pa
 
     if (res_itr == cache_.cend()) {
       dirty_ = true;
-      std::ifstream new_cached_file(path, std::ios_base::ate);
+      std::ifstream new_cached_file(path, std::ios_base::ate | std::ios_base::binary);
+      new_cached_file.seekg(0, new_cached_file.end);
       
       loader_record record;
       record.data = std::make_shared<std::vector<char>>();
       record.file_size = new_cached_file.tellg();
+      BOOST_LOG_TRIVIAL(trace) << "Loading file " << path << " - " << record.file_size << " bytes";
       record.data->resize(record.file_size);
-      new_cached_file.seekg(std::ios_base::beg, 0);
+      new_cached_file.seekg(new_cached_file.beg, 0);
       new_cached_file.rdbuf()->sgetn(record.data->data(), record.file_size);
       cache_.insert(std::pair<std::string, loader_record>(path, std::move(record)));
       res_itr = cache_.find(path);
@@ -96,7 +98,7 @@ CachedFileLoader::CachedFileLoader(CachedFileLoader&& other) {
 }
 
 void CachedFileLoader::threadfunc_(std::string cache_path) {
-  std::ifstream cache_file(cache_path);
+  std::ifstream cache_file(cache_path, std::ios_base::in | std::ios_base::binary);
   if (!cache_file.good()) {
     cache_file.close();
     BOOST_LOG_TRIVIAL(warning) << "Cache file not found. Recreating cache...";
@@ -107,6 +109,7 @@ void CachedFileLoader::threadfunc_(std::string cache_path) {
 
   uint32_t magic = ReadAsBytes<uint32_t>(cache_file);
   if (magic != CACHE_MAGIC) {
+    BOOST_LOG_TRIVIAL(warning) << "Magic number did not match. Recreating cache...";
     cache_file.close();
     recreate_cache_(cache_path);
     setup_ostream_(cache_path);
@@ -116,15 +119,16 @@ void CachedFileLoader::threadfunc_(std::string cache_path) {
   uint32_t crc_expected = ReadAsBytes<uint32_t>(cache_file);
   uint32_t crc_actual = utils::fileutils::CalculateCRCHash(cache_file, std::streampos(CACHE_DATA_START));
   if (crc_expected != crc_actual) {
+    BOOST_LOG_TRIVIAL(warning) << "Old CRC did not match. Recreating cache...";
     cache_file.close();
     recreate_cache_(cache_path);
     setup_ostream_(cache_path);
     return;
   }
 
-  cache_file.seekg(CACHE_DATA_START - 4);
   uint32_t num_entries = ReadAsBytes<uint32_t>(cache_file);
   std::unique_lock<std::shared_timed_mutex>(cache_mutex_);
+  BOOST_LOG_TRIVIAL(debug) << "Cache file with " << num_entries << " entries found";
 
   // get number of bytes cached
   {
@@ -133,8 +137,9 @@ void CachedFileLoader::threadfunc_(std::string cache_path) {
     uint16_t pathlen;
     for (int i = 0; i < num_entries; i++) {
       // get total size
+
       pathlen = ReadAsBytes<uint16_t>(cache_file);
-      cache_file.seekg(std::ios_base::cur, pathlen);
+      cache_file.seekg(pathlen, std::ios_base::cur);
       file_size = ReadAsBytes<uint64_t>(cache_file);
       cache_size += file_size;
     }
@@ -156,7 +161,7 @@ void CachedFileLoader::threadfunc_(std::string cache_path) {
     path.resize(pathlen);
     cache_file.read(&path[0], pathlen);
 
-    std::ifstream cached_file(path);
+    std::ifstream cached_file(path, std::ios_base::in | std::ios_base::binary);
     if (cached_file.bad()) {
       cached_file.close();
 
@@ -170,6 +175,8 @@ void CachedFileLoader::threadfunc_(std::string cache_path) {
     cached_file_record.data = std::make_shared<std::vector<char>>();
     cached_file_record.file_size = ReadAsBytes<size_t>(cache_file);
     cached_file_record.data->resize(cached_file_record.file_size);
+
+    BOOST_LOG_TRIVIAL(trace) << "Read file at " << path << " - " << cached_file_record.file_size << " bytes";
 
     {
       std::lock_guard<std::mutex> lock(progress_lock_);
@@ -189,7 +196,7 @@ void CachedFileLoader::threadfunc_(std::string cache_path) {
 void CachedFileLoader::recreate_cache_(const std::string& cache_path) {
   remove(cache_path.c_str());
   // input mode requires file to exist.
-  std::ofstream new_cache_file(cache_path);
+  std::ofstream new_cache_file(cache_path, std::ios_base::out | std::ios_base::binary);
   new_cache_file.seekp(0);
   WriteAsBytes(new_cache_file, CACHE_MAGIC);
   // crc and num_entries should be 0.
@@ -201,7 +208,8 @@ void CachedFileLoader::recreate_cache_(const std::string& cache_path) {
 
 void CachedFileLoader::setup_ostream_(const std::string& cache_path) {
   cache_file_output_.open(cache_path, std::fstream::in |
-                                      std::fstream::out);
+                                      std::fstream::out |
+                                      std::fstream::binary);
   cached_.store(true, std::memory_order_release);
   cached_cv_.notify_all();
 }
