@@ -81,12 +81,10 @@ class CachedFileLoader {
    */ 
   std::unique_ptr<CacheStreambuf> LoadFile(const std::string& path);
 
-  // TODO: hangs on load
   ~CachedFileLoader();
   CachedFileLoader(const CachedFileLoader& other) = delete;
   CachedFileLoader(CachedFileLoader&& other);
   CachedFileLoader& operator=(const CachedFileLoader& rhs) = delete;
-  // TODO if we need this: come up with a way to make default ctor work
   CachedFileLoader& operator=(CachedFileLoader&& rhs) = delete;
  private:
   /**
