@@ -44,8 +44,8 @@ uint32_t CalculateCRCHash(std::istream& input, std::streamoff offset) {
     crc = (crc >> 8) ^ CRC_HASH[(c ^ crc) & 0xFF];
   }
 
-  input.seekg(pos_initial);
   input.clear();
+  input.seekg(pos_initial);
   return ~crc;
 }
 
