@@ -35,8 +35,10 @@ std::unique_ptr<CacheStreambuf> CachedFileLoader::LoadFile(const std::string& pa
   std::unordered_map<std::string, loader_record>::const_iterator res_itr = cache_.find(path);
 
   if (res_itr == cache_.cend()) {
-    // release to avoid deadlock up here
-    cache_r.release();
+    // unlock to avoid deadlock up here
+    // release dissociates the mutex, unlock actually does what i want
+    cache_r.unlock();
+
     std::unique_lock<std::shared_timed_mutex> cache_g(cache_mutex_);
     res_itr = cache_.find(path);
 
@@ -181,9 +183,6 @@ void CachedFileLoader::threadfunc_(std::string cache_path) {
   
   }
   cache_file.close();
-
-  cached_.store(true, std::memory_order_release);
-  cached_cv_.notify_all();
   setup_ostream_(cache_path);
 }
 
@@ -203,6 +202,8 @@ void CachedFileLoader::recreate_cache_(const std::string& cache_path) {
 void CachedFileLoader::setup_ostream_(const std::string& cache_path) {
   cache_file_output_.open(cache_path, std::fstream::in |
                                       std::fstream::out);
+  cached_.store(true, std::memory_order_release);
+  cached_cv_.notify_all();
 }
 
 } // namespace file
