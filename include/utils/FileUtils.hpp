@@ -3,6 +3,7 @@
 
 #include <cinttypes>
 #include <fstream>
+#include <iostream>
 
 namespace screenspacemanager {
 namespace utils {
@@ -27,7 +28,7 @@ uint32_t CalculateCRCHash(std::istream& input, std::streamoff offset);
  */ 
 template <typename input_type>
 void WriteAsBytes(std::ostream& output, input_type data) {
-  output.write(reinterpret_cast<const char*>(&data), sizeof(input_type));
+  output.write(reinterpret_cast<char*>(&data), sizeof(input_type));
 }
 
 /**
