@@ -46,7 +46,7 @@ struct loader_record {
 class CachedFileLoader {
  public:
 
-  static const uint32_t CACHE_MAGIC = 0x5746534D;   // WFSM
+  static const uint32_t CACHE_MAGIC = 0x4D534657;   // WFSM
   static const uint64_t CACHE_DATA_START = 12;
 
   /**
