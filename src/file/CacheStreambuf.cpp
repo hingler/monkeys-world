@@ -5,6 +5,8 @@
 namespace screenspacemanager {
 namespace file {
 
+// contract: always expose the full cached vector
+
 using std::ios_base;
 
 CacheStreambuf::CacheStreambuf(const std::shared_ptr<std::vector<char>>& data) : data_(data) {
@@ -14,14 +16,11 @@ CacheStreambuf::CacheStreambuf(const std::shared_ptr<std::vector<char>>& data) :
 
 
 std::streampos CacheStreambuf::seekoff(std::streamoff off, ios_base::seekdir way, ios_base::openmode which) {
-  // shouldn't do anything
   if (which == ios_base::out) {
     return -1;
   }
 
   char* data_head = const_cast<char*>(data_->data());
-  // getc_ is the next place we fetch from next
-  // but that's always the end of the array due to how we set it up :/
   std::streampos offset;
   switch (way) {
     case ios_base::beg:
