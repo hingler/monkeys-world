@@ -81,6 +81,7 @@ class CachedFileLoader {
    */ 
   std::unique_ptr<CacheStreambuf> LoadFile(const std::string& path);
 
+  // TODO: hangs on load
   ~CachedFileLoader();
   CachedFileLoader(const CachedFileLoader& other) = delete;
   CachedFileLoader(CachedFileLoader&& other);
