@@ -54,6 +54,9 @@ TEST(StreambufTests, VerifyIstreamBehavior) {
     data_actual[i] = 0;
   }
 
+  ASSERT_FALSE(test_stream.eof());
+  ASSERT_FALSE(test_stream.fail());
+  ASSERT_FALSE(test_stream.bad());
   test_stream.read(data_actual, 1);
 
   ASSERT_TRUE(test_stream.eof());
@@ -78,9 +81,17 @@ TEST(StreambufTests, VerifyIstreamBehavior) {
     ASSERT_EQ(data->operator[](i + 384), data_actual[i]);
   }
 
+  std::cout << "last call :-)" << std::endl;
+
   test_stream.seekg(256, std::ios_base::end);
+  std::cout << "pre read" << std::endl;
   test_stream.read(data_actual, 256);
   for (int i = 0; i < 256; i++) {
     ASSERT_EQ(data->operator[](i + 768), data_actual[i]);
   }
+
+  std::cout << data->capacity();
+  std::cout << "should EOF!" << std::endl;
+  ASSERT_EQ(EOF, test_stream.get());
+  ASSERT_TRUE(test_stream.eof());
 }
