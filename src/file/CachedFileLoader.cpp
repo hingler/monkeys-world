@@ -29,7 +29,7 @@ void CachedFileLoader::SpinUntilCached() {
   cached_cv_.wait(cache_r, [&]() -> bool{return cached_;});
 }
 
-std::unique_ptr<CacheStreambuf> CachedFileLoader::LoadFile(const std::string& path) {
+std::unique_ptr<std::streambuf> CachedFileLoader::LoadFile(const std::string& path) {
   std::shared_lock<std::shared_timed_mutex> cache_r(cache_mutex_);
   cached_cv_.wait(cache_r, [&]() -> bool{return cached_;});
   std::unordered_map<std::string, loader_record>::const_iterator res_itr = cache_.find(path);
@@ -59,7 +59,9 @@ std::unique_ptr<CacheStreambuf> CachedFileLoader::LoadFile(const std::string& pa
     }
   }
 
-  return std::make_unique<CacheStreambuf>(res_itr->second.data);
+  // unique ptr assumes ownership of the newly allocated streambuf
+  CacheStreambuf* result_streambuf = new CacheStreambuf(res_itr->second.data);
+  return std::unique_ptr<std::streambuf>(result_streambuf);
 }
 
 CachedFileLoader::~CachedFileLoader() {

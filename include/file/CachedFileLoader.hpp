@@ -1,7 +1,8 @@
-#ifndef FILE_LOADER_H_
-#define FILE_LOADER_H_
+#ifndef CACHED_FILE_LOADER_H_
+#define CACHED_FILE_LOADER_H_
 
 #include <file/CacheStreambuf.hpp>
+#include <file/FileLoader.hpp>
 
 #include <atomic>
 #include <cinttypes>
@@ -43,7 +44,7 @@ struct loader_record {
  * 
  *  To clear the cache: just delete the respective cache file.
  */ 
-class CachedFileLoader {
+class CachedFileLoader : public FileLoader {
  public:
 
   static const uint32_t CACHE_MAGIC = 0x4D534657;   // WFSM
@@ -74,12 +75,9 @@ class CachedFileLoader {
   void SpinUntilCached();
 
   /**
-   *  Returns a stream buffer corresponding with the desired file.
-   *  Updates internal cache if necessary.
-   *  @param path - the path to the desired file.
-   *  If the file has not been loaded, spins until the file has been cached, then returns.
+   *  Override for FileLoader::LoadFile.
    */ 
-  std::unique_ptr<CacheStreambuf> LoadFile(const std::string& path);
+  std::unique_ptr<std::streambuf> LoadFile(const std::string& path) override;
 
   ~CachedFileLoader();
   CachedFileLoader(const CachedFileLoader& other) = delete;
@@ -117,4 +115,4 @@ class CachedFileLoader {
 } // namespace file
 } // namespace screenspacemanager
 
-#endif  // FILE_LOADER_H_
+#endif  // CACHED_FILE_LOADER_H_
