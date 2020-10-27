@@ -14,9 +14,14 @@ namespace screenspacemanager {
 namespace shader {
 namespace materials {
 
-// TODO: Passing in the file loader is OK for now, but if this dependency list grows
-//       it may be necessary to build a "context" object and fetch dependencies from that
-//       (could also look for a DI package but whatever)
+/* TODO: IF NEEDED, SWAP TO A GENERALIZED "CONTEXT" OBJECT.
+         Currently the only shared behavior we need is file loading,
+         but as the engine grows we'll need to account for other behavior
+         which should be dictated across all components.
+
+         I'm fine just passing in a FileLoader but anything else and I'd
+         much rather make a context object to keep it in check.
+*/
 
 class MatteMaterial : ::screenspacemanager::shader::Material {
  public:
