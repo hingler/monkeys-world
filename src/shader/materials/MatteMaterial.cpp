@@ -1,3 +1,4 @@
+#include <file/FileLoader.hpp>
 #include <shader/materials/MatteMaterial.hpp>
 #include <shader/ShaderProgram.hpp>
 #include <shader/ShaderProgramBuilder.hpp>
@@ -13,8 +14,10 @@ namespace screenspacemanager {
 namespace shader {
 namespace materials {
 
-MatteMaterial::MatteMaterial() {
-  matte_prog_ = ShaderProgramBuilder()
+using file::FileLoader;
+
+MatteMaterial::MatteMaterial(std::shared_ptr<FileLoader> loader) {
+  matte_prog_ = ShaderProgramBuilder(loader)
                 .WithVertexShader("resources/glsl/matte-material/matte-material.vert")
                 .WithFragmentShader("resources/glsl/matte-material/matte-material.frag")
                 .Build();

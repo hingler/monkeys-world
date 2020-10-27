@@ -3,22 +3,32 @@
 #include <shader/ShaderProgramBuilder.hpp>
 #include <shader/ShaderProgram.hpp>
 
+#include <file/FileLoader.hpp>
+#include "SimpleFileLoader.hpp"
+
 #include <gtest/gtest.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+#include <memory>
 
 namespace screenspacemanagertest {
 
 using screenspacemanager::shader::ShaderProgramBuilder;
 using screenspacemanager::shader::ShaderProgram;
+using screenspacemanager::file::FileLoader;
 
 class ShaderBuilderTests : public ::testing::Test {
+ public:
+  std::shared_ptr<FileLoader> loader;
  protected:
   void SetUp() override {
     if (!glfwInit()) {
       // could not initialize glfw, required for shader funcs
       exit(EXIT_FAILURE);
     }
+    FileLoader* loader_ptr = new SimpleFileLoader();
+    loader = std::shared_ptr<FileLoader>(loader_ptr);
 
     test_window = glfwCreateWindow(800, 600, "temp", NULL, NULL);
     if (test_window == NULL) {
@@ -56,7 +66,7 @@ class ShaderBuilderTests : public ::testing::Test {
 };
 
 TEST_F(ShaderBuilderTests, CreateEmptyShader) {
-  ShaderProgram prog = ShaderProgramBuilder()
+  ShaderProgram prog = ShaderProgramBuilder(loader)
                         .WithVertexShader("resources/test/dummy-shader.vert")
                         .WithFragmentShader("resources/test/dummy-shader.frag")
                         .Build();

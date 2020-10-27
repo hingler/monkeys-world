@@ -12,6 +12,9 @@
 #include <shader/ShaderProgramBuilder.hpp>
 #include <shader/ShaderProgram.hpp>
 
+#include <file/FileLoader.hpp>
+#include "../SimpleFileLoader.hpp"
+
 #include <storage/VertexPacketTypes.hpp>
 
 #include <boost/math/constants/constants.hpp>
@@ -30,6 +33,8 @@ using ::screenspacemanager::shader::ShaderProgram;
 using ::screenspacemanager::shader::ShaderProgramBuilder;
 
 using ::screenspacemanager::storage::VertexPacket3D;
+
+using ::screenspacemanager::file::FileLoader;
 
 static float deg_to_rad(float f) {
   return f * boost::math::constants::pi<float>() / 180.0f;
@@ -106,7 +111,9 @@ void main(int argc, char** argv) {
     { 0.1f,  0.1f,  0.1f, 1.0f}
   });
 
-  MatteMaterial test_material;
+  std::shared_ptr<FileLoader> loader(new SimpleFileLoader());
+
+  MatteMaterial test_material(loader);
   
   test_material.SetSurfaceColor(glm::vec4(1.0, 0.6, 0.0, 1.0));
 

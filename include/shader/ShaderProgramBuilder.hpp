@@ -1,10 +1,12 @@
 #ifndef SHADER_PROGRAM_BUILDER_H_
 #define SHADER_PROGRAM_BUILDER_H_
 
+#include <memory>
 #include <string>
 #include <glad/glad.h>
 
 #include <shader/ShaderProgram.hpp>
+#include <file/FileLoader.hpp>
 
 namespace screenspacemanager {
 namespace shader {
@@ -32,9 +34,10 @@ class ShaderProgramBuilder {
  public:
 
   /**
-   *  Creates a new shader program builder.
+   *  Creates a new shader program builder, using `loader` to access resources.
+   *  @param loader - The file loader used to access resources.
    */ 
-  ShaderProgramBuilder();
+  ShaderProgramBuilder(std::shared_ptr<file::FileLoader> loader);
 
   ShaderProgramBuilder& WithVertexShader(const std::string& vertex_path);
   ShaderProgramBuilder& WithGeometryShader(const std::string& geometry_path);
@@ -63,6 +66,9 @@ class ShaderProgramBuilder {
   // contains the program being created
   GLuint prog_;
   ShaderPacket shaders_;
+
+  // cache loader
+  std::shared_ptr<file::FileLoader> loader_;
 
 };
 

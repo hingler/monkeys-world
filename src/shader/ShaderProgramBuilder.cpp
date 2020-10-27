@@ -13,6 +13,7 @@ namespace shader {
 using std::ios_base;
 using exception::InvalidShaderException;
 using exception::LinkFailedException;
+using file::FileLoader;
 
 
 static std::string GetShaderType(GLint type) {
@@ -28,9 +29,10 @@ static std::string GetShaderType(GLint type) {
   }
 }
 
-ShaderProgramBuilder::ShaderProgramBuilder() {
+ShaderProgramBuilder::ShaderProgramBuilder(std::shared_ptr<FileLoader> loader) {
   shaders_ = ShaderPacket();
   prog_ = 0;
+  loader_ = loader;
 }
 
 ShaderProgramBuilder& ShaderProgramBuilder::WithVertexShader(const std::string& vertex_path) {
@@ -92,24 +94,23 @@ void ShaderProgramBuilder::DeleteIfNonZero(GLuint shader) {
 // todo: separate file reading into a separate class? it's a bit trivial though :/
 GLuint ShaderProgramBuilder::CreateShaderFromFile(const std::string& shader_path, GLenum shader_type) {
   GLuint shader = glCreateShader(shader_type);
-  std::ifstream shader_file(shader_path);
+  std::shared_ptr<std::streambuf> buffer = loader_->LoadFile(shader_path);
+  std::istream shader_file(buffer.get());
   
   if (shader_file.fail()) {
     // could not read file path
-    shader_file.close();
     glDeleteShader(shader);
     BOOST_LOG_TRIVIAL(error) << "Invalid shader path " << shader_path;
     throw std::invalid_argument("Invalid shader path " + shader_path);
   }
 
+  // TODO: scope optimization throughout
   std::string contents;
   shader_file.seekg(0, ios_base::end);
   std::streamoff file_size = shader_file.tellg();
   shader_file.seekg(0, ios_base::beg);
   contents.resize(file_size);
   shader_file.read(&contents[0], file_size);
-
-  shader_file.close();
 
   const char* shader_data = contents.c_str();
   glShaderSource(shader, 1, &shader_data, NULL);

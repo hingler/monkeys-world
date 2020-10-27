@@ -10,7 +10,7 @@ namespace file {
  *  Interface for file loader
  */ 
 class FileLoader {
-
+ public:
  /**
    *  Returns a stream buffer corresponding with the desired file.
    *  Updates internal cache if necessary.
