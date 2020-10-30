@@ -9,7 +9,7 @@
 
 #include <vector>
 
-namespace screenspacemanager {
+namespace monkeysworld {
 namespace shader {
 
 /**
@@ -45,6 +45,6 @@ class Material {
 };
 
 } // namespace shader
-} // namespace screenspacemanager
+} // namespace monkeysworld
 
 #endif

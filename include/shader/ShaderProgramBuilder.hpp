@@ -8,7 +8,7 @@
 #include <shader/ShaderProgram.hpp>
 #include <file/FileLoader.hpp>
 
-namespace screenspacemanager {
+namespace monkeysworld {
 namespace shader {
 
 /**
@@ -73,6 +73,6 @@ class ShaderProgramBuilder {
 };
 
 }   // namespace shader  
-}   // namespace screenspacemanager
+}   // namespace monkeysworld
 
 #endif  // SHADER_PROGRAM_FACTORY_H_

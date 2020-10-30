@@ -15,7 +15,7 @@
 // from https://stackoverflow.com/questions/87372/check-if-a-class-has-a-member-function-of-a-given-signature/10707822#10707822
 // todo: enable some R/W on attributes (not sure how yet lol)
 
-namespace screenspacemanager {
+namespace monkeysworld {
 namespace model {
 
 /**
@@ -45,14 +45,14 @@ class Mesh {
    *  Constructs a new VertexData object.
    */ 
   Mesh() : dirty_(true) {
-    context_ = std::make_unique<::screenspacemanager::model::VertexDataContextGL<Packet>>();
+    context_ = std::make_unique<::monkeysworld::model::VertexDataContextGL<Packet>>();
    }
 
   /**
    *  Constructs a new VertexData object from a preallocated context object.
    *  The new object assumes ownership of the passed-in context.
    */ 
-  Mesh(std::unique_ptr<::screenspacemanager::model::VertexDataContext<Packet>> context) :
+  Mesh(std::unique_ptr<::monkeysworld::model::VertexDataContext<Packet>> context) :
     dirty_(true),
     context_(std::move(context)) { }
 
@@ -161,7 +161,7 @@ class Mesh {
   std::vector<unsigned int> indices_;
 
   // context used to make opengl calls
-  std::unique_ptr<::screenspacemanager::model::VertexDataContext<Packet>> context_;
+  std::unique_ptr<::monkeysworld::model::VertexDataContext<Packet>> context_;
 
   // tracks whether we need to update our buffers.
   bool dirty_;
@@ -170,6 +170,6 @@ class Mesh {
 };
 
 };  // namespace storage
-};  // namespace screenspacemanager
+};  // namespace monkeysworld
 
 #endif  // MESH_H_ 

@@ -4,7 +4,7 @@
 #include <string>
 #include <stdexcept>
 
-namespace screenspacemanager {
+namespace monkeysworld {
 namespace shader {
 namespace exception {
 
@@ -20,6 +20,6 @@ class UninitializedShaderException : public std::runtime_error {
 
 }   // namespace exception
 }   // namespace shader
-}   // namespace screenspacemanager
+}   // namespace monkeysworld
 
 #endif  // UNINITIALIZED_SHADER_EXCEPTION_H_

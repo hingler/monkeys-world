@@ -10,7 +10,7 @@
 
 #include <memory>
 
-namespace screenspacemanager {
+namespace monkeysworld {
 namespace shader {
 namespace materials {
 
@@ -23,7 +23,7 @@ namespace materials {
          much rather make a context object to keep it in check.
 */
 
-class MatteMaterial : ::screenspacemanager::shader::Material {
+class MatteMaterial : ::monkeysworld::shader::Material {
  public:
   /**
    *  Creates a new MatteMaterial instance.
@@ -65,6 +65,6 @@ class MatteMaterial : ::screenspacemanager::shader::Material {
 
 } // namespace materials
 } // namespace shader
-} // namespace screenspacemanager
+} // namespace monkeysworld
 
 #endif  // MATTE_MATERIAL_H_

@@ -6,7 +6,7 @@
 #include <iostream>
 #include <thread>
 
-using ::screenspacemanager::file::CachedFileLoader;
+using ::monkeysworld::file::CachedFileLoader;
 
 TEST(CacheTests, CreateEmptyCache) {
   remove("resources/cache/testcache.filecache");

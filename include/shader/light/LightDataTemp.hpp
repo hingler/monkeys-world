@@ -3,7 +3,7 @@
 
 #include <glm/glm.hpp>
 
-namespace screenspacemanager {
+namespace monkeysworld {
 namespace shader {
 namespace light {
 
@@ -23,6 +23,6 @@ struct LightData {
 
 } // namespace light
 } // namespace shader
-} // namespace screenspacemanager
+} // namespace monkeysworld
 
 #endif  // LIGHT_DATA_TEMP_H_

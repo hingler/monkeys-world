@@ -5,7 +5,7 @@
 #include <streambuf>
 #include <vector>
 
-namespace screenspacemanager {
+namespace monkeysworld {
 namespace file {
 
 class CacheStreambuf : public std::streambuf {
@@ -27,6 +27,6 @@ class CacheStreambuf : public std::streambuf {
 };
 
 } // namespace file
-} // namespace screenspacemanager
+} // namespace monkeysworld
 
 #endif  // CACHE_STREAMBUF_H_

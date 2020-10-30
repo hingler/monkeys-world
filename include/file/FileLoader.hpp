@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 
-namespace screenspacemanager {
+namespace monkeysworld {
 namespace file {
 
 /**
@@ -21,6 +21,6 @@ class FileLoader {
 };
 
 } // namespace file
-} // namespace screenspacemanager
+} // namespace monkeysworld
 
 #endif

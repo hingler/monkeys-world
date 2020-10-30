@@ -5,7 +5,7 @@
 #include <fstream>
 #include <iostream>
 
-namespace screenspacemanager {
+namespace monkeysworld {
 namespace utils {
 namespace fileutils {
 
@@ -45,6 +45,6 @@ output_type ReadAsBytes(std::istream& input) {
 
 } // namespace fileutils
 } // namespace utils
-} // namespace screenspacemanager
+} // namespace monkeysworld
 
 #endif

@@ -4,7 +4,7 @@
 #include <string>
 #include <glad/glad.h>
 
-namespace screenspacemanager {
+namespace monkeysworld {
 namespace shader {
 
 /**
@@ -42,7 +42,7 @@ class ShaderProgram {
 };
 
 };    // namespace shader
-};    // namespace screenspacemanager
+};    // namespace monkeysworld
 
 
 #endif  // SHADER_PROGRAM_H_

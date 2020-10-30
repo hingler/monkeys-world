@@ -7,7 +7,7 @@
 
 #include <fstream>
 
-namespace screenspacemanager {
+namespace monkeysworld {
 namespace shader {
 
 using std::ios_base;
@@ -134,4 +134,4 @@ GLuint ShaderProgramBuilder::CreateShaderFromFile(const std::string& shader_path
 }
 
 } // namespace shader
-} // namespace screenspacemanager
+} // namespace monkeysworld

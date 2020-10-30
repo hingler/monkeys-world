@@ -1,7 +1,7 @@
 #ifndef CAMERA_H_
 #define CAMERA_H_
 
-namespace screenspacemanager {
+namespace monkeysworld {
 namespace critter {
   /**
    *  Represents the camera within a scene.

@@ -4,7 +4,7 @@
 #include <string>
 #include <stdexcept>
 
-namespace screenspacemanager {
+namespace monkeysworld {
 namespace shader {
 namespace exception {
 
@@ -18,6 +18,6 @@ class InvalidShaderException : public std::runtime_error {
 
 }   // namespace exception
 }   // namespace shader
-}   // namespace screenspacemanager
+}   // namespace monkeysworld
 
 #endif  // INVALID_SHADER_EXCEPTION_H_

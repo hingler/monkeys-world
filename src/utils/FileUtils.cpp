@@ -2,7 +2,7 @@
 
 #include <cinttypes>
 
-namespace screenspacemanager {
+namespace monkeysworld {
 namespace utils {
 namespace fileutils {
 
@@ -51,4 +51,4 @@ uint32_t CalculateCRCHash(std::istream& input, std::streamoff offset) {
 
 } // namespace fileutils
 } // namespace utils
-} // namespace screenspacemanager
+} // namespace monkeysworld

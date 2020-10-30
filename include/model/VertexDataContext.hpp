@@ -1,7 +1,7 @@
 #ifndef VERTEX_DATA_CONTEXT_H_
 #define VERTEX_DATA_CONTEXT_H_
 
-namespace screenspacemanager {
+namespace monkeysworld {
 namespace model {
 
 /**
@@ -25,6 +25,6 @@ class VertexDataContext {
 };
 
 };  // namespace opengl
-};  // namespace screenspacemanager
+};  // namespace monkeysworld
 
 #endif

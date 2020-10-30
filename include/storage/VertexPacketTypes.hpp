@@ -3,7 +3,7 @@
 
 #include <glm/glm.hpp>
 
-namespace screenspacemanager {
+namespace monkeysworld {
 namespace storage {
 
 /**
@@ -45,6 +45,6 @@ struct VertexPacket3D {
 };
 
 };  // namespace storage
-};  // namespace screenspacemanager
+};  // namespace monkeysworld
 
 #endif  // VERTEX_PACKET_TYPES_H_

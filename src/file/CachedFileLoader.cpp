@@ -7,7 +7,7 @@
 #include <fstream> 
 #include <string>
 
-namespace screenspacemanager {
+namespace monkeysworld {
 namespace file {
 
 using utils::fileutils::WriteAsBytes;
@@ -217,4 +217,4 @@ void CachedFileLoader::setup_ostream_(const std::string& cache_path) {
 }
 
 } // namespace file
-} // namespace screenspacemanager
+} // namespace monkeysworld

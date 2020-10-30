@@ -1,7 +1,7 @@
 #ifndef OBJECT_H_
 #define OBJECT_H_
 
-namespace screenspacemanager {
+namespace monkeysworld {
 namespace critter {
 
 /**
@@ -14,6 +14,6 @@ class Object {
 }
 
 } // namespace critter
-} // namespace screenspacemanager
+} // namespace monkeysworld
 
 #endif  // OBJECT_H_

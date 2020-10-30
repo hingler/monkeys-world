@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 #include <glad/glad.h>
 
-namespace screenspacemanager {
+namespace monkeysworld {
 namespace storage {
 
 void VertexPacket2D::Bind() {
@@ -35,4 +35,4 @@ void VertexPacket3D::Bind() {
 }
 
 };  // namespace storage
-};  // namespace screenspacemanager
+};  // namespace monkeysworld

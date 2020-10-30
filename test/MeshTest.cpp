@@ -16,9 +16,9 @@
 #define DEBUG_EPS 0.0001
 
 
-namespace screenspacemanagertest {
-using ::screenspacemanager::model::Mesh;
-using ::screenspacemanager::model::VertexDataContext;
+namespace monkeysworldtest {
+using ::monkeysworld::model::Mesh;
+using ::monkeysworld::model::VertexDataContext;
 
 struct DummyPacket {
   int data;
@@ -101,4 +101,4 @@ TEST_F(VertexDataTests, CreateMock2DPacket) {
 }
 
 
-};  // namespace screenspacemanagertests
+};  // namespace monkeysworldtests

@@ -25,16 +25,16 @@
 // 0 -> -1, 1 -> 1. For building cube.
 #define SPLIT(x) (x * 2) - 1
 
-using ::screenspacemanager::model::Mesh;
-using ::screenspacemanager::model::VertexDataContextGL;
-using ::screenspacemanager::shader::light::LightData;
-using ::screenspacemanager::shader::materials::MatteMaterial;
-using ::screenspacemanager::shader::ShaderProgram;
-using ::screenspacemanager::shader::ShaderProgramBuilder;
+using ::monkeysworld::model::Mesh;
+using ::monkeysworld::model::VertexDataContextGL;
+using ::monkeysworld::shader::light::LightData;
+using ::monkeysworld::shader::materials::MatteMaterial;
+using ::monkeysworld::shader::ShaderProgram;
+using ::monkeysworld::shader::ShaderProgramBuilder;
 
-using ::screenspacemanager::storage::VertexPacket3D;
+using ::monkeysworld::storage::VertexPacket3D;
 
-using ::screenspacemanager::file::FileLoader;
+using ::monkeysworld::file::FileLoader;
 
 static float deg_to_rad(float f) {
   return f * boost::math::constants::pi<float>() / 180.0f;

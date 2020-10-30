@@ -5,7 +5,7 @@
 
 #include <boost/log/trivial.hpp>
 
-namespace screenspacemanager {
+namespace monkeysworld {
 namespace shader {
 
 using exception::UninitializedShaderException;
@@ -48,4 +48,4 @@ ShaderProgram& ShaderProgram::operator=(ShaderProgram&& other) {
 }
 
 } // namespace shader
-} // namespace screenspacemanager
+} // namespace monkeysworld

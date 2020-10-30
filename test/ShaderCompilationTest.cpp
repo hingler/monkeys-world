@@ -12,11 +12,11 @@
 
 #include <memory>
 
-namespace screenspacemanagertest {
+namespace monkeysworldtest {
 
-using screenspacemanager::shader::ShaderProgramBuilder;
-using screenspacemanager::shader::ShaderProgram;
-using screenspacemanager::file::FileLoader;
+using monkeysworld::shader::ShaderProgramBuilder;
+using monkeysworld::shader::ShaderProgram;
+using monkeysworld::file::FileLoader;
 
 class ShaderBuilderTests : public ::testing::Test {
  public:
@@ -72,4 +72,4 @@ TEST_F(ShaderBuilderTests, CreateEmptyShader) {
                         .Build();
 }
 
-} // namespace screenspacemanagertests
+} // namespace monkeysworldtests

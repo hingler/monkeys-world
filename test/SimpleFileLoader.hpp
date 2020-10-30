@@ -8,7 +8,7 @@
 #include <string>
 
 // simple interface for file loader
-class SimpleFileLoader : public ::screenspacemanager::file::FileLoader {
+class SimpleFileLoader : public ::monkeysworld::file::FileLoader {
   virtual std::unique_ptr<std::streambuf> LoadFile(const std::string& path) override {
     std::filebuf* res = new std::filebuf;
     res->open(path.c_str(), std::ios_base::in);

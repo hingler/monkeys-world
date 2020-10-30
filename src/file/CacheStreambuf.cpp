@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-namespace screenspacemanager {
+namespace monkeysworld {
 namespace file {
 
 // contract: always expose the full cached vector
@@ -57,4 +57,4 @@ CacheStreambuf::int_type CacheStreambuf::overflow(CacheStreambuf::int_type c) {
 }
 
 } // namespace file
-} // namespace screenspacemanager
+} // namespace monkeysworld

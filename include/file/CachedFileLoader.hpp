@@ -15,7 +15,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace screenspacemanager {
+namespace monkeysworld {
 namespace file {
 
 /**
@@ -113,6 +113,6 @@ class CachedFileLoader : public FileLoader {
 };
 
 } // namespace file
-} // namespace screenspacemanager
+} // namespace monkeysworld
 
 #endif  // CACHED_FILE_LOADER_H_

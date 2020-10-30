@@ -11,7 +11,7 @@
 #include <model/VertexDataContext.hpp>
 #include <boost/log/trivial.hpp>
 
-namespace screenspacemanager {
+namespace monkeysworld {
 namespace model {
 
 /**
@@ -72,6 +72,6 @@ class VertexDataContextGL : public VertexDataContext<Packet> {
 };
 
 };  // namespace opengl
-};  // namespace screenspacemanager
+};  // namespace monkeysworld
 
 #endif  // VERTEX_DATA_CONTEXT_GL_H_

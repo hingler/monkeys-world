@@ -10,7 +10,7 @@
 
 #include <boost/log/trivial.hpp>
 
-namespace screenspacemanager {
+namespace monkeysworld {
 namespace shader {
 namespace materials {
 
@@ -73,4 +73,4 @@ GLuint MatteMaterial::GetProgramDescriptor() {
 
 } // namespace materials
 } // namespace shader
-} // namespace screenspacemanager
+} // namespace monkeysworld

@@ -5,7 +5,7 @@
 #include <iostream>
 #include <memory>
 
-using ::screenspacemanager::file::CacheStreambuf;
+using ::monkeysworld::file::CacheStreambuf;
 
 TEST(StreambufTests, CreateStreambufFromArbVector) {
   std::shared_ptr<std::vector<char>> data = std::make_shared<std::vector<char>>();
