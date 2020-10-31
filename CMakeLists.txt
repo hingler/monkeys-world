@@ -1,6 +1,3 @@
-# todo: this looks like a mess and VS2017 doesn't like it.
-# do some comment cleanup here lol
-
 cmake_minimum_required(VERSION 3.15.0)
 project(monkeys-world VERSION 0.0.1)
 
@@ -53,6 +50,9 @@ set(BOOST_USE_MULTITHREADED ON)
 set(BOOST_USE_STATIC_LIBS ON)
 set(Boost_DEBUG 1)
 find_package(Boost 1.72.0 COMPONENTS log REQUIRED)
+
+# this should be all i need for now
+set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG ${CMAKE_CXX_FLAGS_DEBUG}")
 
 target_link_libraries(monkeys-world-components glm glad::glad)
 target_include_directories(monkeys-world-components PUBLIC ${Boost_INCLUDE_DIRS})

@@ -19,6 +19,10 @@
 
 #include <boost/math/constants/constants.hpp>
 
+#ifdef DEBUG
+#include <shader/GLDebugSetup.hpp>
+#endif
+
 #include <memory>
 #include <vector>
 
@@ -76,6 +80,10 @@ void main(int argc, char** argv) {
     exit(EXIT_FAILURE);
   }
 
+  #ifdef DEBUG
+  ::monkeysworld::shader::gldebug::SetupGLDebug();
+  #endif
+
   Mesh<VertexPacket3D> cube_mesh(std::make_unique<VertexDataContextGL<VertexPacket3D>>());
 
   /**
@@ -83,8 +91,8 @@ void main(int argc, char** argv) {
    */ 
   for (int i = 0; i < 24; i++) {
     cube_mesh.AddVertex({
-      {SPLIT((i&1)), SPLIT(((i&2)>>1)), SPLIT(((i&4)>>2))},                                             // positions
-      {0, 0},                                                                                     // texcoords
+      {SPLIT((i&1)), SPLIT(((i&2)>>1)), SPLIT(((i&4)>>2))},                                                 // positions
+      {0, 0},                                                                                               // texcoords
       {(i > 15 ? SPLIT((i & 1)) : 0), (i > 7 && i < 16 ? SPLIT((i&2)) : 0), (i < 8 ? SPLIT((i & 4)) : 0)}   // normals
     });
   }
@@ -118,12 +126,12 @@ void main(int argc, char** argv) {
   test_material.SetSurfaceColor(glm::vec4(1.0, 0.6, 0.0, 1.0));
 
   float rot = 0.0f;
+  glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LEQUAL);
+  glViewport(0, 0, 1600, 900);
   while (!glfwWindowShouldClose(test_window)) { 
     rot += 0.01f;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
-    glViewport(0, 0, 1600, 900);
     glm::mat4 model_matrix = glm::mat4(1.0);
     glm::mat4 vp_matrix = glm::mat4(1.0);
     // glm::perspective now takes a radians arg
