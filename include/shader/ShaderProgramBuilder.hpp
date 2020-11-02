@@ -44,6 +44,7 @@ class ShaderProgramBuilder {
   ShaderProgramBuilder& WithFragmentShader(const std::string& fragment_path);
   ShaderProgram Build();
 
+  // TODO: need to impl copy + move
   ~ShaderProgramBuilder();
 
  private:
