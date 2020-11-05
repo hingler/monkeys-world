@@ -8,7 +8,10 @@
 #include <shader/light/LightDataTemp.hpp>
 #include <glm/glm.hpp>
 
+#include <critter/Context.hpp>
+
 #include <memory>
+
 
 namespace monkeysworld {
 namespace shader {
@@ -27,9 +30,9 @@ class MatteMaterial : ::monkeysworld::shader::Material {
  public:
   /**
    *  Creates a new MatteMaterial instance.
-   *  @param loader - FileLoader used to fetch files.
+   *  @param context - Context object
    */ 
-  MatteMaterial(std::shared_ptr<file::FileLoader> loader);
+  MatteMaterial(std::shared_ptr<critter::Context> context);
 
   /**
    *  Makes the material active and passes all uniforms.

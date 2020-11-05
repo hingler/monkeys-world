@@ -11,6 +11,7 @@
 #include <shader/materials/MatteMaterial.hpp>
 #include <shader/ShaderProgramBuilder.hpp>
 #include <shader/ShaderProgram.hpp>
+#include <critter/Context.hpp>
 
 #include <file/FileLoader.hpp>
 #include "../SimpleFileLoader.hpp"
@@ -35,6 +36,7 @@ using ::monkeysworld::shader::light::LightData;
 using ::monkeysworld::shader::materials::MatteMaterial;
 using ::monkeysworld::shader::ShaderProgram;
 using ::monkeysworld::shader::ShaderProgramBuilder;
+using ::monkeysworld::critter::Context;
 
 using ::monkeysworld::storage::VertexPacket3D;
 
@@ -119,9 +121,9 @@ void main(int argc, char** argv) {
     { 0.1f,  0.1f,  0.1f, 1.0f}
   });
 
-  std::shared_ptr<FileLoader> loader(new SimpleFileLoader());
+  std::shared_ptr<Context> ctx = std::make_shared<Context>();
 
-  MatteMaterial test_material(loader);
+  MatteMaterial test_material(ctx);
   
   test_material.SetSurfaceColor(glm::vec4(1.0, 0.6, 0.0, 1.0));
 

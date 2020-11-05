@@ -19,7 +19,8 @@ add_library(monkeys-world-components ${SRC_DIR}/storage/VertexPacketTypes.cpp
                                                   ${SRC_DIR}/shader/materials/MatteMaterial.cpp
                                                   ${SRC_DIR}/file/CacheStreambuf.cpp
                                                   ${SRC_DIR}/file/CachedFileLoader.cpp
-                                                  ${SRC_DIR}/utils/FileUtils.cpp)
+                                                  ${SRC_DIR}/utils/FileUtils.cpp
+                                                  ${SRC_DIR}/critter/Context.cpp)
 
 set_property(TARGET monkeys-world-components PROPERTY CXX_STANDARD 14)
 
