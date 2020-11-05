@@ -1,6 +1,10 @@
 #ifndef CONTEXT_H_
 #define CONTEXT_H_
 
+#include <file/CachedFileLoader.hpp>
+
+#include <memory>
+
 namespace monkeysworld {
 namespace critter {
 
@@ -17,6 +21,25 @@ class Context {
   // other context objects can "get" from last context (probably a good idea to port over like audio handler for inst)
   // use a builder pattern to create the context
     // use premade assets if available, or construct from defaults if not
+  // something for borrowing components
+  // create a context builder which can be used to pass in components?
+  // data class which contains dependencies
+  // and which can be fetched from the struct
+
+  // this should make it easier to add components and shit
+
+  // note: the CONTEXT should be detached from state. this thing should exist from start to finish,
+  // and should be closely tied to system components which require a rooted
+ public:
+  /**
+   *  Default constructor which attempts to initialize all fields.
+   */ 
+  Context();
+
+  // the following functions return some higher level component
+
+  // file loader
+  const std::shared_ptr<file::CachedFileLoader> GetCachedFileLoader();
 };
 
 }
