@@ -38,6 +38,8 @@ class Context {
 
   // the following functions return some higher level component
 
+  // add timer + timed event handler
+
   // file loader
   const std::shared_ptr<file::CachedFileLoader> GetCachedFileLoader();
   // NOTE: This should DEFINITELY be provided by the context object --
@@ -135,6 +137,10 @@ class Context {
 //                        keep drawing it during a context switch
 //                        actually it would be good practice in general to save the last FB
 //                        so that we can do something with it
+
+//  basically: context is local, it's constructed from global resources.
+//  it enables access to those global resources, and ensures that resources associated with a single
+//  "real" context are no longer relevant outside of it
 
 } // namespace critter
 } // namespace monkeysworld
