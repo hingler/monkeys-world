@@ -102,7 +102,6 @@ class Context {
 
   //       however, that particular instance dies when we switch contexts.
 
-
   //       what is a context switch?
   //       probably gonna be similar to switching between "screens"
   //       hitting the "start" button is probably a context switch
@@ -110,7 +109,6 @@ class Context {
   //       scoreboards or settings could be a context switch
   //       if we want to make it smooth, we need a context object which stores that data globally
   //       thus ensuring we can transition between points
-
 
   //       ex: let's say we wanted to transition from a menu to a high score screen with an effect
   //       we could use a context component to save our framebuffer somewhere accessible
