@@ -17,15 +17,6 @@ namespace monkeysworld {
 namespace shader {
 namespace materials {
 
-/* TODO: IF NEEDED, SWAP TO A GENERALIZED "CONTEXT" OBJECT.
-         Currently the only shared behavior we need is file loading,
-         but as the engine grows we'll need to account for other behavior
-         which should be dictated across all components.
-
-         I'm fine just passing in a FileLoader but anything else and I'd
-         much rather make a context object to keep it in check.
-*/
-
 class MatteMaterial : ::monkeysworld::shader::Material {
  public:
   /**
