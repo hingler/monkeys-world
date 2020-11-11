@@ -1,8 +1,9 @@
-#ifndef OBJECT_H_
-#define OBJECT_H_
+#ifndef GAME_OBJECT_H_
+#define GAME_OBJECT_H_
 
 #include <glm/glm.hpp>
 
+#include <atomic>
 #include <cinttypes>
 #include <memory>
 #include <unordered_set>
@@ -44,19 +45,31 @@ class GameObject {
   GameObject* GetParent();
 
   /**
+   *  Returns the transformation matrix associated with this object.
+   */ 
+  const glm::mat4& GetTransformationMatrix();
+
+  /**
    *  Get the ID currently associated with an object
    * 
    *  @returns ID, if not valid. 0 is reserved for an invalid ID.
    */ 
   uint64_t GetId();
 
-  // go with this for now!
-  // later: we'll probably have some methods which simplify transformations
-  // there should be a private method which actually compiles the transformation
-  // from these fields
-  glm::vec3 position;
-  glm::vec3 rotation;
-  glm::vec3 scale;
+  /**
+   *  Sets XYZ position.
+   */ 
+  void SetPosition(const glm::vec3& new_pos);
+
+  /**
+   *  Sets XYZ rotation.
+   */ 
+  void SetRotation(const glm::vec3& new_rot);
+
+  /**
+   *  Sets XYZ scale.
+   */ 
+  void SetScale(const glm::vec3& new_scale);
 
  protected:
   /**
@@ -65,16 +78,32 @@ class GameObject {
   void RemoveChild(uint64_t id);
 
  private:
+  glm::vec3 position;
+  glm::vec3 rotation;
+  glm::vec3 scale;
+
   GameObject* parent_;
   // These fields could become contentious if we're going multi-thread.
   // if that ends up being the case: lock it here!
   // alt: probably only one thread at a time will attempt to alter these fields.
   // don't worry about it :)
+
+  // set of all children associated with this object
   std::unordered_set<std::shared_ptr<GameObject>> children_;
-  // static ID generator, probably, since these need to be unique
+
+  // ID associated with this object.
+  uint64_t id_;
+
+  // cached transformation matrix
+  glm::mat4 tf_matrix_cache_;
+
+  // whether or not the transformation matrix on store is safe.
+  std::atomic_bool dirty_;
+
+  // TODO: is a lock on transformation calls necessary, or will access be limited to a single thread?
 };
 
 } // namespace critter
 } // namespace monkeysworld
 
-#endif  // OBJECT_H_
+#endif  // GAME_OBJECT_H_
