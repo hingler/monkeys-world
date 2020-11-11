@@ -26,6 +26,7 @@ TEST(CacheTests, ReadExistingCache) {
     loader.LoadFile("resources/test/dummy-shader.vert");
   }
 
+  std::cout << "Re-reading cache..." << std::endl;
   CachedFileLoader loader("existingcache");
 }
 

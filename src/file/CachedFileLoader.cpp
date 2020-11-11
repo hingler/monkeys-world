@@ -72,8 +72,10 @@ CachedFileLoader::~CachedFileLoader() {
   load_thread_.join();
 
   if (dirty_) {
+    BOOST_LOG_TRIVIAL(debug) << "Updating cache...";
     cache_file_output_.seekp(12);
     for (auto cache_itr = cache_.begin(); cache_itr != cache_.end(); cache_itr++) {
+      BOOST_LOG_TRIVIAL(trace) << "Removing " << cache_itr->first.data();
       uint16_t path_size = static_cast<uint16_t>(cache_itr->first.size());
       WriteAsBytes(cache_file_output_, path_size);
       cache_file_output_.write(cache_itr->first.data(), cache_itr->first.size());
@@ -84,6 +86,7 @@ CachedFileLoader::~CachedFileLoader() {
     uint32_t cache_crc = utils::fileutils::CalculateCRCHash(cache_file_output_, CACHE_DATA_START);
     cache_file_output_.seekp(CACHE_DATA_START - 8);
     // overwrite the old crc with the new one
+    
     WriteAsBytes(cache_file_output_, cache_crc);
     WriteAsBytes(cache_file_output_, static_cast<uint32_t>(cache_.size()));
   }
