@@ -20,7 +20,9 @@ add_library(monkeys-world-components ${SRC_DIR}/storage/VertexPacketTypes.cpp
                                                   ${SRC_DIR}/file/CacheStreambuf.cpp
                                                   ${SRC_DIR}/file/CachedFileLoader.cpp
                                                   ${SRC_DIR}/utils/FileUtils.cpp
-                                                  ${SRC_DIR}/critter/Context.cpp)
+                                                  ${SRC_DIR}/critter/Context.cpp
+                                                  ${SRC_DIR}/critter/GameObject.cpp
+                                                  ${SRC_DIR}/utils/IDGenerator.cpp)
 
 set_property(TARGET monkeys-world-components PROPERTY CXX_STANDARD 14)
 
@@ -90,6 +92,12 @@ add_executable(loader-test test/CacheFileLoaderTest.cpp)
 target_include_directories(loader-test PRIVATE ${INC_DIR})
 target_link_libraries(loader-test GTest::gtest_main monkeys-world-components)
 add_test(NAME loader-test COMMAND loader-test
+            WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
+
+add_executable(object-test test/GameObjectTest.cpp)
+target_include_directories(object-test PRIVATE ${INC_DIR})
+target_link_libraries(object-test GTest::gtest_main monkeys-world-components)
+add_test(NAME object-test COMMAND object-test
             WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
