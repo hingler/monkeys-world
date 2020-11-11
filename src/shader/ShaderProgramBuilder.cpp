@@ -35,6 +35,22 @@ ShaderProgramBuilder::ShaderProgramBuilder(std::shared_ptr<FileLoader> loader) {
   loader_ = loader;
 }
 
+ShaderProgramBuilder::ShaderProgramBuilder(ShaderProgramBuilder&& other) {
+  shaders_ = std::move(other.shaders_);
+  memset(&other.shaders_, 0, sizeof(ShaderPacket));
+  prog_ = other.prog_;
+  other.prog_ = 0;
+  loader_ = other.loader_;
+}
+
+ShaderProgramBuilder& ShaderProgramBuilder::operator=(ShaderProgramBuilder&& other) {
+  shaders_ = std::move(other.shaders_);
+  memset(&other.shaders_, 0, sizeof(ShaderPacket));
+  prog_ = other.prog_;
+  other.prog_ = 0;
+  loader_ = other.loader_;
+}
+
 ShaderProgramBuilder& ShaderProgramBuilder::WithVertexShader(const std::string& vertex_path) {
   shaders_.vertex_shader = CreateShaderFromFile(vertex_path, GL_VERTEX_SHADER);
   return *this;
