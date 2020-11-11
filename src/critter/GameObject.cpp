@@ -1,16 +1,19 @@
 #include <critter/GameObject.hpp>
-
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/euler_angles.hpp>
 #include <memory>
 
 namespace monkeysworld {
 namespace critter {
 
 void GameObject::AddChild(std::shared_ptr<GameObject> child) {
-  // invalid -- we get stuck in a looping dependency
+  // if the child is a parent (direct or indirect) this will faial.
   if (child->GetChild(this->GetId()) != NULL) {
     return;
   }
 
+  // if the child is already a child (direct or indirect) it will be removed.
   child->parent_->RemoveChild(child->GetId());
   child->parent_ = this;
   // child is moved here -- don't want it in multiple locations
@@ -29,16 +32,51 @@ GameObject* GameObject::GetChild(uint64_t id) {
   GameObject* result;
   for (auto child : children_) {
     result = child->GetChild(id);
-    if (result != NULL) {
+    if (result != nullptr) {
       return result;
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 GameObject* GameObject::GetParent() {
   return parent_;
+}
+
+uint64_t GameObject::GetId() {
+  return id_;
+}
+
+void GameObject::SetPosition(const glm::vec3& new_pos) {
+  dirty_.store(true, std::memory_order_release);
+  position = new_pos;
+}
+
+void GameObject::SetRotation(const glm::vec3& new_rot) {
+  dirty_.store(true, std::memory_order_release);
+  rotation = new_rot;
+}
+
+void GameObject::SetScale(const glm::vec3& new_scale) {
+  dirty_.store(true, std::memory_order_release);
+  scale = new_scale;
+}
+
+const glm::mat4& GameObject::GetTransformationMatrix() {
+  if (dirty_) {
+    tf_matrix_cache_ = glm::mat4();
+    // scales, then rotates, then translates
+    glm::translate(tf_matrix_cache_, position);
+    tf_matrix_cache_ *= glm::eulerAngleXYZ(rotation.x, rotation.y, rotation.z);
+    glm::scale(tf_matrix_cache_, scale);
+  }
+
+  if (parent_ != nullptr) {
+    return parent_->GetTransformationMatrix() * tf_matrix_cache_;
+  }
+
+  return tf_matrix_cache_;
 }
 
 } // namespace critter
