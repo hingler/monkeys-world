@@ -7,6 +7,18 @@
 namespace monkeysworld {
 namespace critter {
 
+using utils::IDGenerator;
+IDGenerator GameObject::id_generator_;
+
+GameObject::GameObject() {
+  this->parent_ = nullptr;
+  this->dirty_ = true;
+  this->position = glm::vec3(0);
+  this->rotation = glm::vec3(0);
+  this->scale = glm::vec3(1);
+  this->id_ = id_generator_.GetUniqueId();
+}
+
 void GameObject::AddChild(std::shared_ptr<GameObject> child) {
   // if the child is a parent (direct or indirect) this will faial.
   if (child->GetChild(this->GetId()) != NULL) {
@@ -63,7 +75,7 @@ void GameObject::SetScale(const glm::vec3& new_scale) {
   scale = new_scale;
 }
 
-const glm::mat4& GameObject::GetTransformationMatrix() {
+glm::mat4 GameObject::GetTransformationMatrix() {
   if (dirty_) {
     tf_matrix_cache_ = glm::mat4();
     // scales, then rotates, then translates
@@ -77,6 +89,20 @@ const glm::mat4& GameObject::GetTransformationMatrix() {
   }
 
   return tf_matrix_cache_;
+}
+
+void GameObject::RemoveChild(uint64_t id) {
+  for (auto child : children_) {
+    if (child->GetId() == id) {
+      children_.erase(child);
+      return;
+    }
+  }
+
+  // check descendants
+  for (auto child : children_) {
+    child->RemoveChild(id);
+  }
 }
 
 } // namespace critter

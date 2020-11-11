@@ -1,6 +1,9 @@
 #ifndef GAME_OBJECT_H_
 #define GAME_OBJECT_H_
 
+#include <utils/IDGenerator.hpp>
+
+
 #include <glm/glm.hpp>
 
 #include <atomic>
@@ -21,6 +24,9 @@ namespace critter {
  */ 
 class GameObject {
  public:
+
+  GameObject();
+
   /**
    *  Makes all GL calls necessary to draw the game object on screen.
    */ 
@@ -47,7 +53,7 @@ class GameObject {
   /**
    *  Returns the transformation matrix associated with this object.
    */ 
-  const glm::mat4& GetTransformationMatrix();
+  glm::mat4 GetTransformationMatrix();
 
   /**
    *  Get the ID currently associated with an object
@@ -99,6 +105,9 @@ class GameObject {
 
   // whether or not the transformation matrix on store is safe.
   std::atomic_bool dirty_;
+
+  // id generator for new game objects
+  static utils::IDGenerator id_generator_;
 
   // TODO: is a lock on transformation calls necessary, or will access be limited to a single thread?
 };
