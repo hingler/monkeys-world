@@ -40,7 +40,7 @@ ShaderProgramBuilder::ShaderProgramBuilder(ShaderProgramBuilder&& other) {
   memset(&other.shaders_, 0, sizeof(ShaderPacket));
   prog_ = other.prog_;
   other.prog_ = 0;
-  loader_ = other.loader_;
+  loader_ = std::move(other.loader_);
 }
 
 ShaderProgramBuilder& ShaderProgramBuilder::operator=(ShaderProgramBuilder&& other) {
@@ -49,6 +49,7 @@ ShaderProgramBuilder& ShaderProgramBuilder::operator=(ShaderProgramBuilder&& oth
   prog_ = other.prog_;
   other.prog_ = 0;
   loader_ = other.loader_;
+  return *this;
 }
 
 ShaderProgramBuilder& ShaderProgramBuilder::WithVertexShader(const std::string& vertex_path) {
