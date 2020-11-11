@@ -1,47 +1,42 @@
 #include <utils/FileUtils.hpp>
 
+#include <atomic>
 #include <cinttypes>
+#include <mutex>
+
+#include <boost/log/trivial.hpp>
 
 namespace monkeysworld {
 namespace utils {
 namespace fileutils {
 
-// stores a record of CRC hashes.
-// a lock on writing this static data should be unnecessary
-// but we can deal with it later :)
-static uint32_t CRC_HASH[256];
-
-static bool CRC_HASH_CACHED = false;
-
 static const uint32_t CRC_MAGIC = 0x04C11DB7;
 
 uint32_t CalculateCRCHash(std::istream& input, std::streamoff offset) {
-  if (!CRC_HASH_CACHED) {
-    // generate the hash table
+  // todo: get this to store, lock/unlock properly
+  uint32_t crc_table[256];
+  uint32_t crc;
 
-    uint32_t crc;
-
-    for (int i = 0; i < 256; i++) {
-      crc = i;
-      for (int j = 0; j < 8; j++) {
+  for (int i = 0; i < 256; i++) {
+    crc = i;
+    for (int j = 0; j < 8; j++) {
+      if (crc & 1) {
         crc >>= 1;
-        if (crc & 1) {
-          crc ^= CRC_MAGIC;
-        }
+        crc ^= CRC_MAGIC;
+      } else {
+        crc >>= 1;
       }
-      CRC_HASH[i] = crc;
     }
-
-    CRC_HASH_CACHED = true;
+    crc_table[i] = crc;
   }
 
-  uint32_t crc = 0xFFFFFFFF;
+  crc = 0xFFFFFFFF;
   char c;
   std::streampos pos_initial = input.tellg();
   input.seekg(offset);
 
   while ((c = input.get()) != EOF) {
-    crc = (crc >> 8) ^ CRC_HASH[(c ^ crc) & 0xFF];
+    crc = (crc >> 8) ^ crc_table[(c ^ crc) & 0xFF];
   }
 
   input.clear();
