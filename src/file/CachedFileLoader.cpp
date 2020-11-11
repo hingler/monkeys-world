@@ -31,7 +31,10 @@ void CachedFileLoader::SpinUntilCached() {
 
 std::unique_ptr<std::streambuf> CachedFileLoader::LoadFile(const std::string& path) {
   std::shared_lock<std::shared_timed_mutex> cache_r(cache_mutex_);
-  cached_cv_.wait(cache_r, [&]() -> bool{return cached_;});
+  while (!cached_) {
+    cached_cv_.wait(cache_r, [&]() -> bool{return cached_;});
+  }
+
   std::unordered_map<std::string, loader_record>::const_iterator res_itr = cache_.find(path);
 
   if (res_itr == cache_.cend()) {
@@ -91,7 +94,9 @@ CachedFileLoader::~CachedFileLoader() {
 
 CachedFileLoader::CachedFileLoader(CachedFileLoader&& other) {
   std::shared_lock<std::shared_timed_mutex> other_cache_r(other.cache_mutex_);
-  other.cached_cv_.wait(other_cache_r, [&]() -> bool{ return other.cached_;});
+  while (!other.cached_) {
+    other.cached_cv_.wait(other_cache_r, [&]() -> bool{ return other.cached_;});
+  }
 
   cache_ = std::move(other.cache_);
   cache_file_output_ = std::move(other.cache_file_output_);
@@ -212,7 +217,10 @@ void CachedFileLoader::setup_ostream_(const std::string& cache_path) {
   cache_file_output_.open(cache_path, std::fstream::in |
                                       std::fstream::out |
                                       std::fstream::binary);
-  cached_.store(true, std::memory_order_release);
+  cached_.store(true, std::memory_order_seq_cst);
+  // reordered calls could leave a thread waiting forever
+  // the bool store should prevent that but whatever lol better safe than not
+  std::unique_lock<std::shared_timed_mutex> cache_notify(cache_mutex_);
   cached_cv_.notify_all();
 }
 
