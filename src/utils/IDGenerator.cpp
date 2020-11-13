@@ -11,11 +11,11 @@ uint64_t IDGenerator::GetUniqueId() {
   std::lock_guard<std::mutex> lock(id_generation_lock_);
   while (used_ids_.find(++id_min_) != used_ids_.end());
 
-  for (auto id : used_ids_) {
-    if (id < id_min_) {
-      used_ids_.erase(id);
-    }
+  auto itr = used_ids_.begin();
+  while (itr != used_ids_.end() && *itr < id_min_) {
+    itr++;
   }
+  used_ids_.erase(used_ids_.begin(), itr);
 
   return id_min_.load(std::memory_order_acquire);
 }
