@@ -4,6 +4,8 @@
 #include <glm/gtx/euler_angles.hpp>
 #include <memory>
 
+#include <boost/log/trivial.hpp>
+
 namespace monkeysworld {
 namespace critter {
 
@@ -20,13 +22,17 @@ GameObject::GameObject() {
 }
 
 void GameObject::AddChild(std::shared_ptr<GameObject> child) {
-  // if the child is a parent (direct or indirect) this will faial.
+  // if the child is a parent (direct or indirect) this will fail.
   if (child->GetChild(this->GetId()) != NULL) {
     return;
   }
 
+  BOOST_LOG_TRIVIAL(trace) << "Adding child with ID " << child->GetId();
+
   // if the child is already a child (direct or indirect) it will be removed.
-  child->parent_->RemoveChild(child->GetId());
+  if (child->parent_ != nullptr) {
+    child->parent_->RemoveChild(child->GetId());
+  }
   child->parent_ = this;
   // child is moved here -- don't want it in multiple locations
   children_.insert(child);
@@ -77,11 +83,11 @@ void GameObject::SetScale(const glm::vec3& new_scale) {
 
 glm::mat4 GameObject::GetTransformationMatrix() {
   if (dirty_) {
-    tf_matrix_cache_ = glm::mat4();
+    tf_matrix_cache_ = glm::mat4(1.0);
     // scales, then rotates, then translates
-    glm::translate(tf_matrix_cache_, position);
+    tf_matrix_cache_ = glm::translate(tf_matrix_cache_, position);
     tf_matrix_cache_ *= glm::eulerAngleXYZ(rotation.x, rotation.y, rotation.z);
-    glm::scale(tf_matrix_cache_, scale);
+    tf_matrix_cache_ = glm::scale(tf_matrix_cache_, scale);
   }
 
   if (parent_ != nullptr) {
