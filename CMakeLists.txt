@@ -94,6 +94,12 @@ target_link_libraries(loader-test GTest::gtest_main monkeys-world-components)
 add_test(NAME loader-test COMMAND loader-test
             WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
 
+add_executable(generator-test test/IDGeneratorTest.cpp)
+target_include_directories(generator-test PRIVATE ${INC_DIR})
+target_link_libraries(generator-test GTest::gtest_main monkeys-world-components)
+add_test(NAME generator-test COMMAND generator-test
+            WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
+
 add_executable(object-test test/GameObjectTest.cpp)
 target_include_directories(object-test PRIVATE ${INC_DIR})
 target_link_libraries(object-test GTest::gtest_main monkeys-world-components)
