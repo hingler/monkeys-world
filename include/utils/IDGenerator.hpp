@@ -4,7 +4,7 @@
 #include <atomic>
 #include <cinttypes>
 #include <mutex>
-#include <unordered_set>
+#include <set>
 
 namespace monkeysworld {
 namespace utils {
@@ -37,7 +37,7 @@ class IDGenerator {
   std::atomic<uint64_t> id_min_;
 
   // set of all IDs currently in use within this generator's scope
-  std::unordered_set<uint64_t> used_ids_;
+  std::set<uint64_t> used_ids_;
 };
 
 } // namespace utils
