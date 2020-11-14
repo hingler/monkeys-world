@@ -21,6 +21,7 @@ namespace critter {
  *  Along with the instructions necessary to draw itself, this object also interfaces with
  *  other objects, providing resources for detecting collisions*, local 3D transformations*,
  *  and more*
+ * 
  */ 
 class GameObject {
  public:
@@ -28,9 +29,15 @@ class GameObject {
   GameObject();
 
   /**
-   *  Makes all GL calls necessary to draw the game object on screen.
+   *  Sets up all attributes required to draw this object.
    */ 
-  virtual void Draw() = 0;
+  virtual void PrepareAttributes() = 0;
+
+  /**
+   *  Renders the desired material onto the scene. Assumes that attributes
+   *  have already been set up.
+   */ 
+  virtual void RenderMaterial() = 0;
 
   /**
    *  Adds a child to this GameObject.

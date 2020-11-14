@@ -12,8 +12,12 @@ using ::monkeysworld::critter::GameObject;
 
 class DummyGameObject : public GameObject {
   public:
-    void Draw() override {
+    void PrepareAttributes() override {
       // do nothing
+    }
+
+    void RenderMaterial() override {
+      // also do nothing
     }
 };
 
