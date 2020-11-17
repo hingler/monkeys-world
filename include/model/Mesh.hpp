@@ -11,6 +11,7 @@
 #include <boost/log/trivial.hpp>
 
 #include <model/VertexDataContext.hpp>
+#include <storage/VertexPacketTypes.hpp>
 
 // from https://stackoverflow.com/questions/87372/check-if-a-class-has-a-member-function-of-a-given-signature/10707822#10707822
 // todo: enable some R/W on attributes (not sure how yet lol)
@@ -23,7 +24,7 @@ namespace model {
  *  @tparam Packet - the specification for the vertex data which will be passed in.
  *                   this encompasses data types, and locations.
  */ 
-template <typename Packet>
+template <typename Packet = storage::VertexPacket3D>
 class Mesh {
  private:
 
