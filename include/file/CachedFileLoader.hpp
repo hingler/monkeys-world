@@ -43,6 +43,9 @@ struct loader_record {
  *  Cache state may be changed. The cache will always grow but never shrink, just in case.
  * 
  *  To clear the cache: just delete the respective cache file.
+ * 
+ *  TODO: It looks like there's actually some gains to be made thru multithreading.
+ *        It's not a big deal at all but if it comes down to it it might be beneficial lol.
  */ 
 class CachedFileLoader : public FileLoader {
  public:

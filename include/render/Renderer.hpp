@@ -10,5 +10,7 @@ class Renderer {
 
 };
 
-}  
-}
+} // namespace render
+} // namespace monkeysworld
+
+#endif  // RENDERER_H_
