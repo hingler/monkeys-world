@@ -3,6 +3,8 @@
 
 #include <utils/IDGenerator.hpp>
 
+#include <critter/Context.hpp>
+
 
 #include <glm/glm.hpp>
 
@@ -26,7 +28,7 @@ namespace critter {
 class GameObject {
  public:
 
-  GameObject();
+  GameObject(Context* ctx);
 
   /**
    *  Sets up all attributes required to draw this object.
@@ -90,6 +92,16 @@ class GameObject {
    */ 
   void RemoveChild(uint64_t id);
 
+  /**
+   *  Returns ptr to context.
+   */ 
+  Context* GetContext();
+
+  /**
+   *  0-arg ctor for tests only.
+   */ 
+  GameObject();
+
  private:
   glm::vec3 position;
   glm::vec3 rotation;
@@ -112,6 +124,9 @@ class GameObject {
 
   // whether or not the transformation matrix on store is safe.
   std::atomic_bool dirty_;
+
+  // context associated with this "scene"
+  Context* ctx_;
 
   // id generator for new game objects
   static utils::IDGenerator id_generator_;

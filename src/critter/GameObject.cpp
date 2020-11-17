@@ -12,8 +12,11 @@ namespace critter {
 using utils::IDGenerator;
 IDGenerator GameObject::id_generator_;
 
-GameObject::GameObject() {
+GameObject::GameObject() : GameObject(nullptr) { }
+
+GameObject::GameObject(Context* ctx) {
   this->parent_ = nullptr;
+  this->ctx_ = ctx;
   this->dirty_ = true;
   this->position = glm::vec3(0);
   this->rotation = glm::vec3(0);
