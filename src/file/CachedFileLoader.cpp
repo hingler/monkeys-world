@@ -46,8 +46,14 @@ std::unique_ptr<std::streambuf> CachedFileLoader::LoadFile(const std::string& pa
     res_itr = cache_.find(path);
 
     if (res_itr == cache_.cend()) {
-      dirty_ = true;
       std::ifstream new_cached_file(path, std::ios_base::ate | std::ios_base::binary);
+      // no handle for invalid file
+      if (new_cached_file.bad()) {
+        // file does not exist!
+        BOOST_LOG_TRIVIAL(error) << "Encountered invalid file " << path;
+        return std::unique_ptr<std::streambuf>(nullptr);
+      }
+      dirty_ = true;
       new_cached_file.seekg(0, new_cached_file.end);
       
       loader_record record;
