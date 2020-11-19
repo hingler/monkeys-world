@@ -19,6 +19,7 @@
 namespace monkeysworldtest {
 using ::monkeysworld::model::Mesh;
 using ::monkeysworld::model::VertexDataContext;
+using ::monkeysworld::model::VertexDataContextType;
 
 struct DummyPacket {
   int data;
@@ -43,6 +44,7 @@ class MockVertexContext : public VertexDataContext<Packet> {
  public:
   MOCK_METHOD(void, UpdateBuffersAndPoint, (const std::vector<Packet>& data, const std::vector<unsigned int>& indices), (override));
   MOCK_METHOD(void, Point, (), (override));
+  MOCK_METHOD(VertexDataContextType, GetType, (), (override));
 };
 
 
