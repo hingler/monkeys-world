@@ -65,6 +65,10 @@ class VertexDataContextGL : public VertexDataContext<Packet> {
     // buffers are bound, data has not changed
   }
 
+  VertexDataContextType GetType() override {
+    return VertexDataContextType::gl;
+  }
+
  private:
   GLuint array_buffer_;
   GLuint element_buffer_;

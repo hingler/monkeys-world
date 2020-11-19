@@ -4,6 +4,11 @@
 namespace monkeysworld {
 namespace model {
 
+enum VertexDataContextType {
+  gl,
+  debug
+};
+
 /**
  *  Interface used for the VertexDataContext.
  */ 
@@ -22,9 +27,14 @@ class VertexDataContext {
    *  If no attributes have been modified, then we can simply bind the VAO.
    */ 
   virtual void Point() = 0;
+
+  /**
+   *  Returns an enum representing the type of this context.
+   */ 
+  virtual VertexDataContextType GetType() = 0;
 };
 
-};  // namespace opengl
-};  // namespace monkeysworld
+}  // namespace opengl
+}  // namespace monkeysworld
 
 #endif
