@@ -11,6 +11,7 @@
 #include <boost/log/trivial.hpp>
 
 #include <model/VertexDataContext.hpp>
+#include <model/VertexDataContextGL.hpp>
 #include <storage/VertexPacketTypes.hpp>
 
 // from https://stackoverflow.com/questions/87372/check-if-a-class-has-a-member-function-of-a-given-signature/10707822#10707822
@@ -46,14 +47,14 @@ class Mesh {
    *  Constructs a new VertexData object.
    */ 
   Mesh() : dirty_(true) {
-    context_ = std::make_unique<::monkeysworld::model::VertexDataContextGL<Packet>>();
+    context_ = std::make_unique<VertexDataContextGL<Packet>>();
    }
 
   /**
    *  Constructs a new VertexData object from a preallocated context object.
    *  The new object assumes ownership of the passed-in context.
    */ 
-  Mesh(std::unique_ptr<::monkeysworld::model::VertexDataContext<Packet>> context) :
+  Mesh(std::unique_ptr<VertexDataContext<Packet>> context) :
     dirty_(true),
     context_(std::move(context)) { }
 
@@ -154,6 +155,40 @@ class Mesh {
     dirty_ = true;
   }
 
+  Mesh(const Mesh& other) {
+    data_ = other.data_;
+    indices_ = other.indices_;
+    switch (context_->GetType()) {
+      case GL:
+        context_ = std::make_unique<VertexDataContextGL<Packet>>();
+      default:
+        context_ = std::unique_ptr<VertexDataContext<Packet>>(nullptr);
+    }
+  }
+
+  Mesh& operator=(const Mesh& other) {
+    data_ = other.data_;
+    indices_ = other.indices_;
+    switch (context_->GetType()) {
+      case GL:
+        context_ = std::make_unique<VertexDataContextGL<Packet>>();
+      default:
+        context_ = std::unique_ptr<VertexDataContext<Packet>>(nullptr);
+    }
+  }
+
+  Mesh(Mesh&& other) {
+    data_ = std::move(other.data_);
+    indices_ = std::move(other.indices_);
+    context_ = std::move(other.context_);
+  }
+
+  Mesh& operator=(Mesh&& other) {
+    data_ = std::move(other.data_);
+    indices_ = std::move(other.indices_);
+    context_ = std::move(other.context_);
+  }
+
  private:
   // the underlying data stored.
   std::vector<Packet> data_;
@@ -162,7 +197,7 @@ class Mesh {
   std::vector<unsigned int> indices_;
 
   // context used to make opengl calls
-  std::unique_ptr<::monkeysworld::model::VertexDataContext<Packet>> context_;
+  std::unique_ptr<VertexDataContext<Packet>> context_;
 
   // tracks whether we need to update our buffers.
   bool dirty_;
