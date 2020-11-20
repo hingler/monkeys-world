@@ -114,5 +114,72 @@ void GameObject::RemoveChild(uint64_t id) {
   }
 }
 
+GameObject::GameObject(const GameObject& other) {
+  position = other.position;
+  rotation = other.rotation;
+  scale = other.scale;
+
+  parent_ = nullptr;
+  dirty_ = true;
+  ctx_ = other.ctx_;
+  id_ = id_generator_.GetUniqueId();
+
+  // deep copy the children
+  for (auto child : other.children_) {
+    // this is ok
+    AddChild(child);
+  }
+}
+
+GameObject::GameObject(GameObject&& other) {
+  position = std::move(other.position);
+  rotation = std::move(other.rotation);
+  scale = std::move(other.scale);
+
+  parent_ = nullptr;
+  ctx_ = other.ctx_;
+  id_ = other.id_;
+  dirty_ = true;
+
+  // cannot copy over parent/child relationship
+  // if for some reason this occurs: must rebind the parent
+
+  children_ = std::move(other.children_);
+}
+
+GameObject& GameObject::operator=(const GameObject& other) {
+  position = other.position;
+  rotation = other.rotation;
+  scale = other.scale;
+
+  parent_ = nullptr;
+  id_ = other.id_;
+  dirty_ = true;
+
+  for (auto child : other.children_) {
+    AddChild(child);
+  }
+
+  return *this;
+}
+
+GameObject& GameObject::operator=(GameObject&& other) {
+  position = std::move(other.position);
+  rotation = std::move(other.rotation);
+  scale = std::move(other.scale);
+
+  parent_ = nullptr;
+  ctx_ = other.ctx_;
+  id_ = other.id_;
+  dirty_ = true;
+
+  // cannot copy over parent/child relationship
+  // if for some reason this occurs: must rebind the parent
+
+  children_ = std::move(other.children_);
+
+  return *this;
+}
+
 } // namespace critter
 } // namespace monkeysworld

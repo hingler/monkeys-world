@@ -86,6 +86,14 @@ class GameObject {
    */ 
   void SetScale(const glm::vec3& new_scale);
 
+  // note: moves DO NOT preserve parent child relationship! this must be restored.
+  GameObject(const GameObject& other);
+  GameObject(GameObject&& other);
+  GameObject& operator=(const GameObject& other);
+  GameObject& operator=(GameObject&& other);
+
+  // copy + move ctors are necessary lol
+
  protected:
   /**
    *  Remove a directly nested child
