@@ -15,7 +15,7 @@ IDGenerator GameObject::id_generator_;
 GameObject::GameObject() : GameObject(nullptr) { }
 
 GameObject::GameObject(Context* ctx) {
-  this->parent_ = nullptr;
+  this->parent_ = std::weak_ptr<GameObject>();
   this->ctx_ = ctx;
   this->dirty_ = true;
   this->position = glm::vec3(0);
@@ -30,13 +30,16 @@ void GameObject::AddChild(std::shared_ptr<GameObject> child) {
     return;
   }
 
+  BOOST_LOG_TRIVIAL(trace) << child->parent_.expired();
+  auto test = child->parent_.lock();
   BOOST_LOG_TRIVIAL(trace) << "Adding child with ID " << child->GetId();
 
-  // if the child is already a child (direct or indirect) it will be removed.
-  if (child->parent_ != nullptr) {
-    child->parent_->RemoveChild(child->GetId());
+  if (auto parent = child->parent_.lock()) {
+    parent->RemoveChild(child->GetId());
+    BOOST_LOG_TRIVIAL(trace) << "Removed old parent";
   }
-  child->parent_ = this;
+
+  child->parent_ = std::weak_ptr<GameObject>(this->shared_from_this());
   // child is moved here -- don't want it in multiple locations
   children_.insert(child);
 }
@@ -62,7 +65,7 @@ GameObject* GameObject::GetChild(uint64_t id) {
 }
 
 GameObject* GameObject::GetParent() {
-  return parent_;
+  return parent_.lock().get();
 }
 
 uint64_t GameObject::GetId() {
@@ -93,8 +96,8 @@ glm::mat4 GameObject::GetTransformationMatrix() {
     tf_matrix_cache_ = glm::scale(tf_matrix_cache_, scale);
   }
 
-  if (parent_ != nullptr) {
-    return parent_->GetTransformationMatrix() * tf_matrix_cache_;
+  if (auto parent = parent_.lock()) {
+    return parent->GetTransformationMatrix() * tf_matrix_cache_;
   }
 
   return tf_matrix_cache_;
@@ -119,7 +122,7 @@ GameObject::GameObject(const GameObject& other) {
   rotation = other.rotation;
   scale = other.scale;
 
-  parent_ = nullptr;
+  parent_ = std::weak_ptr<GameObject>();
   dirty_ = true;
   ctx_ = other.ctx_;
   id_ = id_generator_.GetUniqueId();
@@ -136,7 +139,11 @@ GameObject::GameObject(GameObject&& other) {
   rotation = std::move(other.rotation);
   scale = std::move(other.scale);
 
-  parent_ = nullptr;
+  if (auto other_parent = other.parent_.lock()) {
+    other_parent->RemoveChild(other.GetId());
+    other_parent->AddChild(shared_from_this());
+  }
+
   ctx_ = other.ctx_;
   id_ = other.id_;
   dirty_ = true;
@@ -152,7 +159,7 @@ GameObject& GameObject::operator=(const GameObject& other) {
   rotation = other.rotation;
   scale = other.scale;
 
-  parent_ = nullptr;
+  parent_ = std::weak_ptr<GameObject>();
   id_ = other.id_;
   dirty_ = true;
 
@@ -168,13 +175,14 @@ GameObject& GameObject::operator=(GameObject&& other) {
   rotation = std::move(other.rotation);
   scale = std::move(other.scale);
 
-  parent_ = nullptr;
+  if (auto other_parent = other.parent_.lock()) {
+    other_parent->RemoveChild(other.GetId());
+    other_parent->AddChild(shared_from_this());
+  }
+
   ctx_ = other.ctx_;
   id_ = other.id_;
   dirty_ = true;
-
-  // cannot copy over parent/child relationship
-  // if for some reason this occurs: must rebind the parent
 
   children_ = std::move(other.children_);
 

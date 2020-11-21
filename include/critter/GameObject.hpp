@@ -25,7 +25,7 @@ namespace critter {
  *  and more*
  * 
  */ 
-class GameObject {
+class GameObject : public std::enable_shared_from_this<GameObject> {
  public:
 
   GameObject(Context* ctx);
@@ -115,7 +115,7 @@ class GameObject {
   glm::vec3 rotation;
   glm::vec3 scale;
 
-  GameObject* parent_;
+  std::weak_ptr<GameObject> parent_;
   // These fields could become contentious if we're going multi-thread.
   // if that ends up being the case: lock it here!
   // alt: probably only one thread at a time will attempt to alter these fields.
