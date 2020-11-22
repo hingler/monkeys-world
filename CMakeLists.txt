@@ -14,16 +14,17 @@ add_executable(monkeys-world main.cpp)
 
 # separate out a bit better for testing
 add_library(monkeys-world-components ${SRC_DIR}/storage/VertexPacketTypes.cpp
-                                                  ${SRC_DIR}/shader/ShaderProgramBuilder.cpp
-                                                  ${SRC_DIR}/shader/ShaderProgram.cpp
-                                                  ${SRC_DIR}/shader/materials/MatteMaterial.cpp
-                                                  ${SRC_DIR}/file/CacheStreambuf.cpp
-                                                  ${SRC_DIR}/file/CachedFileLoader.cpp
-                                                  ${SRC_DIR}/utils/FileUtils.cpp
-                                                  ${SRC_DIR}/critter/Context.cpp
-                                                  ${SRC_DIR}/critter/GameObject.cpp
-                                                  ${SRC_DIR}/utils/IDGenerator.cpp
-                                                  ${SRC_DIR}/critter/Model.cpp)
+                                    ${SRC_DIR}/shader/ShaderProgramBuilder.cpp
+                                    ${SRC_DIR}/shader/ShaderProgram.cpp
+                                    ${SRC_DIR}/shader/materials/MatteMaterial.cpp
+                                    ${SRC_DIR}/file/CacheStreambuf.cpp
+                                    ${SRC_DIR}/file/CachedFileLoader.cpp
+                                    ${SRC_DIR}/utils/FileUtils.cpp
+                                    ${SRC_DIR}/critter/Context.cpp
+                                    ${SRC_DIR}/critter/GameObject.cpp
+                                    ${SRC_DIR}/utils/IDGenerator.cpp
+                                    ${SRC_DIR}/critter/Model.cpp
+                                    ${SRC_DIR}/model/Mesh.cpp)
 
 set_property(TARGET monkeys-world-components PROPERTY CXX_STANDARD 14)
 
@@ -53,7 +54,7 @@ find_package(glm CONFIG REQUIRED)
 set(BOOST_USE_MULTITHREADED ON)
 set(BOOST_USE_STATIC_LIBS ON)
 set(Boost_DEBUG 1)
-find_package(Boost 1.72.0 COMPONENTS log REQUIRED)
+find_package(Boost 1.72.0 COMPONENTS log regex REQUIRED)
 
 # this should be all i need for now
 set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG ${CMAKE_CXX_FLAGS_DEBUG}")
