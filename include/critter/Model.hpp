@@ -6,7 +6,7 @@
 #include <model/Mesh.hpp>
 #include <storage/VertexPacketTypes.hpp>
 
-
+#include <memory>
 
 namespace monkeysworld {
 namespace critter {
@@ -42,13 +42,18 @@ class Model : public GameObject {
    */ 
   void SetMesh(const std::shared_ptr<model::Mesh<>>& mesh);
 
+  Model(const Model& other);
+  Model(Model&& other);
+  Model& operator=(const Model& other);
+  Model& operator=(Model&& other);
+
   /**
    *  Loads vertex data from a .OBJ file and adds it to shader.
    * 
    *  @param ctx - pointer to the relevant context.
    *  @param path - path to the desired OBJ file.
    */ 
-  static Model FromObjFile(Context* ctx, const std::string& path);
+  static std::shared_ptr<Model> FromObjFile(Context* ctx, const std::string& path);
 
  private:
   // TODO: need to handle textures as well!
