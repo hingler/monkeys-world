@@ -76,7 +76,6 @@ class Mesh {
    *  @return true if the vertices are in-bounds, and false otherwise.
    */ 
   bool AddPolygon(unsigned int vertA, unsigned int vertB, unsigned int vertC) {
-    std::initializer_list<unsigned int> vert_list({vertA, vertB, vertC});
     unsigned int min_value = (vertA < vertB ? vertA : vertB);
     unsigned int max_value = (vertA < vertB ? vertB : vertA);
     min_value = (vertC < min_value ? vertC : min_value);
@@ -89,9 +88,23 @@ class Mesh {
       return true;
     }
 
-    
-
     return false;
+  }
+
+  /**
+   *  Adds a polygon with an arbitrary number of vertices.
+   *  Simple ver: adds n-2 triangles, reading in increasing order.
+   *  @param indices - List of vertices in the polygon.
+   */
+  bool AddPolygon(const std::vector<unsigned int>& indices) {
+    // i could try to implement sweep algo
+    for (int i = 0; i < indices.size() - 2; i++) {
+      if (!AddPolygon(indices[i], indices[i + 1], indices[i + 2])) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /**
@@ -100,7 +113,6 @@ class Mesh {
    */ 
   void PointToVertexAttribs() {
     if (dirty_) {
-
       context_->UpdateBuffersAndPoint(data_, indices_);
     } else {
       context_->Point();
@@ -204,6 +216,16 @@ class Mesh {
 
   
 };
+
+/**
+ *  Specialization for 3D packets
+ * 
+ *  If that's not possible: i really don't care lol that's on you
+ */ 
+bool Mesh<storage::VertexPacket3D>::AddPolygon(const std::vector<unsigned int>& indices);
+
+// bool Mesh<storage::VertexPacket2D>::AddPolygon(const std::vector<unsigned int>& indices);
+
 
 };  // namespace storage
 };  // namespace monkeysworld
