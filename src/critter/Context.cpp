@@ -6,7 +6,7 @@ namespace critter {
 using file::CachedFileLoader;
 
 Context::Context() {
-  file_loader_ = std::make_shared<CachedFileLoader>("context cache");
+  file_loader_ = std::make_shared<CachedFileLoader>("context_cache");
 }
 
 const std::shared_ptr<CachedFileLoader> Context::GetCachedFileLoader() {
