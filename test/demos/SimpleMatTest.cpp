@@ -69,12 +69,13 @@ void main(int argc, char** argv) {
     glfwTerminate();
     exit(EXIT_FAILURE);
   }
+  
+  glfwMakeContextCurrent(test_window);
 
   glfwWindowHint(GL_MAJOR_VERSION, 4);
   glfwWindowHint(GL_MINOR_VERSION, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  glfwMakeContextCurrent(test_window);
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     BOOST_LOG_TRIVIAL(error) << "Could not load GL calls!";
     glfwDestroyWindow(test_window);
@@ -137,7 +138,7 @@ void main(int argc, char** argv) {
     glm::mat4 model_matrix = glm::mat4(1.0);
     glm::mat4 vp_matrix = glm::mat4(1.0);
     // glm::perspective now takes a radians arg
-    lights[0].position = glm::vec4(0, 0, -rot, 1);
+    lights[0].position = glm::vec4(0, glm::sin(rot) * 3, -rot, 1);
     glm::mat4 persp = glm::perspective(deg_to_rad(45.0f), 1.85f, 0.01f, 100.0f);
     vp_matrix = glm::lookAt(glm::vec3(-8, -8, -rot), glm::vec3(0, 0, -rot), glm::vec3(0, 1, 0));
     vp_matrix = persp * vp_matrix;
@@ -145,7 +146,6 @@ void main(int argc, char** argv) {
 
     model_matrix = glm::translate(model_matrix, glm::vec3(0, 0, -rot));
     model_matrix = glm::rotate(model_matrix, rot * 2, glm::vec3(0.707));
-    model_matrix = glm::translate(model_matrix, glm::vec3(0, 3, 0));
     test_material.SetModelTransforms(model_matrix);
     test_material.SetCameraTransforms(vp_matrix);
     test_material.SetLights(lights);
