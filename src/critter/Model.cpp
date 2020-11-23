@@ -62,12 +62,23 @@ static void InsertFaceIndices(std::unordered_map<vnt_triplet, unsigned int, vnt_
                               std::vector<std::vector<unsigned int>>& poly_data,
                               std::vector<vnt_triplet>& vert_triplets_ordered,
                               unsigned int* vert_count);
-static data_type GetDataType(boost::ssub_match match);
+static std::string TrimHeader(const std::string& line);
+static data_type GetDataType(const std::string& line);
 
 Model::Model(Context* ctx) : GameObject(ctx) {}
 
 void Model::PrepareAttributes() {
+  if (mesh_) {
+    mesh_->PointToVertexAttribs();
+  }
+}
+
+void Model::RenderMaterial() {
+  glPointSize(16.0f);
+  
+  // TODO: Add material field and prepare material. this requires camera data!
   mesh_->PointToVertexAttribs();
+  glDrawElements(GL_TRIANGLES, mesh_->GetIndexCount(), GL_UNSIGNED_INT, reinterpret_cast<void*>(0));
 }
 
 void Model::SetMesh(const std::shared_ptr<model::Mesh<>>& mesh) {
@@ -106,29 +117,26 @@ std::shared_ptr<Model> Model::FromObjFile(Context* ctx, const std::string& path)
   // stores normal data.
   std::vector<glm::vec3> normal_data;
 
-  // used for incrementing vert_count -- starts at 1!
-  unsigned int vert_count = 1;
+  // used for tracking number of vertices thus far.
+  unsigned int vert_count = 0;
   while (!obj_stream.eof()) {
     // fetch line
-    obj_stream.getline(&line_data[0], MAX_LINE_SIZE);
-    BOOST_LOG_TRIVIAL(trace) << line_data;
+    std::getline(obj_stream, line_data);
+    boost::trim(line_data);
     if (line_data[0] == 'f') {
       // face data -- call InsertFaceIndices to handle.
       InsertFaceIndices(vert_triplets, line_data, poly_data, vert_triplets_ordered, &vert_count);
     } else if (line_data[0] == 'v') {
       // regex reads up to 3 float values from string, and data type
       // (extra would be ignored anyway so it doesnt matter)
-      boost::regex re("(\w+)\s+((\d+(.|,)\d+\s+){,3})");
-      boost::smatch result;
-      if (!boost::regex_search(line_data, result, re, boost::match_default)) {
-        BOOST_LOG_TRIVIAL(warning) << "Skipping line '" << line_data << "'";
-        continue;
-      }
+
+      // this regex is meaty and unnecessary
+      std::string trimmed_line = TrimHeader(line_data);
 
       // group 2 contains all of our float values
       // split group 2 on whitespace
       std::vector<std::string> vals;
-      boost::split(vals, result[2], boost::is_any_of(" \t"), boost::token_compress_on);
+      boost::split(vals, trimmed_line, boost::is_any_of(" \t"), boost::token_compress_on);
       glm::vec3 data(0.0);
 
       // read values from string to float!
@@ -137,7 +145,7 @@ std::shared_ptr<Model> Model::FromObjFile(Context* ctx, const std::string& path)
         data[i] = boost::lexical_cast<float>(vals[i]);
       }
 
-      switch(GetDataType(result[1])) {
+      switch(GetDataType(line_data)) {
         case vertex_position:
           position_data.push_back(data);
           break;
@@ -158,23 +166,24 @@ std::shared_ptr<Model> Model::FromObjFile(Context* ctx, const std::string& path)
   std::shared_ptr<model::Mesh<>> mesh = std::make_shared<model::Mesh<>>();
 
   VertexPacket3D temp_data;
+  BOOST_LOG_TRIVIAL(trace) << "logged " << position_data.size() << "pos, " << texcoord_data.size() << "tex, " << normal_data.size() << "norm.";
   for (auto vert_triplet : vert_triplets_ordered) {
     if (vert_triplet.v_index == 0) {
       temp_data.position = glm::vec3(0);
     } else {
-      temp_data.position = position_data[vert_triplet.v_index];
+      temp_data.position = position_data[vert_triplet.v_index - 1];
     }
 
     if (vert_triplet.t_index == 0) {
       temp_data.coords = glm::vec2(0);
     } else {
-      temp_data.coords = texcoord_data[vert_triplet.t_index];
+      temp_data.coords = texcoord_data[vert_triplet.t_index - 1];
     }
 
     if (vert_triplet.n_index == 0) {
-      temp_data.coords = glm::vec3(1, 0, 0);
+      temp_data.normals = glm::vec3(1, 0, 0);
     } else {
-      temp_data.coords = normal_data[vert_triplet.n_index];
+      temp_data.normals = normal_data[vert_triplet.n_index - 1];
     }
 
     mesh->AddVertex(temp_data);
@@ -187,6 +196,17 @@ std::shared_ptr<Model> Model::FromObjFile(Context* ctx, const std::string& path)
   std::shared_ptr<Model> result = std::make_shared<Model>(ctx);
   result->SetMesh(mesh);
   return result;
+}
+
+static std::string TrimHeader(const std::string& line) {
+  int cur = 0;
+  while (line[cur] != '-'                       // negative number
+    && !(line[cur] >= '0' && line[cur] <= '9')  // number
+    &&   line[cur] != '/') {                    // face decl
+    cur++;
+  }
+
+  return line.substr(cur);
 }
 
 static void InsertFaceIndices(std::unordered_map<vnt_triplet, unsigned int, vnt_triplet_hash>& map,
@@ -202,55 +222,40 @@ static void InsertFaceIndices(std::unordered_map<vnt_triplet, unsigned int, vnt_
 
   // stores the calculated indices for this polygon
   std::vector<unsigned int> ind_data;
-  // TODO: use regex instead probably lol
-  boost::regex face_tabs("f\s+((\d*/\d*/\d*\s*){3,})");
-  boost::smatch face_match;
-  if (!boost::regex_match(line, face_match, face_tabs)) {
-    // face data does not match
-    BOOST_LOG_TRIVIAL(error) << "Skipping line '" << line << "'";
-  }
-
-  // 1st capture group contains face decls
-  boost::split(verts, face_match[1], boost::is_any_of("\t "), boost::token_compress_on);
-
+  boost::split(verts, TrimHeader(line), boost::is_any_of("\t "), boost::token_compress_on);
   // each entry in `verts` now contains a single face decl
   for (auto vert : verts) {
-    // also splits `f`, so account for that!
-    if (vert[0] == 'f') {
-      continue;
-    }
 
     std::vector<std::string> coord_inds;
     boost::split(coord_inds, vert, [](char c){ return c == '/'; });
     vnt_triplet t;
 
     // for each: if begin == end, empty string (slashes next to each other)
-    if (coord_inds[1].begin() != coord_inds[1].end()) {
-      t.v_index = lexical_cast<uint32_t>(coord_inds[1]);
+    if (coord_inds[0].begin() != coord_inds[0].end()) {
+      t.v_index = lexical_cast<uint32_t>(coord_inds[0]);
     } else {
       t.v_index = 0;
     }
 
-    if (coord_inds[2].begin() != coord_inds[2].end()) {
-      t.t_index = lexical_cast<uint32_t>(coord_inds[2]);
+    if (coord_inds[1].begin() != coord_inds[1].end()) {
+      t.t_index = lexical_cast<uint32_t>(coord_inds[1]);
     } else {
       t.t_index = 0;
     }
 
-    if (coord_inds[3].begin() != coord_inds[3].end()) {
-      t.n_index = lexical_cast<uint32_t>(coord_inds[3]);
+    if (coord_inds[2].begin() != coord_inds[2].end()) {
+      t.n_index = lexical_cast<uint32_t>(coord_inds[2]);
     } else {
       t.n_index = 0;
     }
 
-    BOOST_LOG_TRIVIAL(trace) << "Read face: v=" << t.v_index << ", t=" << t.t_index << ", n=" << t.n_index;
     auto triplet_entry = map.find(t);
     if (triplet_entry == map.end()) {
       // new vertex
-      map.insert(std::pair<vnt_triplet, int>(t, *vert_count));
+      map.insert(std::pair<vnt_triplet, unsigned int>(t, *vert_count));
       vert_triplets_ordered.push_back(t);
       ind_data.push_back(*vert_count);
-      *vert_count++;
+      (*vert_count)++;
     } else {
       // use the old entry!
       ind_data.push_back(triplet_entry->second);
@@ -261,13 +266,15 @@ static void InsertFaceIndices(std::unordered_map<vnt_triplet, unsigned int, vnt_
   poly_data.push_back(std::move(ind_data));
 }
 
-static data_type GetDataType(boost::ssub_match match) {
-  if (!match.compare("v")) {
-    return data_type::vertex_position;
-  } else if (!match.compare("vt")) {
-    return data_type::texture_coord;
-  } else if (!match.compare("vn")) {
-    return data_type::vertex_normal;
+static data_type GetDataType(const std::string& line) {
+  if (line[0] == 'v') {
+    if (line[1] == 'n') {
+      return data_type::vertex_normal;
+    } else if (line[1] == 't') {
+      return data_type::texture_coord;
+    } else {
+      return data_type::vertex_position;
+    }
   } else {
     return data_type::ignore;
   }
