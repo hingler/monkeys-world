@@ -81,6 +81,10 @@ add_executable(mat-test test/demos/SimpleMatTest.cpp)
 target_include_directories(mat-test PRIVATE ${INC_DIR})
 target_link_libraries(mat-test glad::glad glm monkeys-world-components)
 
+add_executable(model-test test/demos/SimpleModelTest.cpp)
+target_include_directories(model-test PRIVATE ${INC_DIR})
+target_link_libraries(model-test glad::glad glm monkeys-world-components)
+
 add_executable(streambuf-test test/CacheStreambufTest.cpp)
 target_include_directories(streambuf-test PRIVATE ${INC_DIR})
 target_link_libraries(streambuf-test GTest::gtest_main monkeys-world-components)
