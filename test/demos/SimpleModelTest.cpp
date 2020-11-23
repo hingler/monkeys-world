@@ -57,7 +57,7 @@ void main(int argc, char** argv) {
   std::shared_ptr<Context> ctx = std::make_shared<Context>();
   
   // TODO: Make these pointers consistent :)
-  std::shared_ptr<Model> test_model = Model::FromObjFile(ctx.get(), "resources/test/untitled4.obj");
+  std::shared_ptr<Model> test_model = Model::FromObjFile(ctx.get(), "resources/test/untitled3.obj");
   test_model->PrepareAttributes();
 
   std::vector<LightData> lights;
@@ -77,14 +77,13 @@ void main(int argc, char** argv) {
     rot += 0.01f;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glm::mat4 model_matrix = glm::mat4(1.0);
     glm::mat4 persp = glm::perspective(0.78f, 1.85f, 0.01f, 100.0f);
     glm::mat4 vp_matrix = glm::lookAt(glm::vec3(0, 0, -8), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     test_material.SetSurfaceColor(glm::vec4(1.0, 0.6, glm::fract(rot), 1.0));
     vp_matrix = persp * vp_matrix;
     test_model->SetPosition(glm::vec3(0, 0, 0));
     test_model->SetRotation(glm::vec3(0, rot, 0));
-    test_model->SetScale(glm::vec3(1, 1, 1));
+    test_model->SetScale(glm::vec3(2, 1, 1));
     test_material.SetModelTransforms(test_model->GetTransformationMatrix());
     test_material.SetCameraTransforms(vp_matrix);
     test_material.SetLights(lights);

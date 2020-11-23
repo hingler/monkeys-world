@@ -58,11 +58,16 @@ struct vnt_triplet_hash {
  *  @param vert_count - number of vertices tallied so far.
  */ 
 static void InsertFaceIndices(std::unordered_map<vnt_triplet, unsigned int, vnt_triplet_hash>& map,
-                              const std::string& line,
+                              std::string& line,
                               std::vector<std::vector<unsigned int>>& poly_data,
                               std::vector<vnt_triplet>& vert_triplets_ordered,
                               unsigned int* vert_count);
-static std::string TrimHeader(const std::string& line);
+
+/**
+ *  Trims down the header of an OBJ line.
+ *  @param line - the line we are trimming.
+ */ 
+static void TrimHeader(std::string& line);
 static data_type GetDataType(const std::string& line);
 
 Model::Model(Context* ctx) : GameObject(ctx) {}
@@ -122,30 +127,26 @@ std::shared_ptr<Model> Model::FromObjFile(Context* ctx, const std::string& path)
   while (!obj_stream.eof()) {
     // fetch line
     std::getline(obj_stream, line_data);
-    boost::trim(line_data);
     if (line_data[0] == 'f') {
       // face data -- call InsertFaceIndices to handle.
       InsertFaceIndices(vert_triplets, line_data, poly_data, vert_triplets_ordered, &vert_count);
     } else if (line_data[0] == 'v') {
-      // regex reads up to 3 float values from string, and data type
-      // (extra would be ignored anyway so it doesnt matter)
+      data_type type = GetDataType(line_data);
+      TrimHeader(line_data);
 
-      // this regex is meaty and unnecessary
-      std::string trimmed_line = TrimHeader(line_data);
-
-      // group 2 contains all of our float values
-      // split group 2 on whitespace
+      // TODO: I'm pretty sure much of the runtime at this point is going towards
+      //       boost::split. See if there's a more barebones way to do it.
+      //       try profiling and see where all the runtime goes, ig
       std::vector<std::string> vals;
-      boost::split(vals, trimmed_line, boost::is_any_of(" \t"), boost::token_compress_on);
+      boost::split(vals, line_data, [](char c){ return std::isspace(c); }, boost::token_compress_on);
       glm::vec3 data(0.0);
 
       // read values from string to float!
       for (int i = 0; i < vals.size(); i++) {
-        boost::trim(vals[i]);
         data[i] = boost::lexical_cast<float>(vals[i]);
       }
 
-      switch(GetDataType(line_data)) {
+      switch(type) {
         case vertex_position:
           position_data.push_back(data);
           break;
@@ -198,19 +199,21 @@ std::shared_ptr<Model> Model::FromObjFile(Context* ctx, const std::string& path)
   return result;
 }
 
-static std::string TrimHeader(const std::string& line) {
-  int cur = 0;
-  while (line[cur] != '-'                       // negative number
-    && !(line[cur] >= '0' && line[cur] <= '9')  // number
-    &&   line[cur] != '/') {                    // face decl
-    cur++;
-  }
+static void TrimHeader(std::string& line) {
+  // int cur = 0;
+  // while (line[cur] != '-'                       // negative number
+  //   && !(line[cur] >= '0' && line[cur] <= '9')  // number
+  //   &&   line[cur] != '/') {                    // face decl
+  //   cur++;
+  // }
 
-  return line.substr(cur);
+  line.erase(line.begin(), std::find_if(line.begin(), line.end(), [](char c) {
+    return ((c >= '0' && c <= '9') || c == '-' || c == '/');
+  }));
 }
 
 static void InsertFaceIndices(std::unordered_map<vnt_triplet, unsigned int, vnt_triplet_hash>& map,
-                              const std::string& line,
+                              std::string& line,
                               std::vector<std::vector<unsigned int>>& poly_data,
                               std::vector<vnt_triplet>& vert_triplets_ordered,
                               unsigned int* vert_count) {
@@ -222,12 +225,13 @@ static void InsertFaceIndices(std::unordered_map<vnt_triplet, unsigned int, vnt_
 
   // stores the calculated indices for this polygon
   std::vector<unsigned int> ind_data;
-  boost::split(verts, TrimHeader(line), boost::is_any_of("\t "), boost::token_compress_on);
+  TrimHeader(line);
+  boost::split(verts, line, [](char c){ return std::isspace(c); }, boost::token_compress_on);
   // each entry in `verts` now contains a single face decl
   for (auto vert : verts) {
 
     std::vector<std::string> coord_inds;
-    boost::split(coord_inds, vert, [](char c){ return c == '/'; });
+    boost::split(coord_inds, vert, [](char c){ return c == '/'; }, boost::token_compress_off);
     vnt_triplet t;
 
     // for each: if begin == end, empty string (slashes next to each other)
