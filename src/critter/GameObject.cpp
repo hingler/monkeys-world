@@ -41,7 +41,7 @@ void GameObject::AddChild(std::shared_ptr<GameObject> child) {
 
   child->parent_ = std::weak_ptr<GameObject>(this->shared_from_this());
   // child is moved here -- don't want it in multiple locations
-  children_.insert(child);
+  children_.push_back(child);
 }
 
 GameObject* GameObject::GetChild(uint64_t id) {
@@ -104,9 +104,9 @@ glm::mat4 GameObject::GetTransformationMatrix() {
 }
 
 void GameObject::RemoveChild(uint64_t id) {
-  for (auto child : children_) {
-    if (child->GetId() == id) {
-      children_.erase(child);
+  for (auto ptr = children_.begin(); ptr != children_.end(); ptr++) {
+    if ((*ptr)->GetId() == id) {
+      children_.erase(ptr);
       return;
     }
   }

@@ -11,7 +11,7 @@
 #include <atomic>
 #include <cinttypes>
 #include <memory>
-#include <unordered_set>
+#include <vector>
 
 namespace monkeysworld {
 namespace critter {
@@ -122,7 +122,7 @@ class GameObject : public std::enable_shared_from_this<GameObject> {
   // don't worry about it :)
 
   // set of all children associated with this object
-  std::unordered_set<std::shared_ptr<GameObject>> children_;
+  std::vector<std::shared_ptr<GameObject>> children_;
 
   // ID associated with this object.
   uint64_t id_;
