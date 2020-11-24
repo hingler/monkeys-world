@@ -57,7 +57,7 @@ void main(int argc, char** argv) {
   std::shared_ptr<Context> ctx = std::make_shared<Context>();
   
   // TODO: Make these pointers consistent :)
-  std::shared_ptr<Model> test_model = Model::FromObjFile(ctx.get(), "resources/test/monkeyquads.obj");
+  std::shared_ptr<Model> test_model = Model::FromObjFile(ctx.get(), "resources/test/untitled4.obj");
   test_model->PrepareAttributes();
 
   std::vector<LightData> lights;
