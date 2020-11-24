@@ -45,8 +45,9 @@ class WindowEventManager {
    *                     - int: the GLFW identifier for the key which generated the event (see below, and https://www.glfw.org/docs/3.3.2/group__keys.html)
    *                     - int: the GLFW action associated with the event (see https://www.glfw.org/docs/3.3.2/group__input.html)
    *                     - int: Any key modifiers (see https://www.glfw.org/docs/3.3.2/group__mods.html)
+   * @returns a uniquely identifying "event descriptor" which can be used to modify the event later.
    */  
-  void RegisterKeyListener(int key, std::function<void(int, int, int)> callback);
+  uint64_t RegisterKeyListener(int key, std::function<void(int, int, int)> callback);
 
  private:
   // record of all callbacks stored, by the associated key.
