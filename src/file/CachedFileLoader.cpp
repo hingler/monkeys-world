@@ -63,7 +63,7 @@ std::unique_ptr<std::streambuf> CachedFileLoader::LoadFile(const std::string& pa
       record.data->resize(record.file_size);
       new_cached_file.seekg(new_cached_file.beg, 0);
       new_cached_file.rdbuf()->sgetn(record.data->data(), record.file_size);
-      cache_.insert(std::pair<std::string, loader_record>(path, std::move(record)));
+      cache_.insert(std::make_pair(path, std::move(record)));
       res_itr = cache_.find(path);
     }
   }
@@ -200,7 +200,7 @@ void CachedFileLoader::threadfunc_(std::string cache_path) {
     }
 
     cached_file.rdbuf()->sgetn(cached_file_record.data->data(), cached_file_record.file_size);
-    cache_.insert(std::pair<std::string, loader_record>(std::move(path), std::move(cached_file_record)));
+    cache_.insert(std::make_pair(std::move(path), std::move(cached_file_record)));
 
     cached_file.close();
   

@@ -256,7 +256,7 @@ static void InsertFaceIndices(std::unordered_map<vnt_triplet, unsigned int, vnt_
     auto triplet_entry = map.find(t);
     if (triplet_entry == map.end()) {
       // new vertex
-      map.insert(std::pair<vnt_triplet, unsigned int>(t, *vert_count));
+      map.insert(std::make_pair(t, *vert_count));
       vert_triplets_ordered.push_back(t);
       ind_data.push_back(*vert_count);
       (*vert_count)++;
