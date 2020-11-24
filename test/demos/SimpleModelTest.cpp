@@ -57,7 +57,7 @@ void main(int argc, char** argv) {
   std::shared_ptr<Context> ctx = std::make_shared<Context>();
   
   // TODO: Make these pointers consistent :)
-  std::shared_ptr<Model> test_model = Model::FromObjFile(ctx.get(), "resources/test/untitled6.obj");
+  std::shared_ptr<Model> test_model = Model::FromObjFile(ctx.get(), "resources/test/monkeyquads.obj");
   test_model->PrepareAttributes();
 
   std::vector<LightData> lights;
@@ -82,8 +82,8 @@ void main(int argc, char** argv) {
     test_material.SetSurfaceColor(glm::vec4(1.0, 0.6, glm::fract(rot), 1.0));
     vp_matrix = persp * vp_matrix;
     test_model->SetPosition(glm::vec3(0, 0, 0));
-    test_model->SetRotation(glm::vec3(0, rot, 0));
-    test_model->SetScale(glm::vec3(2, 1, 1));
+    test_model->SetRotation(glm::vec3(rot, 0, rot));
+    test_model->SetScale(glm::vec3(1.4));
     test_material.SetModelTransforms(test_model->GetTransformationMatrix());
     test_material.SetCameraTransforms(vp_matrix);
     test_material.SetLights(lights);

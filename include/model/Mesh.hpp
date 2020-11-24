@@ -13,6 +13,9 @@
 #include <model/VertexDataContext.hpp>
 #include <model/VertexDataContextGL.hpp>
 #include <storage/VertexPacketTypes.hpp>
+#include <glm/gtc/constants.hpp>
+
+#include <map>
 
 // from https://stackoverflow.com/questions/87372/check-if-a-class-has-a-member-function-of-a-given-signature/10707822#10707822
 // todo: enable some R/W on attributes (not sure how yet lol)
@@ -220,10 +223,78 @@ class Mesh {
 /**
  *  Specialization for 3D packets
  * 
- *  If that's not possible: i really don't care lol that's on you
+ *  This is mostly working but there are lingering issues -- it's just a backup anyway, so i'll
+ *  let it be for now.
  */ 
-bool Mesh<storage::VertexPacket3D>::AddPolygon(const std::vector<unsigned int>& indices);
+template <>
+bool Mesh<storage::VertexPacket3D>::AddPolygon(const std::vector<unsigned int>& indices) {
+  // smart idea: since it's convex, read top to bottom
+  if (indices.size() == 3) {
+    return AddPolygon(indices[0], indices[1], indices[2]);
+  }
 
+  std::vector<std::pair<unsigned int, storage::VertexPacket3D>> vertices;
+  for (auto index : indices) {
+    if (index >= data_.size() || index < 0) {
+      return false;
+    }
+
+    vertices.push_back(std::pair<unsigned int,
+                       storage::VertexPacket3D>(index, data_[index]));
+  }
+
+  glm::vec3 cross_r = vertices[0].second.normals;
+  int sorting_axis;
+  if (cross_r.x > cross_r.y) {
+    if (cross_r.x > cross_r.z) {
+      sorting_axis = 0;   // x axis
+    } else {
+      sorting_axis = 2;
+    }
+  } else if (cross_r.y > cross_r.z) {
+    sorting_axis = 1;
+  } else {
+    sorting_axis = 2;
+  }
+
+  glm::vec3 anchor = vertices[0].second.position;
+
+  int ac = (sorting_axis + 1) % 3;
+  int bc = (sorting_axis + 2) % 3;
+
+  // ignore anchor, sort all others in fan order relative to anchor
+  std::sort(vertices.begin() + 1,
+            vertices.end(),
+            [sorting_axis, &anchor, ac, bc]
+            (std::pair<unsigned int, storage::VertexPacket3D> a,
+             std::pair<unsigned int, storage::VertexPacket3D> b) -> bool {
+              // sorting axis = plane of greatest change
+              glm::vec3 a_vec = a.second.position - anchor;
+              glm::vec3 b_vec = b.second.position - anchor;
+              float atan_a = glm::atan(a_vec[bc],
+                                       a_vec[ac]);
+              float atan_b = glm::atan(b_vec[bc],
+                                       b_vec[ac]);
+
+              float diff = atan_b - atan_a;
+              if (diff > glm::pi<float>()) {
+                // b is very positive, a is negative -- by our rule, b comes before a.
+                return false;
+              } else if (diff < -glm::pi<float>()) {
+                // a is very positive, b is very negative -- by our rule, a comes before b
+                return true;
+              }
+              // both are on the same side of our axes -- return the rational thing.
+              return (atan_b > atan_a);
+            }
+  );
+
+  for (int i = 2; i < vertices.size(); i++) {
+    AddPolygon(vertices[0].first, vertices[i - 1].first, vertices[i].first);
+  }
+
+  return true;
+}
 // bool Mesh<storage::VertexPacket2D>::AddPolygon(const std::vector<unsigned int>& indices);
 
 

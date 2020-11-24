@@ -13,7 +13,8 @@ set(TST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)
 add_executable(monkeys-world main.cpp)
 
 # separate out a bit better for testing
-add_library(monkeys-world-components ${SRC_DIR}/storage/VertexPacketTypes.cpp
+add_library(monkeys-world-components 
+                                    ${SRC_DIR}/storage/VertexPacketTypes.cpp
                                     ${SRC_DIR}/shader/ShaderProgramBuilder.cpp
                                     ${SRC_DIR}/shader/ShaderProgram.cpp
                                     ${SRC_DIR}/shader/materials/MatteMaterial.cpp
@@ -23,8 +24,7 @@ add_library(monkeys-world-components ${SRC_DIR}/storage/VertexPacketTypes.cpp
                                     ${SRC_DIR}/critter/Context.cpp
                                     ${SRC_DIR}/critter/GameObject.cpp
                                     ${SRC_DIR}/utils/IDGenerator.cpp
-                                    ${SRC_DIR}/critter/Model.cpp
-                                    ${SRC_DIR}/model/Mesh.cpp)
+                                    ${SRC_DIR}/critter/Model.cpp)
 
 set_property(TARGET monkeys-world-components PROPERTY CXX_STANDARD 14)
 
