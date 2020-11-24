@@ -24,7 +24,8 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/critter/Context.cpp
                                     ${SRC_DIR}/critter/GameObject.cpp
                                     ${SRC_DIR}/utils/IDGenerator.cpp
-                                    ${SRC_DIR}/critter/Model.cpp)
+                                    ${SRC_DIR}/critter/Model.cpp
+                                    ${SRC_DIR}/input/WindowEventManager.cpp)
 
 set_property(TARGET monkeys-world-components PROPERTY CXX_STANDARD 14)
 

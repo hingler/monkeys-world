@@ -18,8 +18,8 @@ namespace input {
  *  Stores callbacks, and provides locking access to them.
  */ 
 struct callback_info {
-  std::unordered_map<uint64_t, std::function<void(int, int, int)>> callbacks;    // maps callback identifiers to their respective descriptors
-  std::shared_timed_mutex set_lock;                                              // lock associated with all callbacks for this key
+  std::unordered_map<uint64_t, std::function<void(int, int, int)>> callbacks;    // maps descriptors to functions
+  std::shared_timed_mutex set_lock;                                              // lock associated with struct scope
 };
 
 /**
@@ -27,6 +27,7 @@ struct callback_info {
  */ 
 class WindowEventManager {
  public:
+
   /**
    * Creates a new window manager.
    */ 
@@ -49,18 +50,33 @@ class WindowEventManager {
    */  
   uint64_t RegisterKeyListener(int key, std::function<void(int, int, int)> callback);
 
+  /**
+   * Removes the key listener associated with the provided event descriptor.
+   * @param event_id - the ID of the event we wish to remove.
+   * @returns true if the event was removed successfully -- false otherwise.
+   */ 
+  bool RemoveKeyListener(uint64_t event_id);
+
  private:
-  // record of all callbacks stored, by the associated key.
+  // maps keycodes to callback sets
   std::unordered_map<int, std::shared_ptr<callback_info>> callbacks_;
 
-  // associates callbacks with their associated key
+  // maps event descriptors to key codes
   std::unordered_map<uint64_t, int> callback_to_key_;
 
-  // lock for callbacks_ and callback_to_key_
+  // lock for class scope fields
   std::shared_timed_mutex callback_mutex_;
 
-  // for generating new event descriptors
+  // generates new events
   static utils::IDGenerator event_desc_generator_;
+
+ protected:
+  /**
+   *  Protected ctor for testing purposes.
+   *  Tests should subclass this object and then define a nop ctor which uses this.
+   *  Please don't fuck with it
+   */ 
+  WindowEventManager() {};
 
 };
 
