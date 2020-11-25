@@ -142,8 +142,19 @@ std::shared_ptr<Model> Model::FromObjFile(Context* ctx, const std::string& path)
       glm::vec3 data(0.0);
 
       // read values from string to float!
-      for (int i = 0; i < vals.size(); i++) {
-        data[i] = boost::lexical_cast<float>(vals[i]);
+      for (int i = 0; i < vals.size() && i < 3; i++) {
+        if (vals[i].size() > 0) {
+          // in VS: weird behavior where an empty string is pushed at the end (not a problem on my desktop!!!)
+          try {
+            data[i] = boost::lexical_cast<float>(vals[i]);
+          }
+          catch (boost::bad_lexical_cast e) {
+            data[i] = 0.0f;
+          }
+        }
+        else {
+          data[i] = 0.0f;
+        }
       }
 
       switch(type) {
@@ -229,6 +240,9 @@ static void InsertFaceIndices(std::unordered_map<vnt_triplet, unsigned int, vnt_
   boost::split(verts, line, [](char c){ return std::isspace(c); }, boost::token_compress_on);
   // each entry in `verts` now contains a single face decl
   for (auto vert : verts) {
+    if (vert.size() == 0) {
+      continue;
+    }
 
     std::vector<std::string> coord_inds;
     boost::split(coord_inds, vert, [](char c){ return c == '/'; }, boost::token_compress_off);
