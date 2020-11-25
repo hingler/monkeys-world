@@ -113,6 +113,12 @@ target_link_libraries(object-test GTest::gtest_main monkeys-world-components)
 add_test(NAME object-test COMMAND object-test
             WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
 
+add_executable(events-test test/EventManagerTest.cpp)
+target_include_directories(events-test PRIVATE ${INC_DIR})
+target_link_libraries(events-test GTest::gtest_main monkeys-world-components)
+add_test(NAME events-test COMMAND events-test
+            WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
+
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)

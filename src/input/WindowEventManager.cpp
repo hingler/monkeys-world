@@ -9,6 +9,8 @@
 namespace monkeysworld {
 namespace input {
 
+utils::IDGenerator WindowEventManager::event_desc_generator_;
+
 WindowEventManager::WindowEventManager(GLFWwindow* window) {
   glfwSetWindowUserPointer(window, this);
   // lambdas are equiv. to fptrs if there are no captures
