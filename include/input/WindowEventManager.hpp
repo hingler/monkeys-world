@@ -35,6 +35,9 @@ struct event_info {
 
 /**
  *  Integrates with GLFW to allow components to listen to input updates.
+ *  Events are stored as they arrive, then processed in order when
+ *  `ProcessWaitingEvents` is called. Most likely, this should be
+ *  called once per frame, after `glfwPollEvents` is called.
  */ 
 class WindowEventManager {
  public:
