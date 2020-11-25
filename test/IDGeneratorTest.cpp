@@ -1,6 +1,7 @@
 #include <utils/IDGenerator.hpp>
 
 #include <gtest/gtest.h>
+#include <set>
 
 using ::monkeysworld::utils::IDGenerator;
 
@@ -54,4 +55,14 @@ TEST(IDGeneratorTests, AvoidAddedID) {
 
   // 33 gens with 3 skips -- the next thing we see should be 
   ASSERT_EQ(37, gen.GetUniqueId());
+}
+
+TEST(IDGeneratorTests, EnsureIDsUnique) {
+  IDGenerator gen;
+  std::set<uint64_t> ids;
+  for (int i = 0; i < 32; i++) {
+    uint64_t id = gen.GetUniqueId();
+    ASSERT_TRUE(ids.find(id) == ids.end());
+    ids.insert(id);
+  }
 }
