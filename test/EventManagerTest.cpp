@@ -30,6 +30,9 @@ TEST_F(EventManagerTests, CreateEvent) {
 
   uint64_t event = event_mgr->RegisterKeyListener(0, test_lambda);
   event_mgr->GenerateKeyEvent(NULL, 0, 0, 0, 0);
+
+  ASSERT_EQ(0, good);
+
   event_mgr->ProcessWaitingEvents();
   ASSERT_EQ(1, good);
 

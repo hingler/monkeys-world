@@ -125,6 +125,7 @@ void main(int argc, char** argv) {
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LEQUAL);
   while (!glfwWindowShouldClose(window)) {
+    event_mgr.ProcessWaitingEvents();
     rot += 0.01f;
     key_x += (0.01f * x_mod);
     key_y += (0.01f * y_mod);
