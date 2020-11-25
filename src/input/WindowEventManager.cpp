@@ -17,17 +17,31 @@ WindowEventManager::WindowEventManager(GLFWwindow* window) {
   glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
     WindowEventManager* that =
       reinterpret_cast<WindowEventManager*>(glfwGetWindowUserPointer(window));
-    that->ProcessKeyEvent(window, key, scancode, action, mods);
+    that->GenerateKeyEvent(window, key, scancode, action, mods);
   });
 }
 
-void WindowEventManager::ProcessKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods) {
+void WindowEventManager::GenerateKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods) {
+  std::unique_lock<std::shared_timed_mutex>(event_mutex_);
+  event_queue_.push_back({window, key, scancode, action, mods});
+}
+
+void WindowEventManager::ProcessWaitingEvents() {
   std::shared_lock<std::shared_timed_mutex>(callback_mutex_);
-  auto callbacks = callbacks_.find(key);
-  if (callbacks != callbacks_.end()) {
-    std::shared_lock<std::shared_timed_mutex>(callbacks->second->set_lock);
-    for (auto callback : callbacks->second->callbacks) {
-      callback.second(key, action, mods);
+  std::vector<event_info> events;
+  {
+    std::unique_lock<std::shared_timed_mutex>(event_mutex_);
+    events = event_queue_;
+    event_queue_.clear();
+  }
+
+  for (auto event : events) {
+    auto callbacks = callbacks_.find(event.key);
+    if (callbacks != callbacks_.end()) {
+      std::shared_lock<std::shared_timed_mutex>(callbacks->second->set_lock);
+      for (auto callback : callbacks->second->callbacks) {
+        callback.second(event.key, event.action, event.mods);
+      }
     }
   }
 }

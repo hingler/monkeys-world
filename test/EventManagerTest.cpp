@@ -29,11 +29,13 @@ TEST_F(EventManagerTests, CreateEvent) {
   };
 
   uint64_t event = event_mgr->RegisterKeyListener(0, test_lambda);
-  event_mgr->ProcessKeyEvent(NULL, 0, 0, 0, 0);
+  event_mgr->GenerateKeyEvent(NULL, 0, 0, 0, 0);
+  event_mgr->ProcessWaitingEvents();
   ASSERT_EQ(1, good);
 
   good = 0;
-  event_mgr->ProcessKeyEvent(NULL, 15, 0, 0, 0);
+  event_mgr->GenerateKeyEvent(NULL, 15, 0, 0, 0);
+  event_mgr->ProcessWaitingEvents();
   ASSERT_EQ(0, good);
 }
 
@@ -51,7 +53,8 @@ TEST_F(EventManagerTests, CreateMultipleEventsOnSameKey) {
   uint64_t event_sogob = event_mgr->RegisterKeyListener(1, lambda_sogob);
   uint64_t event_paric = event_mgr->RegisterKeyListener(1, lambda_paric);
   ASSERT_NE(event_sogob, event_paric);
-  event_mgr->ProcessKeyEvent(NULL, 1, 0, 0, 0);
+  event_mgr->GenerateKeyEvent(NULL, 1, 0, 0, 0);
+  event_mgr->ProcessWaitingEvents();
   ASSERT_EQ(1, sogob);
   ASSERT_EQ(1, paric);
 
@@ -59,7 +62,8 @@ TEST_F(EventManagerTests, CreateMultipleEventsOnSameKey) {
   paric = 0;
   // remove event and see what hapen
   event_mgr->RemoveKeyListener(event_sogob);
-  event_mgr->ProcessKeyEvent(NULL, 1, 0, 0, 0);
+  event_mgr->GenerateKeyEvent(NULL, 1, 0, 0, 0);
+  event_mgr->ProcessWaitingEvents();
   ASSERT_EQ(0, sogob);
   ASSERT_EQ(1, paric);
 }
@@ -89,26 +93,30 @@ TEST_F(EventManagerTests, CreateMultipleEventsOnDifferentKeys) {
   ASSERT_NE(event_fo, event_fe);
   ASSERT_NE(event_d, event_fe);
 
-  event_mgr->ProcessKeyEvent(NULL, 1, 0, 0, 0);
+  event_mgr->GenerateKeyEvent(NULL, 1, 0, 0, 0);
+  event_mgr->ProcessWaitingEvents();
 
   ASSERT_EQ(0, fortnite);
   ASSERT_EQ(0, feet_pic);
   ASSERT_EQ(1, dogecoin);
 
-  event_mgr->ProcessKeyEvent(NULL, 2, 0, 0, 0);
+  event_mgr->GenerateKeyEvent(NULL, 2, 0, 0, 0);
+  event_mgr->ProcessWaitingEvents();
 
   ASSERT_EQ(1, fortnite);
   ASSERT_EQ(0, feet_pic);
   ASSERT_EQ(1, dogecoin);
 
-  event_mgr->ProcessKeyEvent(NULL, 3, 0, 0, 0);
+  event_mgr->GenerateKeyEvent(NULL, 3, 0, 0, 0);
+  event_mgr->ProcessWaitingEvents();
 
   ASSERT_EQ(1, fortnite);
   ASSERT_EQ(1, feet_pic);
   ASSERT_EQ(1, dogecoin);
 
   event_mgr->RemoveKeyListener(event_d);
-  event_mgr->ProcessKeyEvent(NULL, 1, 0, 0, 0);
+  event_mgr->GenerateKeyEvent(NULL, 1, 0, 0, 0);
+  event_mgr->ProcessWaitingEvents();
   
   ASSERT_EQ(1, fortnite);
   ASSERT_EQ(1, feet_pic);

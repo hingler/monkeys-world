@@ -23,6 +23,17 @@ struct callback_info {
 };
 
 /**
+ *  Stores info on a single event.
+ */ 
+struct event_info {
+  GLFWwindow* window;
+  int key;
+  int scancode;
+  int action;
+  int mods;
+};
+
+/**
  *  Integrates with GLFW to allow components to listen to input updates.
  */ 
 class WindowEventManager {
@@ -36,7 +47,12 @@ class WindowEventManager {
   /**
    *  Handles incoming GLFW events.
    */ 
-  void ProcessKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods);
+  void GenerateKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+  /**
+   *  Process all waiting events.
+   */  
+  void ProcessWaitingEvents();
 
   /**
    * Register a listener which will be called when an event is generated for the desired key.
@@ -69,6 +85,12 @@ class WindowEventManager {
 
   // generates new events
   static utils::IDGenerator event_desc_generator_;
+
+  // stores incoming events so that they can be processed at once.
+  std::vector<event_info> event_queue_;
+
+  // lock for event queue
+  std::shared_timed_mutex event_mutex_;
 
  protected:
   /**
