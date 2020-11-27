@@ -134,9 +134,6 @@ std::shared_ptr<Model> Model::FromObjFile(Context* ctx, const std::string& path)
       data_type type = GetDataType(line_data);
       TrimHeader(line_data);
 
-      // TODO: I'm pretty sure much of the runtime at this point is going towards
-      //       boost::split. See if there's a more barebones way to do it.
-      //       try profiling and see where all the runtime goes, ig
       std::vector<std::string> vals;
       boost::split(vals, line_data, [](char c){ return std::isspace(c); }, boost::token_compress_on);
       glm::vec3 data(0.0);
@@ -144,7 +141,6 @@ std::shared_ptr<Model> Model::FromObjFile(Context* ctx, const std::string& path)
       // read values from string to float!
       for (int i = 0; i < vals.size() && i < 3; i++) {
         if (vals[i].size() > 0) {
-          // in VS: weird behavior where an empty string is pushed at the end (not a problem on my desktop!!!)
           try {
             data[i] = boost::lexical_cast<float>(vals[i]);
           }
