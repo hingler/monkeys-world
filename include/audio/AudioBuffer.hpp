@@ -1,7 +1,10 @@
 #ifndef AUDIO_BUFFER_H_
 #define AUDIO_BUFFER_H_
 
+#include <atomic>
 #include <condition_variable>
+#include <mutex>
+#include <thread>
 
 #define CACHE_LINE 64
 
@@ -18,6 +21,9 @@ namespace audio {
  */ 
 class AudioBuffer {
  public:
+  /**
+   *  Creates new AudioBuffer with capacity `size` bytes
+   */ 
   AudioBuffer(int capacity);
 
   // note: determine if "peek" is necessary later :)
@@ -50,10 +56,12 @@ class AudioBuffer {
    *  by the buffer, to the buffer.
    */ 
   virtual int WriteFromFile(int n) = 0;
+
   
  protected:
   // implementation shouldn't require locks!
-  float* buffer;                        // set up by AudioBuffer ctor.
+  const int capacity_;
+  float* buffer_;                        // set up by AudioBuffer ctor.
   char CACHE_BREAK_R_[CACHE_LINE];      // separates read from buffer
   std::atomic<uint64_t> bytes_read_;    // read header
   uint64_t last_write_polled_;          // last write value polled
