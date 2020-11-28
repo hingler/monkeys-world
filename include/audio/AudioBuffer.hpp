@@ -16,8 +16,8 @@ namespace audio {
  *  Used by AudioManager to source audio samples from file.
  *  Typically: manager will construct on demand, then choose to populate from cache.
  *  Then, it will start the write thread, which will take care of writing from there.
- *  Only one thread (the file writer thread) will write at a time.
- *  Generally, only one thread will read at a time.
+ *  Only one thread (the file writer thread) will write at a time,
+ *  and only one thread will read at a time.
  */ 
 class AudioBuffer {
  public:
