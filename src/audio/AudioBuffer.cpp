@@ -75,6 +75,8 @@ void AudioBuffer::WriteThreadFunc() {
         // wait until notified
         // edge cond: the buffer is killed while waiting here
         // use dtor to grab lock, clear flag, then notify, then release.
+        // because the lock is grabbed: we're guaranteed to be in this state when that
+        // happens, or done completely.
         write_cv_.wait(threadlock);
         continue;
       }

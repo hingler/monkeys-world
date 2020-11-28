@@ -28,12 +28,14 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/input/WindowEventManager.cpp)
 
 add_library(monkeys-world-audio
-                                    ${SRC_DIR}/audio/AudioBuffer.cpp)
+                                    ${SRC_DIR}/audio/AudioBuffer.cpp
+                                    ${SRC_DIR}/_stb_libs/stb_vorbis.c)
 
 set_property(TARGET monkeys-world-components PROPERTY CXX_STANDARD 14)
 
 target_include_directories(monkeys-world-components PUBLIC ${INC_DIR})
 target_include_directories(monkeys-world-audio PUBLIC ${INC_DIR})
+target_include_directories(monkeys-world-audio PUBLIC ${STB_INCLUDE_DIRS})
 
 ### GLFW ###
 
@@ -55,6 +57,9 @@ find_package(GTest CONFIG REQUIRED)
 ### GLM ###
 find_package(glm CONFIG REQUIRED)
 
+### STB LIBS ###
+find_path(STB_INCLUDE_DIRS "stb.h")
+
 ### BOOST ###
 set(BOOST_USE_MULTITHREADED ON)
 set(BOOST_USE_STATIC_LIBS ON)
@@ -65,7 +70,7 @@ find_package(Boost 1.72.0 COMPONENTS log regex REQUIRED)
 set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG ${CMAKE_CXX_FLAGS_DEBUG}")
 
 target_link_libraries(monkeys-world-components glm glad::glad)
-target_include_directories(monkeys-world-components PUBLIC ${Boost_INCLUDE_DIRS})
+target_include_directories(monkeys-world-components PUBLIC ${Boost_INCLUDE_DIRS} ${STB_INCLUDE_DIRS})
 target_link_libraries(monkeys-world-components ${Boost_LIBRARIES})
 
 target_link_libraries(monkeys-world monkeys-world-components)
