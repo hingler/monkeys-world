@@ -35,25 +35,29 @@ class AudioBuffer {
    *  Reads `n` samples from the buffer and moves them to `output`.
    *  Advances the read head.
    *  @param n - number of samples to read.
-   *  @param output - buffer which stores output.
+   *  @param output_left - left speaker output
+   *  @param output_right - right speaker output
    *  @returns number of samples which could be outputted.
    */ 
-  int Read(int n, float* output);
+  int Read(int n, float* output_left, float* output_right);
+
+  // TODO: implement ReadAdd to add to the input buffer?
 
   /**
    *  Reads `n` samples from the buffer and moves them to `output`.
    *  Does not advance the read head.
    *  @param n - number of samples to read.
-   *  @param output - buffer which stores output.
+   *  @param output_left - left speaker output
+   *  @param output_right - right speaker output
    *  @returns number of samples which could be outputted.
    */ 
-  int Peek(int n, float* output);
+  int Peek(int n, float* output_left, float* output_right);
 
   /**
-   *  Writes `n` samples from `input` to the buffer.
+   *  Writes `n` samples from `input` to the buffer, from left and right channels.
    *  Advances the write head.
    */ 
-  int Write(int n, float* input);
+  int Write(int n, float* input_left, float* input_right);
 
   /**
    *  Starts up the thread which writes to the buffer from a file.
@@ -76,7 +80,8 @@ class AudioBuffer {
  protected:
   // implementation shouldn't require locks!
   const int capacity_;
-  float* buffer_;                        // set up by AudioBuffer ctor.
+  float* buffer_l_;                     // left buffer
+  float* buffer_r_;                     // right buffer
   char CACHE_BREAK_R_[CACHE_LINE];      // separates read from buffer
   std::atomic<uint64_t> bytes_read_;    // read header
   uint64_t last_write_polled_;          // last write value polled
