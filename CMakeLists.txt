@@ -25,12 +25,15 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/critter/GameObject.cpp
                                     ${SRC_DIR}/utils/IDGenerator.cpp
                                     ${SRC_DIR}/critter/Model.cpp
-                                    ${SRC_DIR}/input/WindowEventManager.cpp
+                                    ${SRC_DIR}/input/WindowEventManager.cpp)
+
+add_library(monkeys-world-audio
                                     ${SRC_DIR}/audio/AudioBuffer.cpp)
 
 set_property(TARGET monkeys-world-components PROPERTY CXX_STANDARD 14)
 
 target_include_directories(monkeys-world-components PUBLIC ${INC_DIR})
+target_include_directories(monkeys-world-audio PUBLIC ${INC_DIR})
 
 ### GLFW ###
 
@@ -118,6 +121,12 @@ add_executable(events-test test/EventManagerTest.cpp)
 target_include_directories(events-test PRIVATE ${INC_DIR})
 target_link_libraries(events-test GTest::gtest_main monkeys-world-components)
 add_test(NAME events-test COMMAND events-test
+            WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
+
+add_executable(audio-buffer-test test/AudioBufferTest.cpp)
+target_include_directories(audio-buffer-test PRIVATE ${INC_DIR})
+target_link_libraries(audio-buffer-test GTest::gtest_main monkeys-world-audio)
+add_test(NAME audio-buffer-test COMMAND audio-buffer-test
             WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})

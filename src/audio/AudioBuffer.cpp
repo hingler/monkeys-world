@@ -9,40 +9,46 @@ AudioBuffer::AudioBuffer(int capacity) : capacity_(capacity) {
   bytes_written_ = 0;
   last_write_polled_ = 0;
   last_read_polled_ = 0;
+  running_ = false;
+  write_thread_flag_.test_and_set();
 }
 
 int AudioBuffer::Read(int n, float* output) {
+  int increment = Peek(n, output);
+  bytes_read_.fetch_add(increment, std::memory_order_release);
+  return increment;
+}
+
+int AudioBuffer::Peek(int n, float* output) {
   uint64_t read_head = bytes_read_.load(std::memory_order_acquire);
-  if (read_head + n < last_write_polled_) {
+  if (read_head + n >= last_write_polled_) {
     last_write_polled_ = bytes_written_.load(std::memory_order_acquire);
   }
 
   // number of samples which we can still read
-  int read_capacity = static_cast<int>(last_write_polled_ - read_head);
+  int read_size = static_cast<int>(last_write_polled_ - read_head);
 
-  n = std::min(n, read_capacity);
-  for (int i = 0; i < n; i++) {
+  read_size = std::min(n, read_size);
+  for (int i = 0; i < read_size; i++) {
     output[i] = buffer_[read_head++ % capacity_]; 
   }
 
-  bytes_read_.store(read_head, std::memory_order_release);
-
-  // if less than 50% full now: notify all waiters.
-  if (read_capacity - n < (capacity_ / 2)) {
+  if (read_size - n < (capacity_ / 2)) {
     write_cv_.notify_all();
   }
-  return n;
+
+  return read_size;
 }
 
 int AudioBuffer::Write(int n, float* input) {
   uint64_t write_head = bytes_written_.load(std::memory_order_acquire);
-  if (write_head + n < last_read_polled_ + capacity_) {
+  if (write_head + n >= last_read_polled_ + capacity_) {
     last_read_polled_ = bytes_read_.load(std::memory_order_acquire);
   }
 
   n = std::min(n, static_cast<int>(last_read_polled_ + capacity_ - write_head));
   for (int i = 0; i < n; i++) {
-    buffer_[write_head++ & capacity_] = input[i];
+    buffer_[write_head++ % capacity_] = input[i];
   }
 
   bytes_written_.store(write_head, std::memory_order_release);
@@ -52,17 +58,56 @@ int AudioBuffer::Write(int n, float* input) {
 
 
 void AudioBuffer::WriteThreadFunc() {
-  // figure out how many bytes we can write
-  // grab lock
-  // while looping:
-  //  - if write thread flag raised: return
-  //  - otherwise: see if we can write at all
-  //  - if so: write!
-  //  - if not: wait on the cv
+  std::unique_lock<std::mutex> threadlock(write_lock_);
+  uint64_t bw_local;
+  // someone has to clear this to shut it up
+  while (write_thread_flag_.test_and_set()) {
+    bw_local = bytes_written_.load(std::memory_order_acquire);
+    // buffer is full -- get up to date data
+    if (bw_local == (last_read_polled_ + capacity_)) {
+      last_read_polled_ = bytes_read_.load(std::memory_order_acquire);
+      // after update: still full
+      if (bw_local == (last_read_polled_ + capacity_)) {
+        // wait until notified
+        // edge cond: the buffer is killed while waiting here
+        // use dtor to grab lock, clear flag, then notify, then release.
+        write_cv_.wait(threadlock);
+        continue;
+      }
+    }
 
-  // dtor should grab lock, raise flag, notify, then release.
-  // this can only occur before we restart the loop, so on the next itr
-  // the thread loop will see that the thread needs to be closed.
+    uint64_t w_len = capacity_ - (bw_local - last_read_polled_);
+    // only one thread will write at a time!
+    if (this->WriteFromFile(w_len) <= 0) {
+      // we obviously have capacity, so the file is exhausted or broken.
+      break;
+    }
+  }
+}
+
+/**
+ *  True if the thread could be spun up, false otherwise.
+ */ 
+bool AudioBuffer::StartWriteThread() {
+  std::unique_lock<std::mutex> threadlock(write_lock_);
+  if (running_) {
+    return false;
+  }
+
+  write_thread_ = std::thread(&AudioBuffer::WriteThreadFunc, this);
+  return true;
+}
+
+AudioBuffer::~AudioBuffer() {
+  std::unique_lock<std::mutex> thread_lock(write_lock_);
+  write_thread_flag_.clear();
+  write_cv_.notify_all();
+  thread_lock.unlock();
+  // should terminate shortly after this
+  if (running_) {
+    write_thread_.join();
+  }
+  delete[] buffer_;
 }
 
 }

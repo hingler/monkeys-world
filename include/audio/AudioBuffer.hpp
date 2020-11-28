@@ -36,8 +36,18 @@ class AudioBuffer {
    *  Advances the read head.
    *  @param n - number of samples to read.
    *  @param output - buffer which stores output.
+   *  @returns number of samples which could be outputted.
    */ 
   int Read(int n, float* output);
+
+  /**
+   *  Reads `n` samples from the buffer and moves them to `output`.
+   *  Does not advance the read head.
+   *  @param n - number of samples to read.
+   *  @param output - buffer which stores output.
+   *  @returns number of samples which could be outputted.
+   */ 
+  int Peek(int n, float* output);
 
   /**
    *  Writes `n` samples from `input` to the buffer.
@@ -48,7 +58,7 @@ class AudioBuffer {
   /**
    *  Starts up the thread which writes to the buffer from a file.
    */
-  void StartWriteThread(); 
+  bool StartWriteThread(); 
 
   /**
    *  Implementation-defined function which reads
@@ -56,6 +66,11 @@ class AudioBuffer {
    *  by the buffer, to the buffer.
    */ 
   virtual int WriteFromFile(int n) = 0;
+
+  /**
+   *  Audio buffer dtor.
+   */ 
+  ~AudioBuffer();
 
   
  protected:
@@ -71,6 +86,7 @@ class AudioBuffer {
 
   std::condition_variable write_cv_;    // cv used to signal write thread
   std::thread write_thread_;            // write thread 
+  std::atomic_bool running_;            // true if thread is running
   std::atomic_flag write_thread_flag_;  // flag which signals early termination of write thread
   std::mutex write_lock_;               // lock used by wait func on write thread
  private:
