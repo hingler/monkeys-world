@@ -72,6 +72,12 @@ class AudioBuffer {
   virtual int WriteFromFile(int n) = 0;
 
   /**
+   *  Implementation defined function which
+   *  returns `true` if the file underlying this buffer has been exhausted.
+   */ 
+  virtual bool EndOfFile() = 0;
+
+  /**
    *  Audio buffer dtor.
    */ 
   ~AudioBuffer();

@@ -14,6 +14,10 @@ class DummyAudioBuffer : public AudioBuffer {
   int WriteFromFile(int n) override {
     return 0;
   }
+
+  bool EndOfFile() override {
+    return false;
+  }
 };
 
 TEST(AudioBufferTests, CreateAudioBuffer) {

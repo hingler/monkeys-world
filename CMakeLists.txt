@@ -137,6 +137,12 @@ target_link_libraries(audio-buffer-test GTest::gtest_main monkeys-world-audio)
 add_test(NAME audio-buffer-test COMMAND audio-buffer-test
             WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
 
+add_executable(audio-buffer-test-ogg test/AudioBufferOggTest.cpp)
+target_include_directories(audio-buffer-test-ogg PRIVATE ${INC_DIR})
+target_link_libraries(audio-buffer-test-ogg GTest::gtest_main monkeys-world-audio)
+add_test(NAME audio-buffer-test-ogg COMMAND audio-buffer-test-ogg
+            WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
+
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)

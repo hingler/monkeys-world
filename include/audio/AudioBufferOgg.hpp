@@ -4,6 +4,8 @@
 #include <audio/AudioBuffer.hpp>
 #include <_stb_libs/stb_vorbis.h>
 
+#include <atomic>
+
 namespace monkeysworld {
 namespace audio {
 
@@ -16,9 +18,13 @@ class AudioBufferOgg : public AudioBuffer {
  public:
   AudioBufferOgg(int capacity, const std::string& filename);
   /**
-   *  Specialization for ogg format
+   *  Specialization for ogg format.
+   *  @param n - number of samples we are trying to read.
+   *  @
    */ 
   int WriteFromFile(int n) override;
+
+  bool EndOfFile() override;
 
   ~AudioBufferOgg();
   AudioBufferOgg& operator=(const AudioBufferOgg& other) = delete;
@@ -27,6 +33,7 @@ class AudioBufferOgg : public AudioBuffer {
   AudioBufferOgg(AudioBufferOgg&& other);
  private:
   stb_vorbis* vorbis_file_;             // the vorbis file assc'd w this buffer
+  std::atomic_bool eof_;                // true if we're at eof
 };
 
 }
