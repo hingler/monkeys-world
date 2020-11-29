@@ -75,16 +75,22 @@ class AudioBuffer {
    *  Audio buffer dtor.
    */ 
   ~AudioBuffer();
+  AudioBuffer& operator=(const AudioBuffer& other) = delete;
+  AudioBuffer& operator=(AudioBuffer&& other);
+  AudioBuffer(const AudioBuffer& other) = delete;
+  AudioBuffer(AudioBuffer&& other);
+  
 
   
  protected:
-  // implementation shouldn't require locks!
-  const int capacity_;
+  int capacity_;
   float* buffer_l_;                     // left buffer
   float* buffer_r_;                     // right buffer
+
   char CACHE_BREAK_R_[CACHE_LINE];      // separates read from buffer
   std::atomic<uint64_t> bytes_read_;    // read header
   uint64_t last_write_polled_;          // last write value polled
+
   char CACHE_BREAK_W_[CACHE_LINE];      // separates write from read
   std::atomic<uint64_t> bytes_written_; // write header
   uint64_t last_read_polled_;           // last read value polled

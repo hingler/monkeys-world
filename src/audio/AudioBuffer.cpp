@@ -3,7 +3,6 @@
 namespace monkeysworld {
 namespace audio {
 
-// TODO: Needs to be in stereo lol
 AudioBuffer::AudioBuffer(int capacity) : capacity_(capacity) {
   buffer_l_ = new float[capacity];
   buffer_r_ = new float[capacity];
@@ -82,6 +81,7 @@ void AudioBuffer::WriteThreadFunc() {
       }
     }
 
+    // once we get here: we definitely have capacity -- if WriteFromFile returns <= 0, then the file is exhausted.
     uint64_t w_len = capacity_ - (bw_local - last_read_polled_);
     // only one thread will write at a time!
     if (this->WriteFromFile(w_len) <= 0) {
@@ -100,6 +100,7 @@ bool AudioBuffer::StartWriteThread() {
     return false;
   }
 
+  write_thread_flag_.test_and_set();
   write_thread_ = std::thread(&AudioBuffer::WriteThreadFunc, this);
   return true;
 }
@@ -113,8 +114,84 @@ AudioBuffer::~AudioBuffer() {
   if (running_) {
     write_thread_.join();
   }
-  delete[] buffer_l_;
-  delete[] buffer_r_;
+
+  if (buffer_l_ != nullptr) {
+    delete[] buffer_l_;
+  }
+
+  if (buffer_r_ != nullptr) {
+    delete[] buffer_r_;
+  }
+}
+
+AudioBuffer& AudioBuffer::operator=(AudioBuffer&& other) {
+  // kill my write thread
+  if (running_) {
+    std::unique_lock<std::mutex> thread_lock(write_lock_);
+    write_thread_flag_.clear();
+    write_cv_.notify_all();
+    thread_lock.unlock();
+    write_thread_.join();
+  }
+
+  if (buffer_l_ != nullptr) {
+    delete[] buffer_l_;
+  }
+
+  if (buffer_r_ != nullptr) {
+    delete[] buffer_r_;
+  }
+
+  // kill other's write thread
+  if (other.running_) {
+    std::unique_lock<std::mutex> moved_thread_lock(write_lock_);
+    other.write_thread_flag_.clear();
+    other.write_cv_.notify_all();
+    moved_thread_lock.unlock();
+    other.write_thread_.join();
+  }
+
+  // copy fields
+  capacity_ = other.capacity_;
+  buffer_l_ = other.buffer_l_;
+  buffer_r_ = other.buffer_r_;
+  other.buffer_l_ = other.buffer_r_ = nullptr;
+  bytes_read_ = other.bytes_read_.load(std::memory_order_seq_cst);
+  last_write_polled_ = other.last_write_polled_;
+  bytes_written_ = other.bytes_written_.load(std::memory_order_seq_cst);
+  last_read_polled_ = other.last_read_polled_;
+  write_thread_ = std::move(other.write_thread_);
+  // start up write thread again if it was already up in the moved elem
+  if (other.running_) {
+    StartWriteThread();
+  }
+
+  return *this;
+}
+
+AudioBuffer::AudioBuffer(AudioBuffer&& other) : capacity_(other.capacity_) {
+  // kill other's write thread
+  if (other.running_) {
+    std::unique_lock<std::mutex> moved_thread_lock(write_lock_);
+    other.write_thread_flag_.clear();
+    other.write_cv_.notify_all();
+    moved_thread_lock.unlock();
+    other.write_thread_.join();
+  }
+
+  // copy fields
+  buffer_l_ = other.buffer_l_;
+  buffer_r_ = other.buffer_r_;
+  other.buffer_l_ = other.buffer_r_ = nullptr;
+  bytes_read_ = other.bytes_read_.load(std::memory_order_seq_cst);
+  last_write_polled_ = other.last_write_polled_;
+  bytes_written_ = other.bytes_written_.load(std::memory_order_seq_cst);
+  last_read_polled_ = other.last_read_polled_;
+  write_thread_ = std::move(other.write_thread_);
+  // start up write thread again if it was already up in the moved elem
+  if (other.running_) {
+    StartWriteThread();
+  }
 }
 
 }
