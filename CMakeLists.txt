@@ -29,6 +29,7 @@ add_library(monkeys-world-components
 
 add_library(monkeys-world-audio
                                     ${SRC_DIR}/audio/AudioBuffer.cpp
+                                    ${SRC_DIR}/audio/AudioBufferOgg.cpp
                                     ${SRC_DIR}/_stb_libs/stb_vorbis.c)
 
 set_property(TARGET monkeys-world-components PROPERTY CXX_STANDARD 14)
@@ -72,6 +73,8 @@ set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG ${CMAKE_CXX_FLAGS_DEBUG}")
 target_link_libraries(monkeys-world-components glm glad::glad)
 target_include_directories(monkeys-world-components PUBLIC ${Boost_INCLUDE_DIRS} ${STB_INCLUDE_DIRS})
 target_link_libraries(monkeys-world-components ${Boost_LIBRARIES})
+target_link_libraries(monkeys-world-audio ${Boost_LIBRARIES})
+
 
 target_link_libraries(monkeys-world monkeys-world-components)
 
