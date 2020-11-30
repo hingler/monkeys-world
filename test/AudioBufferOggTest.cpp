@@ -60,3 +60,43 @@ TEST(OggBufferTest, CheckThreadFunc) {
   delete[] truth_r;
   stb_vorbis_close(file);
 }
+
+TEST(OggBufferTest, WriteAndAutoSeek) {
+  AudioBufferOgg oggers(16384, "resources/flap_jack_scream.ogg");
+  float* test_buffer_l = new float[8192];
+  float* test_buffer_r = new float[8192];
+  // leave the garbage -- we're going to ignore it
+  ASSERT_EQ(8192, oggers.Write(8192, test_buffer_l, test_buffer_r));
+  ASSERT_EQ(8192, oggers.WriteFromFile(8192));
+
+  // 16384 samples -- 8192 garbage, then 8192+ from the ogg.
+  int err;
+  stb_vorbis* file = stb_vorbis_open_filename("resources/flap_jack_scream.ogg", &err, NULL);
+  if (file == NULL) {
+    std::cout << "what" << std::endl;
+  }
+  stb_vorbis_seek(file, 8192);
+  float* buffer[2] = {test_buffer_l, test_buffer_r};
+  // test buffers contain 8192 - 16384 from stb vorbis
+  stb_vorbis_get_samples_float(file, 2, buffer, 8192);
+  float* output_buffer_l = new float[8192];
+  float* output_buffer_r = new float[8192];
+  ASSERT_EQ(8192, oggers.Read(8192, output_buffer_l, output_buffer_r));
+  // output buffers contain ogg buffer's 8192 - 16384
+  ASSERT_EQ(8192, oggers.Read(8192, output_buffer_l, output_buffer_r));
+  for (int i = 0; i < 8192; i++) {
+    ASSERT_NEAR(output_buffer_l[i], test_buffer_l[i], EPS);
+    ASSERT_NEAR(output_buffer_r[i], test_buffer_r[i], EPS);
+  }
+
+  // ergo -- to write from cache, we just have to load the cache and write the samples,
+  // before starting the write thread.
+
+  // our write func will handle seeking and everything
+
+  delete[] test_buffer_l;
+  delete[] test_buffer_r;
+  delete[] output_buffer_l;
+  delete[] output_buffer_r;
+  stb_vorbis_close(file);
+}

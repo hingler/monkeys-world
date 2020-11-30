@@ -84,12 +84,12 @@ void AudioBufferOgg::SeekFileToWriteHead() {
     stb_vorbis_seek(vorbis_file_, sample_count);
     // is this necessary?
     eof_ = true;
-  }
-
-  int seek_res = stb_vorbis_seek(vorbis_file_, bytes_written_.load(std::memory_order_acquire));
-  if (seek_res == 0) {
-    // some other error occured!
-    BOOST_LOG_TRIVIAL(error) << "Seek on vorbis file failed with error " << stb_vorbis_get_error(vorbis_file_);
+  } else {
+    int seek_res = stb_vorbis_seek(vorbis_file_, bytes_written_.load(std::memory_order_acquire));
+    if (seek_res == 0) {
+      // some other error occured!
+      BOOST_LOG_TRIVIAL(error) << "Seek on vorbis file failed with error " << stb_vorbis_get_error(vorbis_file_);
+    }
   }
 }
 
