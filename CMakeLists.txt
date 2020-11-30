@@ -61,6 +61,9 @@ find_package(glm CONFIG REQUIRED)
 ### STB LIBS ###
 find_path(STB_INCLUDE_DIRS "stb.h")
 
+### PORTAUDIO ###
+find_package(portaudio CONFIG REQUIRED)
+
 ### BOOST ###
 set(BOOST_USE_MULTITHREADED ON)
 set(BOOST_USE_STATIC_LIBS ON)
@@ -73,7 +76,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG ${CMAKE_CXX_FLAGS_DEBUG}")
 target_link_libraries(monkeys-world-components glm glad::glad)
 target_include_directories(monkeys-world-components PUBLIC ${Boost_INCLUDE_DIRS} ${STB_INCLUDE_DIRS})
 target_link_libraries(monkeys-world-components ${Boost_LIBRARIES})
-target_link_libraries(monkeys-world-audio ${Boost_LIBRARIES})
+target_link_libraries(monkeys-world-audio ${Boost_LIBRARIES} portaudio)
 target_include_directories(monkeys-world-audio PUBLIC ${Boost_INCLUDE_DIRS})
 
 
