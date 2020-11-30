@@ -141,14 +141,7 @@ AudioBuffer::~AudioBuffer() {
 }
 
 AudioBuffer& AudioBuffer::operator=(AudioBuffer&& other) {
-  // kill my write thread
-  if (running_) {
-    std::unique_lock<std::mutex> thread_lock(write_lock_);
-    write_thread_flag_.clear();
-    write_cv_.notify_all();
-    thread_lock.unlock();
-    write_thread_.join();
-  }
+  // killing write thread is the responsibility of the implementor
 
   if (buffer_l_ != nullptr) {
     delete[] buffer_l_;
@@ -159,13 +152,7 @@ AudioBuffer& AudioBuffer::operator=(AudioBuffer&& other) {
   }
 
   // kill other's write thread
-  if (other.running_) {
-    std::unique_lock<std::mutex> moved_thread_lock(write_lock_);
-    other.write_thread_flag_.clear();
-    other.write_cv_.notify_all();
-    moved_thread_lock.unlock();
-    other.write_thread_.join();
-  }
+  other.DestroyWriteThread();
 
   // copy fields
   capacity_ = other.capacity_;
@@ -186,16 +173,8 @@ AudioBuffer& AudioBuffer::operator=(AudioBuffer&& other) {
 }
 
 AudioBuffer::AudioBuffer(AudioBuffer&& other) : capacity_(other.capacity_) {
-  // kill other's write thread
-  if (other.running_) {
-    std::unique_lock<std::mutex> moved_thread_lock(write_lock_);
-    other.write_thread_flag_.clear();
-    other.write_cv_.notify_all();
-    moved_thread_lock.unlock();
-    other.write_thread_.join();
-  }
-
   // copy fields
+  other.DestroyWriteThread();
   buffer_l_ = other.buffer_l_;
   buffer_r_ = other.buffer_r_;
   other.buffer_l_ = other.buffer_r_ = nullptr;
@@ -207,6 +186,17 @@ AudioBuffer::AudioBuffer(AudioBuffer&& other) : capacity_(other.capacity_) {
   // start up write thread again if it was already up in the moved elem
   if (other.running_) {
     StartWriteThread();
+  }
+}
+
+void AudioBuffer::DestroyWriteThread() {
+  if (running_) {
+    std::unique_lock<std::mutex> moved_thread_lock(write_lock_);
+    write_thread_flag_.clear();
+    write_cv_.notify_all();
+    moved_thread_lock.unlock();
+    write_thread_.join();
+    running_ = false;
   }
 }
 

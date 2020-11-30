@@ -80,7 +80,7 @@ bool AudioBufferOgg::EndOfFile() {
 
 AudioBufferOgg::~AudioBufferOgg() {
   // for concurrency reasons: we have to clean up the write thread ourselves
-  // it shouldn't matter in the long run though lol
+  // it shouldn't matter in the long run though
   if (running_) {
     std::unique_lock<std::mutex> thread_lock(write_lock_);
     write_thread_flag_.clear();
@@ -96,6 +96,7 @@ AudioBufferOgg::~AudioBufferOgg() {
 }
 
 AudioBufferOgg& AudioBufferOgg::operator=(AudioBufferOgg&& other) {
+  DestroyWriteThread();
   AudioBuffer::operator=(std::move(other));
   this->vorbis_file_ = other.vorbis_file_;
   other.vorbis_file_ = nullptr;
