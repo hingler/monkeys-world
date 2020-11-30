@@ -59,5 +59,4 @@ TEST(OggBufferTest, CheckThreadFunc) {
   delete[] truth_l;
   delete[] truth_r;
   stb_vorbis_close(file);
-  std::cout << "ding ding" << std::endl;
 }
