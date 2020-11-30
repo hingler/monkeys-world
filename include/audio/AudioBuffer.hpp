@@ -49,8 +49,11 @@ class AudioBuffer {
    *  @returns number of samples which could be outputted.
    */
   int ReadAdd(int n, float* output_left, float* output_right);
-
-  // TODO: implement ReadAdd to add to the input buffer?
+  /**
+   *  Same as readadd, but samples are interleaved in output.
+   *  output must be capable of storing 2 * n samples.
+   */ 
+  int ReadAddInterleaved(int n, float* output);
 
   /**
    *  Reads `n` samples from the buffer and moves them to `output`.
@@ -61,6 +64,7 @@ class AudioBuffer {
    *  @returns number of samples which could be outputted.
    */ 
   int Peek(int n, float* output_left, float* output_right);
+
 
   /**
    *  Writes `n` samples from `input` to the buffer, from left and right channels.

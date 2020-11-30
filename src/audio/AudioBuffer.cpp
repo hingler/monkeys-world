@@ -15,10 +15,34 @@ AudioBuffer::AudioBuffer(int capacity) : capacity_(capacity) {
   write_thread_flag_.test_and_set();
 }
 
+
+
 int AudioBuffer::Read(int n, float* output_left, float* output_right) {
   int increment = Peek(n, output_left, output_right);
   bytes_read_.fetch_add(increment, std::memory_order_release);
   return increment;
+}
+
+int AudioBuffer::ReadAddInterleaved(int n, float* output) {
+  uint64_t read_head = bytes_read_.load(std::memory_order_acquire);
+  if (read_head + n >= last_write_polled_) {
+    last_write_polled_ = bytes_written_.load(std::memory_order_acquire);
+  }
+
+  int read_size = static_cast<int>(last_write_polled_ - read_head);
+
+  n = std::min(n, read_size);
+  for (int i = 0; i < n; i++) {
+    *(output++) += buffer_r_[read_head % capacity_];
+    *(output++) += buffer_l_[read_head % capacity_];
+  }
+
+  if (read_size < (capacity_ / 2)) {
+    write_cv_.notify_all();
+  }
+
+  bytes_read_.fetch_add(read_size, std::memory_order_release);
+  return n;
 }
 
 int AudioBuffer::ReadAdd(int n, float* output_left, float* output_right) {
@@ -29,18 +53,18 @@ int AudioBuffer::ReadAdd(int n, float* output_left, float* output_right) {
 
   int read_size = static_cast<int>(last_write_polled_ - read_head);
 
-  read_size = std::min(n, read_size);
-  for (int i = 0; i < read_size; i++) {
+  n = std::min(n, read_size);
+  for (int i = 0; i < n; i++) {
     output_right[i] += buffer_r_[read_head % capacity_];
     output_left[i] += buffer_l_[read_head++ % capacity_];
   }
 
-  if (read_size - n < (capacity_ / 2)) {
+  if (read_size < (capacity_ / 2)) {
     write_cv_.notify_all();
   }
 
-  bytes_read_.fetch_add(n, std::memory_order_release);
-  return read_size;
+  bytes_read_.fetch_add(read_size, std::memory_order_release);
+  return n;
 }
 
 int AudioBuffer::Peek(int n, float* output_left, float* output_right) {
@@ -52,17 +76,17 @@ int AudioBuffer::Peek(int n, float* output_left, float* output_right) {
   // number of samples which we can still read
   int read_size = static_cast<int>(last_write_polled_ - read_head);
 
-  read_size = std::min(n, read_size);
-  for (int i = 0; i < read_size; i++) {
+  n = std::min(n, read_size);
+  for (int i = 0; i < n; i++) {
     output_right[i] = buffer_r_[read_head % capacity_];
     output_left[i] = buffer_l_[read_head++ % capacity_]; 
   }
 
-  if (read_size - n < (capacity_ / 2)) {
+  if (read_size < (capacity_ / 2)) {
     write_cv_.notify_all();
   }
 
-  return read_size;
+  return n;
 }
 
 int AudioBuffer::Write(int n, float* input_left, float* input_right) {
@@ -71,7 +95,9 @@ int AudioBuffer::Write(int n, float* input_left, float* input_right) {
     last_read_polled_ = bytes_read_.load(std::memory_order_acquire);
   }
 
-  n = std::min(n, static_cast<int>(last_read_polled_ + capacity_ - write_head));
+  int read_size = static_cast<int>(last_read_polled_ + capacity_ - write_head);
+
+  n = std::min(n, read_size);
   for (int i = 0; i < n; i++) {
     buffer_r_[write_head % capacity_] = input_right[i];
     buffer_l_[write_head++ % capacity_] = input_left[i];
