@@ -78,6 +78,7 @@ int AudioBuffer::Write(int n, float* input_left, float* input_right) {
   }
 
   bytes_written_.store(write_head, std::memory_order_release);
+  SeekFileToWriteHead();
   return n;
 }
 

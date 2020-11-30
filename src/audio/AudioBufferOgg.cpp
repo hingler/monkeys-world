@@ -31,7 +31,6 @@ int AudioBufferOgg::WriteFromFile(int n) {
     last_read_polled_ = bytes_read_.load(std::memory_order_acquire);
   }
 
-
   float* buffers_[2] = {&buffer_l_[write_head % capacity_], &buffer_r_[write_head % capacity_]};
   // if we're splitting our buffer: we need to do a pair of writes, instead of just one!
   n = std::min(n, static_cast<int>(last_read_polled_ + capacity_ - write_head));
@@ -76,6 +75,22 @@ int AudioBufferOgg::WriteFromFile(int n) {
 
 bool AudioBufferOgg::EndOfFile() {
   return eof_.load();
+}
+
+void AudioBufferOgg::SeekFileToWriteHead() {
+  int sample_count = stb_vorbis_stream_length_in_samples(vorbis_file_);
+  uint64_t write_head = bytes_written_.load(std::memory_order_acquire);
+  if (write_head >= sample_count) {
+    stb_vorbis_seek(vorbis_file_, sample_count);
+    // is this necessary?
+    eof_ = true;
+  }
+
+  int seek_res = stb_vorbis_seek(vorbis_file_, bytes_written_.load(std::memory_order_acquire));
+  if (seek_res == 0) {
+    // some other error occured!
+    BOOST_LOG_TRIVIAL(error) << "Seek on vorbis file failed with error " << stb_vorbis_get_error(vorbis_file_);
+  }
 }
 
 AudioBufferOgg::~AudioBufferOgg() {

@@ -18,6 +18,11 @@ class DummyAudioBuffer : public AudioBuffer {
   bool EndOfFile() override {
     return false;
   }
+
+ protected:
+  void SeekFileToWriteHead() override {
+    // nop
+  }
 };
 
 TEST(AudioBufferTests, CreateAudioBuffer) {

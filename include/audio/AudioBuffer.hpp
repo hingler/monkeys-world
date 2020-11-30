@@ -87,6 +87,11 @@ class AudioBuffer {
   virtual bool EndOfFile() = 0;
 
   /**
+   *  Terminates the write thread.
+   */ 
+  void DestroyWriteThread();
+
+  /**
    *  Audio buffer dtor.
    *  NOTE: Since the write thread makes use of resources allocated by subclasses,
    *  it is necessary for implementations to clean up the write thread themselves.
@@ -118,7 +123,12 @@ class AudioBuffer {
   std::atomic_flag write_thread_flag_;  // flag which signals early termination of write thread
   std::mutex write_lock_;               // lock used by wait func on write thread
 
-  void DestroyWriteThread();
+  /**
+   *  Seeks the underlying file so that it matches the write head.
+   *  Useful for caching.
+   */ 
+  virtual void SeekFileToWriteHead() = 0;
+
  private:
   /**
    *  Function which writes to the buffer.

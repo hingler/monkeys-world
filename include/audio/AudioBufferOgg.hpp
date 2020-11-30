@@ -31,6 +31,10 @@ class AudioBufferOgg : public AudioBuffer {
   AudioBufferOgg& operator=(AudioBufferOgg&& other);
   AudioBufferOgg(const AudioBufferOgg& other) = delete;
   AudioBufferOgg(AudioBufferOgg&& other);
+
+ protected:
+  void SeekFileToWriteHead() override;
+ 
  private:
   stb_vorbis* vorbis_file_;             // the vorbis file assc'd w this buffer
   std::atomic_bool eof_;                // true if we're at eof

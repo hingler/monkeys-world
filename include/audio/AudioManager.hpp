@@ -2,9 +2,10 @@
 #define AUDIO_MANAGER_H_
 
 #include <memory>
+#include <mutex>
 #include <vector>
 
-#include <AudioBuffer.hpp>
+#include <audio/AudioBuffer.hpp>
 #include <portaudio.h>
 
 #define AUDIO_MGR_MAX_BUFFER_COUNT 256
@@ -42,7 +43,7 @@ class AudioManager {
    *  Should only be called by portaudio.
    *  @param stream - Reference to a stream which has already been instantiated. 
    */ 
-  void RemoveFileFromBuffer(int stream);
+  int RemoveFileFromBuffer(int stream);
 
   /**
    *  Reads n samples from all currently active buffers.
@@ -55,19 +56,26 @@ class AudioManager {
   // TODO -- expansion:
   //    - tag certain buffers in some way, so that we can fuck with music/sfx volume
   //    - those categories would be set when the samples themselves are queued
+  //    - add looping!
   //    - 
+  enum buffer_status {
+    AVAILABLE = 0,
+    USED = 1,
+    DELETING = 2
+  };
+
   struct buffer_info {
-    AudioBuffer* buffer;        // ptr to buffer, or null if not allocated yet
-    std::atomic_int8_t status;  // communicates how the callback is treating the buffer
-                                // if 0: buffer is out of use and/or unallocated
-                                // if 1: buffer is in use
-                                // if 2: buffer will be ignored on future callbacks -- callback should set to 0
+    AudioBuffer* buffer;                  // ptr to buffer, or null if not allocated yet
+    std::atomic<buffer_status> status;    // communicates how the callback is treating the buffer
+                                          // if 0: buffer is out of use and/or unallocated
+                                          // if 1: buffer is in use
+                                          // if 2: buffer will be ignored on future callbacks -- callback should set to 0
 
                                 // we can also add here:
                                 //  - looping
                                 //  - filters and shit!
   };
-
+  
 
   /**
    *  Function called by portauio.
@@ -82,6 +90,12 @@ class AudioManager {
   
   // audio buffer vector
   buffer_info buffers_[AUDIO_MGR_MAX_BUFFER_COUNT];
+
+  // ensures that two buffer creations don't try to alloc the same spot
+  
+  // callback shouldn't have to worry, as the buffer is only marked avail
+  // when the pointer is alloced.
+  std::mutex buffer_info_write_lock_;
 
 };
 
