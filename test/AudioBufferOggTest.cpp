@@ -13,9 +13,12 @@
  TEST(OggBufferTest, CreateOggBuffer) {
    AudioBufferOgg oggers(16384, "resources/flap_jack_scream.ogg");
    ASSERT_EQ(8192, oggers.WriteFromFile(8192));
-   float output_buffer_l[8192];
-   float output_buffer_r[8192];
+   float* output_buffer_l = new float[8192];
+   float* output_buffer_r = new float[8192];
    ASSERT_EQ(8192, oggers.Read(8192, output_buffer_l, output_buffer_r));
+
+   delete[] output_buffer_l;
+   delete[] output_buffer_r;
  }
 
 TEST(OggBufferTest, CheckThreadFunc) {
@@ -40,6 +43,9 @@ TEST(OggBufferTest, CheckThreadFunc) {
   float* test[2] = {truth_l, truth_r};
   int err;
   stb_vorbis* file = stb_vorbis_open_filename("resources/flap_jack_scream.ogg", &err, NULL);
+  if (file == NULL) {
+    std::cout << "oops!!!!" << std::endl;
+  }
   stb_vorbis_info info = stb_vorbis_get_info(file);
   ASSERT_EQ(cur, stb_vorbis_stream_length_in_samples(file));
   stb_vorbis_get_samples_float(file, 2, test, cur);
@@ -52,4 +58,6 @@ TEST(OggBufferTest, CheckThreadFunc) {
   delete[] output_r;
   delete[] truth_l;
   delete[] truth_r;
+  stb_vorbis_close(file);
+  std::cout << "ding ding" << std::endl;
 }

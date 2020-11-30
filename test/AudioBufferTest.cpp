@@ -47,6 +47,31 @@ TEST(AudioBufferTests, ReadWriteTest) {
   }
 }
 
+TEST(AudioBufferTests, ReadAddTest) {
+  DummyAudioBuffer test(32);
+  float test_buffer_l[32];
+  float test_buffer_r[32];
+  for (int i = 0; i < 32; i++) {
+    test_buffer_l[i] = i;
+    test_buffer_r[i] = 32 - i;
+  }
+
+  ASSERT_EQ(test.Write(32, test_buffer_l, test_buffer_r), 32);
+  float output_buffer_l[32];
+  float output_buffer_r[32];
+  for (int i = 0; i < 32; i++) {
+    output_buffer_l[i] = 1.0f;
+    output_buffer_r[i] = 1.0f;
+  }
+
+  ASSERT_EQ(test.ReadAdd(32, output_buffer_l, output_buffer_r), 32);
+
+  for (int i = 0; i < 32; i++) {
+    ASSERT_NEAR(test_buffer_l[i] + 1.0f, output_buffer_l[i], EPS);
+    ASSERT_NEAR(test_buffer_r[i] + 1.0f, output_buffer_r[i], EPS);
+  }
+}
+
 TEST(AudioBufferTests, TheRingPart) {
   DummyAudioBuffer test(32);
   float test_buffer_l[32];

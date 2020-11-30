@@ -41,6 +41,15 @@ class AudioBuffer {
    */ 
   int Read(int n, float* output_left, float* output_right);
 
+  /**
+   *  Reads `n` samples from the buffer and adds them to the values contained in `output`.
+   *  @param n - number of samples to read.
+   *  @param output_left - left speaker output
+   *  @param output_right - right speaker output
+   *  @returns number of samples which could be outputted.
+   */
+  int ReadAdd(int n, float* output_left, float* output_right);
+
   // TODO: implement ReadAdd to add to the input buffer?
 
   /**
@@ -79,6 +88,8 @@ class AudioBuffer {
 
   /**
    *  Audio buffer dtor.
+   *  NOTE: Since the write thread makes use of resources allocated by subclasses,
+   *  it is necessary for implementations to clean up the write thread themselves.
    */ 
   ~AudioBuffer();
   AudioBuffer& operator=(const AudioBuffer& other) = delete;
@@ -106,6 +117,8 @@ class AudioBuffer {
   std::atomic_bool running_;            // true if thread is running
   std::atomic_flag write_thread_flag_;  // flag which signals early termination of write thread
   std::mutex write_lock_;               // lock used by wait func on write thread
+
+  void DestroyWriteThread();
  private:
   /**
    *  Function which writes to the buffer.

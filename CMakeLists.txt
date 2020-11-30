@@ -74,6 +74,7 @@ target_link_libraries(monkeys-world-components glm glad::glad)
 target_include_directories(monkeys-world-components PUBLIC ${Boost_INCLUDE_DIRS} ${STB_INCLUDE_DIRS})
 target_link_libraries(monkeys-world-components ${Boost_LIBRARIES})
 target_link_libraries(monkeys-world-audio ${Boost_LIBRARIES})
+target_include_directories(monkeys-world-audio PUBLIC ${Boost_INCLUDE_DIRS})
 
 
 target_link_libraries(monkeys-world monkeys-world-components)

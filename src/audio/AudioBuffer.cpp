@@ -1,4 +1,5 @@
 #include <audio/AudioBuffer.hpp>
+#include <boost/log/trivial.hpp>
 
 namespace monkeysworld {
 namespace audio {
@@ -18,6 +19,28 @@ int AudioBuffer::Read(int n, float* output_left, float* output_right) {
   int increment = Peek(n, output_left, output_right);
   bytes_read_.fetch_add(increment, std::memory_order_release);
   return increment;
+}
+
+int AudioBuffer::ReadAdd(int n, float* output_left, float* output_right) {
+  uint64_t read_head = bytes_read_.load(std::memory_order_acquire);
+  if (read_head + n >= last_write_polled_) {
+    last_write_polled_ = bytes_written_.load(std::memory_order_acquire);
+  }
+
+  int read_size = static_cast<int>(last_write_polled_ - read_head);
+
+  read_size = std::min(n, read_size);
+  for (int i = 0; i < read_size; i++) {
+    output_right[i] += buffer_r_[read_head % capacity_];
+    output_left[i] += buffer_l_[read_head++ % capacity_];
+  }
+
+  if (read_size - n < (capacity_ / 2)) {
+    write_cv_.notify_all();
+  }
+
+  bytes_read_.fetch_add(n, std::memory_order_release);
+  return read_size;
 }
 
 int AudioBuffer::Peek(int n, float* output_left, float* output_right) {
@@ -101,20 +124,12 @@ bool AudioBuffer::StartWriteThread() {
   }
 
   write_thread_flag_.test_and_set();
+  running_ = true;
   write_thread_ = std::thread(&AudioBuffer::WriteThreadFunc, this);
   return true;
 }
 
 AudioBuffer::~AudioBuffer() {
-  std::unique_lock<std::mutex> thread_lock(write_lock_);
-  write_thread_flag_.clear();
-  write_cv_.notify_all();
-  thread_lock.unlock();
-  // should terminate shortly after this
-  if (running_) {
-    write_thread_.join();
-  }
-
   if (buffer_l_ != nullptr) {
     delete[] buffer_l_;
   }
@@ -122,6 +137,7 @@ AudioBuffer::~AudioBuffer() {
   if (buffer_r_ != nullptr) {
     delete[] buffer_r_;
   }
+
 }
 
 AudioBuffer& AudioBuffer::operator=(AudioBuffer&& other) {
