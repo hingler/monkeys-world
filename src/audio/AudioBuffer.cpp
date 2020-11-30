@@ -33,8 +33,8 @@ int AudioBuffer::ReadAddInterleaved(int n, float* output) {
 
   n = std::min(n, read_size);
   for (int i = 0; i < n; i++) {
-    *(output++) += buffer_r_[read_head % capacity_];
     *(output++) += buffer_l_[read_head % capacity_];
+    *(output++) += buffer_r_[read_head++ % capacity_];
   }
 
   if (read_size < (capacity_ / 2)) {

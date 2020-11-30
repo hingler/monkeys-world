@@ -10,16 +10,40 @@
 
  #define EPS 0.000001
 
- TEST(OggBufferTest, CreateOggBuffer) {
-   AudioBufferOgg oggers(16384, "resources/flap_jack_scream.ogg");
-   ASSERT_EQ(8192, oggers.WriteFromFile(8192));
-   float* output_buffer_l = new float[8192];
-   float* output_buffer_r = new float[8192];
-   ASSERT_EQ(8192, oggers.Read(8192, output_buffer_l, output_buffer_r));
+TEST(OggBufferTest, CreateOggBuffer) {
+  AudioBufferOgg oggers(16384, "resources/flap_jack_scream.ogg");
+  ASSERT_EQ(8192, oggers.WriteFromFile(8192));
+  float* output_buffer_l = new float[8192];
+  float* output_buffer_r = new float[8192];
+  ASSERT_EQ(8192, oggers.Read(8192, output_buffer_l, output_buffer_r));
 
-   delete[] output_buffer_l;
-   delete[] output_buffer_r;
- }
+  delete[] output_buffer_l;
+  delete[] output_buffer_r;
+}
+
+TEST(OggBufferTest, ReadAddInterleavedTest) {
+  AudioBufferOgg oggers(16384, "resources/flap_jack_scream.ogg");
+  ASSERT_EQ(8192, oggers.WriteFromFile(8192));
+  float* output_buffer = new float[16384];
+  for (int i = 0; i < 16384; i++) {
+    output_buffer[i] = 0.0f;
+  }
+  ASSERT_EQ(8192, oggers.ReadAddInterleaved(8192, output_buffer));
+  int err;
+  float* output_verify_left = new float[8192];
+  float* output_verify_right = new float[8192];
+  stb_vorbis* f = stb_vorbis_open_filename("resources/flap_jack_scream.ogg", &err, NULL);
+  float* buffer[2] = {output_verify_left, output_verify_right};
+  stb_vorbis_get_samples_float(f, 2, buffer, 8192);
+  for (int i = 0; i < 8192; i++) {
+    ASSERT_EQ(output_verify_left[i], output_buffer[2 * i]);
+    ASSERT_EQ(output_verify_right[i], output_buffer[2 * i + 1]);
+  }
+  delete[] output_buffer;
+  delete[] output_verify_left;
+  delete[] output_verify_right;
+}
+ 
 
 TEST(OggBufferTest, CheckThreadFunc) {
   AudioBufferOgg oggers(4096, "resources/flap_jack_scream.ogg");
