@@ -41,7 +41,7 @@ void main(int argc, char** argv) {
 
   BOOST_LOG_TRIVIAL(debug) << "GLFW initialized.";
 
-  GLFWwindow* window = glfwCreateWindow(480, 480, "monkey sex", NULL, NULL);
+  GLFWwindow* window = glfwCreateWindow(1600, 900, "monkey sex", NULL, NULL);
   if (!window) {
     BOOST_LOG_TRIVIAL(error) << "Failed to create window.";
     glfwTerminate();
@@ -75,6 +75,8 @@ void main(int argc, char** argv) {
   
   // TODO: Make these pointers consistent :)
   std::shared_ptr<Model> test_model = Model::FromObjFile(ctx.get(), "resources/test/untitled4.obj");
+  std::shared_ptr<Model> test_model_two = Model::FromObjFile(ctx.get(), "resources/test/untitled4.obj");
+  test_model->AddChild(test_model_two);
   test_model->PrepareAttributes();
 
   std::vector<LightData> lights;
@@ -147,13 +149,14 @@ void main(int argc, char** argv) {
   BOOST_LOG_TRIVIAL(trace) << timer_freq;
   uint64_t timer_now, timer_last;
   timer_last = glfwGetTimerValue();
+
   while (!glfwWindowShouldClose(window)) {
     start = std::chrono::high_resolution_clock::now();
     event_mgr.ProcessWaitingEvents();
     timer_now = glfwGetTimerValue();
     rot += 0.2f * ((timer_now - timer_last) / timer_freq);
-    key_x += (2.0f * ((timer_now - timer_last) / timer_freq) * x_mod);
-    key_y += (2.0f * ((timer_now - timer_last) / timer_freq) * y_mod);
+    key_x += (1.4f * ((timer_now - timer_last) / timer_freq) * x_mod);
+    key_y += (1.4f * ((timer_now - timer_last) / timer_freq) * y_mod);
     timer_last = timer_now;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -170,6 +173,16 @@ void main(int argc, char** argv) {
     test_material.UseMaterial();
     
     test_model->RenderMaterial();
+
+    test_model_two->SetPosition(glm::vec3(glm::sin(rot * 1.2) * 3, glm::cos(rot * 1.4 + 3.1415) * 1.4, glm::cos(rot * 1.2) * 3));
+    test_model_two->SetRotation(glm::vec3(rot * 1.7, rot * 2, rot * -0.3));
+    test_model_two->SetScale(glm::vec3(0.3));
+
+    test_material.SetModelTransforms(test_model_two->GetTransformationMatrix());
+    test_material.SetCameraTransforms(vp_matrix);
+    test_material.SetLights(lights);
+    test_material.UseMaterial();
+    test_model_two->RenderMaterial();
 
     auto start_two = std::chrono::high_resolution_clock::now();
     glfwSwapBuffers(window);
