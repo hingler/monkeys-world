@@ -40,10 +40,12 @@ int AudioManager::AddFileToBuffer(const std::string& filename, AudioFiletype fil
   buffer_info* info;
   
 
-  std::unique_lock<std::mutex>(buffer_info_write_lock_);
+  std::unique_lock<std::mutex> templock(buffer_info_write_lock_);
   for (int i = 0; i < AUDIO_MGR_MAX_BUFFER_COUNT; i++) {
     info = &buffers_[i];
     if (info->status == AVAILABLE) {
+      info->status = ALLOCATING;
+      templock.unlock();
       if (info->buffer != nullptr) {
         delete info->buffer;
       }
@@ -51,7 +53,11 @@ int AudioManager::AddFileToBuffer(const std::string& filename, AudioFiletype fil
       switch (file_type) {
         case OGG:
           // i could try creating this on a new thread :)
-          new_buffer = new AudioBufferOgg(4096, filename);
+          // TODO: Create a new thread which can take care of buffer creation
+          // provide a struct for passing information to a thread
+          // then let it create the buffers in its little world
+          // instead of forcing me to deal with it
+          new_buffer = new AudioBufferOgg(16384, filename);
           info->buffer = new_buffer;
           info->status = USED;
           info->buffer->StartWriteThread();
@@ -61,7 +67,6 @@ int AudioManager::AddFileToBuffer(const std::string& filename, AudioFiletype fil
           BOOST_LOG_TRIVIAL(error) << "Could not add file to buffer -- filetype == " << file_type;
           return -1;
       }
-
     }
   }
 

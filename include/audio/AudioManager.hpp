@@ -58,9 +58,10 @@ class AudioManager {
   //    - add looping!
   //    - 
   enum buffer_status {
-    AVAILABLE = 0,
-    USED = 1,
-    DELETING = 2
+    AVAILABLE,
+    ALLOCATING,
+    USED,
+    DELETING
   };
 
   struct buffer_info {
