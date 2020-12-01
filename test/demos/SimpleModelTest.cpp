@@ -49,7 +49,6 @@ void main(int argc, char** argv) {
   }
 
   glfwMakeContextCurrent(window);
-
   glfwWindowHint(GL_MAJOR_VERSION, 4);
   glfwWindowHint(GL_MINOR_VERSION, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -70,7 +69,6 @@ void main(int argc, char** argv) {
   #endif
 
 
-
   std::shared_ptr<Context> ctx = std::make_shared<Context>();
   
   std::shared_ptr<Model> test_model = Model::FromObjFile(ctx.get(), "resources/test/untitled4.obj");
@@ -86,23 +84,25 @@ void main(int argc, char** argv) {
     { 0.1f,  0.1f,  0.1f, 1.0f}
   });
 
+  audio_mgr.AddFileToBuffer("resources/irememberyou.ogg", AudioFiletype::OGG);
+
   MatteMaterial test_material(ctx);
   float rot = 0.0f;
   float key_y = 0.0f;
   float key_x = 0.0f;
   int x_mod = 0;
   int y_mod = 0;
-
-  auto key_func = [&x_mod, &y_mod, &audio_mgr](int keycode, int action, int mods) {
+  int sound = -1;
+  auto key_func = [&x_mod, &y_mod, &audio_mgr, &sound](int keycode, int action, int mods) {
     switch (keycode) {
       case GLFW_KEY_W:
         if (action == GLFW_PRESS) {
-          auto start = std::chrono::high_resolution_clock::now();
-          audio_mgr.AddFileToBuffer("resources/flap_jack_scream.ogg", AudioFiletype::OGG);
+          if (sound != -1) {
+            audio_mgr.RemoveFileFromBuffer(sound);
+          }
+
+          sound = audio_mgr.AddFileToBuffer("resources/flap_jack_scream.ogg", AudioFiletype::OGG);
           x_mod = 1;
-          auto finish = std::chrono::high_resolution_clock::now();
-          auto dur = std::chrono::duration<double, std::micro>(finish - start);
-          BOOST_LOG_TRIVIAL(debug) << "BUFFER ADD TIME: " << dur.count() << "us";
         } else if (action == GLFW_RELEASE) {
           x_mod = 0;
         }
@@ -140,17 +140,12 @@ void main(int argc, char** argv) {
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LEQUAL);
 
-  auto start = std::chrono::high_resolution_clock::now();
-  auto finish = std::chrono::high_resolution_clock::now();
-  auto dur = std::chrono::duration<double, std::micro>(finish - start);
-
   double timer_freq = glfwGetTimerFrequency();
   BOOST_LOG_TRIVIAL(trace) << timer_freq;
   uint64_t timer_now, timer_last;
   timer_last = glfwGetTimerValue();
 
   while (!glfwWindowShouldClose(window)) {
-    start = std::chrono::high_resolution_clock::now();
     event_mgr.ProcessWaitingEvents();
     timer_now = glfwGetTimerValue();
     rot += 0.2f * ((timer_now - timer_last) / timer_freq);
@@ -182,17 +177,10 @@ void main(int argc, char** argv) {
     test_material.SetLights(lights);
     test_material.UseMaterial();
     test_model_two->RenderMaterial();
-
-    auto start_two = std::chrono::high_resolution_clock::now();
     glfwSwapBuffers(window);
     // lol this does it :)
     glFinish();
     glfwPollEvents();
-    finish = std::chrono::high_resolution_clock::now();
-    dur = std::chrono::duration<double, std::micro>(finish - start);
-    if (dur.count() > 1000) {
-      BOOST_LOG_TRIVIAL(debug) << "POLL TIME: " << dur.count() << "us";
-    }
   }
 
   glfwDestroyWindow(window);
