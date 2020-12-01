@@ -30,6 +30,7 @@ add_library(monkeys-world-components
 add_library(monkeys-world-audio
                                     ${SRC_DIR}/audio/AudioBuffer.cpp
                                     ${SRC_DIR}/audio/AudioBufferOgg.cpp
+                                    ${SRC_DIR}/audio/AudioManager.cpp
                                     ${SRC_DIR}/_stb_libs/stb_vorbis.c)
 
 set_property(TARGET monkeys-world-components PROPERTY CXX_STANDARD 14)
