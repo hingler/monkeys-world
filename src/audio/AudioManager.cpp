@@ -76,13 +76,17 @@ int AudioManager::RemoveFileFromBuffer(int stream) {
 
   buffer_info* info = &buffers_[stream];
   std::unique_lock<std::mutex>(buffer_info_write_lock_);
-  if (info->status != USED) {
-    // buffer is already cleaned up, or is about to be cleaned up.
-    return 0;
+  switch (info->status) {
+    case AVAILABLE:
+      if (info->buffer != nullptr) {
+        delete info->buffer;
+        info->buffer = nullptr;
+      }
+      break;
+    case USED:
+      info->status = DELETING;
+      break;
   }
-
-  // the client could delete it between now and then - but its no big deal! lol
-  info->status = DELETING;
   return 0;
 }
 
