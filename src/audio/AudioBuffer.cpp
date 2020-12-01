@@ -41,7 +41,7 @@ int AudioBuffer::ReadAddInterleaved(int n, float* output) {
     write_cv_.notify_all();
   }
 
-  bytes_read_.fetch_add(read_size, std::memory_order_release);
+  bytes_read_.fetch_add(n, std::memory_order_release);
   return n;
 }
 
@@ -153,6 +153,7 @@ bool AudioBuffer::StartWriteThread() {
   write_thread_flag_.test_and_set();
   running_ = true;
   write_thread_ = std::thread(&AudioBuffer::WriteThreadFunc, this);
+  write_thread_.detach();
   return true;
 }
 
@@ -164,7 +165,6 @@ AudioBuffer::~AudioBuffer() {
   if (buffer_r_ != nullptr) {
     delete[] buffer_r_;
   }
-
 }
 
 AudioBuffer& AudioBuffer::operator=(AudioBuffer&& other) {
@@ -222,7 +222,6 @@ void AudioBuffer::DestroyWriteThread() {
     write_thread_flag_.clear();
     write_cv_.notify_all();
     moved_thread_lock.unlock();
-    write_thread_.join();
     running_ = false;
   }
 }
