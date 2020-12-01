@@ -99,8 +99,12 @@ class AudioBuffer {
    *  Audio buffer dtor.
    *  NOTE: Since the write thread makes use of resources allocated by subclasses,
    *  it is necessary for implementations to clean up the write thread themselves.
+   * 
+   *  Cool trick: https://stackoverflow.com/questions/461203/when-to-use-virtual-destructors
+   *  Virtual dtors are intended for polymorphic use cases -- ie when we have pointers to subclasses
+   *  that we intend to dealloc ourselves.
    */ 
-  ~AudioBuffer();
+  virtual ~AudioBuffer();
   AudioBuffer& operator=(const AudioBuffer& other) = delete;
   AudioBuffer& operator=(AudioBuffer&& other);
   AudioBuffer(const AudioBuffer& other) = delete;
