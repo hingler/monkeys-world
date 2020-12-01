@@ -7,6 +7,8 @@
 #include <shader/light/LightDataTemp.hpp>
 #include <shader/materials/MatteMaterial.hpp>
 
+#include <audio/AudioManager.hpp>
+
 #include <input/WindowEventManager.hpp>
 
 #include <glm/glm.hpp>
@@ -16,11 +18,17 @@
 #include <shader/GLDebugSetup.hpp>
 #endif
 
+#include <chrono>
+
 using ::monkeysworld::shader::light::LightData;
 using ::monkeysworld::critter::Model;
 using ::monkeysworld::critter::Context;
 using ::monkeysworld::shader::materials::MatteMaterial;
 using ::monkeysworld::input::WindowEventManager;
+using ::monkeysworld::audio::AudioManager;
+using ::monkeysworld::audio::AudioFiletype;
+
+using milli = std::chrono::milliseconds;
 
 void main(int argc, char** argv) {
   // initialize GLFW
@@ -33,7 +41,7 @@ void main(int argc, char** argv) {
 
   BOOST_LOG_TRIVIAL(debug) << "GLFW initialized.";
 
-  GLFWwindow* window = glfwCreateWindow(1600, 900, "monkey sex", NULL, NULL);
+  GLFWwindow* window = glfwCreateWindow(480, 480, "monkey sex", NULL, NULL);
   if (!window) {
     BOOST_LOG_TRIVIAL(error) << "Failed to create window.";
     glfwTerminate();
@@ -54,6 +62,8 @@ void main(int argc, char** argv) {
   }
 
   WindowEventManager event_mgr(window);
+  AudioManager audio_mgr;
+
 
   #ifdef DEBUG
   ::monkeysworld::shader::gldebug::SetupGLDebug();
@@ -82,11 +92,16 @@ void main(int argc, char** argv) {
   int x_mod = 0;
   int y_mod = 0;
 
-  auto key_func = [&x_mod, &y_mod](int keycode, int action, int mods) {
+  auto key_func = [&x_mod, &y_mod, &audio_mgr](int keycode, int action, int mods) {
     switch (keycode) {
       case GLFW_KEY_W:
         if (action == GLFW_PRESS) {
+          auto start = std::chrono::high_resolution_clock::now();
+          audio_mgr.AddFileToBuffer("resources/flap_jack_scream.ogg", AudioFiletype::OGG);
           x_mod = 1;
+          auto finish = std::chrono::high_resolution_clock::now();
+          auto dur = std::chrono::duration<double, std::micro>(finish - start);
+          BOOST_LOG_TRIVIAL(debug) << "BUFFER ADD TIME: " << dur.count() << "us";
         } else if (action == GLFW_RELEASE) {
           x_mod = 0;
         }
@@ -120,15 +135,26 @@ void main(int argc, char** argv) {
   event_mgr.RegisterKeyListener(GLFW_KEY_A, key_func);
   event_mgr.RegisterKeyListener(GLFW_KEY_D, key_func);
 
-
-  glfwSwapInterval(1);
+  glfwSwapInterval(0);
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LEQUAL);
+
+  auto start = std::chrono::high_resolution_clock::now();
+  auto finish = std::chrono::high_resolution_clock::now();
+  auto dur = std::chrono::duration<double, std::micro>(finish - start);
+
+  double timer_freq = glfwGetTimerFrequency();
+  BOOST_LOG_TRIVIAL(trace) << timer_freq;
+  uint64_t timer_now, timer_last;
+  timer_last = glfwGetTimerValue();
   while (!glfwWindowShouldClose(window)) {
+    start = std::chrono::high_resolution_clock::now();
     event_mgr.ProcessWaitingEvents();
-    rot += 0.01f;
-    key_x += (0.01f * x_mod);
-    key_y += (0.01f * y_mod);
+    timer_now = glfwGetTimerValue();
+    rot += 0.2f * ((timer_now - timer_last) / timer_freq);
+    key_x += (2.0f * ((timer_now - timer_last) / timer_freq) * x_mod);
+    key_y += (2.0f * ((timer_now - timer_last) / timer_freq) * y_mod);
+    timer_last = timer_now;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glm::mat4 persp = glm::perspective(0.78f, 1.85f, 0.01f, 100.0f);
@@ -145,8 +171,16 @@ void main(int argc, char** argv) {
     
     test_model->RenderMaterial();
 
+    auto start_two = std::chrono::high_resolution_clock::now();
     glfwSwapBuffers(window);
+    // lol this does it :)
+    glFinish();
     glfwPollEvents();
+    finish = std::chrono::high_resolution_clock::now();
+    dur = std::chrono::duration<double, std::micro>(finish - start);
+    if (dur.count() > 1000) {
+      BOOST_LOG_TRIVIAL(debug) << "POLL TIME: " << dur.count() << "us";
+    }
   }
 
   glfwDestroyWindow(window);
