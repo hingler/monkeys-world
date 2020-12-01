@@ -5,14 +5,13 @@
 
 #include <boost/log/trivial.hpp>
 
-#define SAMPLE_RATE 48000
+#define SAMPLE_RATE 44100
 
 namespace monkeysworld {
 namespace audio {
 
 using exception::PortAudioException;
 
-// do this last
 AudioManager::AudioManager() {
   int err = Pa_Initialize();
   if (err != paNoError) {
@@ -23,33 +22,46 @@ AudioManager::AudioManager() {
 
   for (int i = 0; i < AUDIO_MGR_MAX_BUFFER_COUNT; i++) {
     buffers_[i].status = AVAILABLE;
+    buffers_[i].buffer = nullptr;
   }
 
-  Pa_OpenDefaultStream(&stream_, 0, 2, paFloat32, SAMPLE_RATE, 0, &AudioManager::CallbackFunc, this);
+  err = Pa_OpenDefaultStream(&stream_, 0, 2, paFloat32, SAMPLE_RATE, 0, &AudioManager::CallbackFunc, this);
+  if (err != paNoError) {
+    BOOST_LOG_TRIVIAL(error) << "Could not initialize PortAudio: " << Pa_GetErrorText(err);
+    Pa_Terminate();
+    throw PortAudioException("Could not initialize PA");
+  }
+
+  Pa_StartStream(stream_);
 }
 
 int AudioManager::AddFileToBuffer(const std::string& filename, AudioFiletype file_type) {
   AudioBuffer* new_buffer;
+  buffer_info* info;
   
 
   std::unique_lock<std::mutex>(buffer_info_write_lock_);
   for (int i = 0; i < AUDIO_MGR_MAX_BUFFER_COUNT; i++) {
-    if (buffers_[i].status == AVAILABLE) {
-      if (buffers_[i].buffer != nullptr) {
-        delete buffers_[i].buffer;
+    info = &buffers_[i];
+    if (info->status == AVAILABLE) {
+      if (info->buffer != nullptr) {
+        delete info->buffer;
       }
 
       switch (file_type) {
         case OGG:
-          new_buffer = new AudioBufferOgg(16384, filename);
+          // i could try creating this on a new thread :)
+          new_buffer = new AudioBufferOgg(4096, filename);
+          info->buffer = new_buffer;
+          info->status = USED;
+          info->buffer->StartWriteThread();
+          return i;
+          break;
         default:
+          BOOST_LOG_TRIVIAL(error) << "Could not add file to buffer -- filetype == " << file_type;
           return -1;
       }
 
-      buffers_[i].buffer = new_buffer;
-      buffers_[i].status = USED;
-      buffers_[i].buffer->StartWriteThread();
-      return i;
     }
   }
 
@@ -80,7 +92,6 @@ int AudioManager::CallbackFunc(const void* input,
                                 const PaStreamCallbackTimeInfo* timeInfo,
                                 PaStreamCallbackFlags statusFlags,
                                 void* userData) {
-
 
   float* output_buffer = reinterpret_cast<float*>(output);
   AudioManager* mgr = reinterpret_cast<AudioManager*>(userData);
