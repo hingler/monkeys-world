@@ -100,7 +100,6 @@ AudioBufferOgg::~AudioBufferOgg() {
     std::unique_lock<std::mutex> thread_lock(write_lock_);
     write_thread_flag_.clear();
     write_cv_.notify_all();
-    write_thread_.join();
     // should terminate shortly after this
   }
   
