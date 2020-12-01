@@ -101,7 +101,7 @@ target_link_libraries(mat-test glad::glad glm monkeys-world-components)
 
 add_executable(model-test test/demos/SimpleModelTest.cpp)
 target_include_directories(model-test PRIVATE ${INC_DIR})
-target_link_libraries(model-test glad::glad glm monkeys-world-components)
+target_link_libraries(model-test glad::glad glm monkeys-world-components monkeys-world-audio)
 
 add_executable(streambuf-test test/CacheStreambufTest.cpp)
 target_include_directories(streambuf-test PRIVATE ${INC_DIR})
