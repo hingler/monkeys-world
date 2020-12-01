@@ -113,16 +113,15 @@ int AudioManager::CallbackFunc(const void* input,
 }
 
 AudioManager::~AudioManager() {
+  // cannot throw exceptions in dtor :)
   int err = Pa_CloseStream(stream_);
   if (err != paNoError) {
     BOOST_LOG_TRIVIAL(error) << "Could not close PA stream for audio manager";
-    throw PortAudioException("Could not close PA stream for audio manager");
   }
 
   err = Pa_Terminate();
   if (err != paNoError) {
     BOOST_LOG_TRIVIAL(error) << "Failed to terminate PA";
-    throw PortAudioException("Failed to terminate PA");
   }
   for (int i = 0; i < AUDIO_MGR_MAX_BUFFER_COUNT; i++) {
     if (buffers_[i].buffer != nullptr) {
