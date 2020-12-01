@@ -45,12 +45,11 @@ class AudioManager {
    */ 
   int RemoveFileFromBuffer(int stream);
 
-  /**
-   *  Reads n samples from all currently active buffers.
-   *  @param n - number of samples to read.
-   *  @param output - buffer to output result to.
-   */ 
-  void ReadFromBuffers(int n, float* output);
+  ~AudioManager();
+  AudioManager& operator=(const AudioManager& other) = delete;
+  AudioManager& operator=(AudioManager&& other) = delete;
+  AudioManager(const AudioManager& other) = delete;
+  AudioManager(AudioManager&& other) = delete;
 
  private:
   // TODO -- expansion:
@@ -78,9 +77,9 @@ class AudioManager {
   
 
   /**
-   *  Function called by portauio.
+   *  Function called by portaudio.
    */ 
-  static void CallbackFunc(const void* input,
+  static int CallbackFunc(const void* input,
                            void* output,
                            unsigned long frameCount,
                            const PaStreamCallbackTimeInfo* timeInfo,
@@ -96,6 +95,8 @@ class AudioManager {
   // callback shouldn't have to worry, as the buffer is only marked avail
   // when the pointer is alloced.
   std::mutex buffer_info_write_lock_;
+
+  PaStream* stream_;
 
 };
 
