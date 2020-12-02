@@ -148,14 +148,19 @@ void main(int argc, char** argv) {
   auto start = std::chrono::high_resolution_clock::now();
   auto finish = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double, std::micro> dur = (finish - start);
+  double render_time_sum = 0;
+  double poll_time_sum = 0;
+  int frame_count = 0;
   while (!glfwWindowShouldClose(window)) {
     start = std::chrono::high_resolution_clock::now();
     glfwPollEvents();
     finish = std::chrono::high_resolution_clock::now();
     dur = finish - start;
     double count = dur.count();
-    if (count > 700) {
+    poll_time_sum += count;
+    if (count > 0) {
       BOOST_LOG_TRIVIAL(trace) << "Poll time: " << count << "us";
+      BOOST_LOG_TRIVIAL(trace) << "Poll time avg: " << poll_time_sum / frame_count << "us";
     }
     start = std::chrono::high_resolution_clock::now();
     event_mgr.ProcessWaitingEvents();
@@ -195,8 +200,11 @@ void main(int argc, char** argv) {
     // lol this does it :)
     glFinish();
     count = dur.count();
-    if (count > 100) {
+    frame_count++;
+    if (count > 0) {
+      render_time_sum += count;
       BOOST_LOG_TRIVIAL(trace) << "Render time: " << count << "us";
+      BOOST_LOG_TRIVIAL(trace) << "Avg. render time: " << render_time_sum / frame_count << " us";
     }
   }
 
