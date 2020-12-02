@@ -148,7 +148,6 @@ void main(int argc, char** argv) {
   auto start = std::chrono::high_resolution_clock::now();
   auto finish = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double, std::micro> dur = (finish - start);
-
   double render_time_sum = 0;
   double poll_time_sum = 0;
   int frame_count = 0;

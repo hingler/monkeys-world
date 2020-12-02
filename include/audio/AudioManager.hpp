@@ -1,8 +1,10 @@
 #ifndef AUDIO_MANAGER_H_
 #define AUDIO_MANAGER_H_
 
+#include <condition_variable>
 #include <memory>
 #include <mutex>
+#include <queue>
 #include <vector>
 
 #include <audio/AudioBuffer.hpp>
@@ -56,7 +58,6 @@ class AudioManager {
   //    - tag certain buffers in some way, so that we can fuck with music/sfx volume
   //    - those categories would be set when the samples themselves are queued
   //    - add looping!
-  //    - 
   enum buffer_status {
     AVAILABLE,
     ALLOCATING,
@@ -75,6 +76,12 @@ class AudioManager {
                                 //  - looping
                                 //  - filters and shit!
   };
+
+  struct queue_info {
+    std::string filename; // path to desired file
+    AudioFiletype type;   // type of file being added
+    int index;            // index of new buffer
+  };
   
 
   /**
@@ -87,15 +94,20 @@ class AudioManager {
                            PaStreamCallbackFlags statusFlags,
                            void* userData);
 
-  
+  /**
+   *  Reads from the buffer creation queue and sets up files for playback
+   */ 
+  void QueueThreadfunc();
+
   // audio buffer vector
   buffer_info buffers_[AUDIO_MGR_MAX_BUFFER_COUNT];
-
-  // ensures that two buffer creations don't try to alloc the same spot
-  
-  // callback shouldn't have to worry, as the buffer is only marked avail
-  // when the pointer is alloced.
   std::mutex buffer_info_write_lock_;
+
+  std::queue<queue_info> buffer_creation_queue_;    // queue of buffers to set up
+  std::mutex buffer_queue_lock_;                    // lock for queue
+  std::thread buffer_creation_thread_;              // thread to handle buffer creation
+  std::atomic_flag buffer_thread_flag_;
+  std::condition_variable buffer_thread_cv_;         // cv for creation thread
 
   PaStream* stream_;
 
