@@ -33,44 +33,65 @@ AudioManager::AudioManager() {
   }
 
   Pa_StartStream(stream_);
+
+  // start the buffer creation thread
+  buffer_thread_flag_.test_and_set();
+  buffer_creation_thread_ = std::thread(&AudioManager::QueueThreadfunc, this);
 }
 
 int AudioManager::AddFileToBuffer(const std::string& filename, AudioFiletype file_type) {
-  AudioBuffer* new_buffer;
+  int index = -1;
   buffer_info* info;
-  
+  buffer_status desired_value = AVAILABLE;
 
-  std::unique_lock<std::mutex> templock(buffer_info_write_lock_);
-  for (int i = 0; i < AUDIO_MGR_MAX_BUFFER_COUNT; i++) {
-    info = &buffers_[i];
-    if (info->status == AVAILABLE) {
-      info->status = ALLOCATING;
-      templock.unlock();
-      if (info->buffer != nullptr) {
-        delete info->buffer;
-      }
-
-      switch (file_type) {
-        case OGG:
-          // i could try creating this on a new thread :)
-          // TODO: Create a new thread which can take care of buffer creation
-          // provide a struct for passing information to a thread
-          // then let it create the buffers in its little world
-          // instead of forcing me to deal with it
-          new_buffer = new AudioBufferOgg(16384, filename);
-          info->buffer = new_buffer;
-          info->status = USED;
-          info->buffer->StartWriteThread();
-          return i;
-          break;
-        default:
-          BOOST_LOG_TRIVIAL(error) << "Could not add file to buffer -- filetype == " << file_type;
-          return -1;
+  { // wraps buffer lock usage
+    std::unique_lock<std::mutex> buffer_lock(buffer_info_write_lock_);
+    for (int i = 0; i < AUDIO_MGR_MAX_BUFFER_COUNT; i++) {
+      info = &buffers_[i];
+      if (info->status.compare_exchange_weak(desired_value, ALLOCATING)) {
+        index = i;
+        break;
       }
     }
   }
 
-  return -1;
+  if (index == -1) {
+    return -1;
+    // could not allocate space
+  }
+  std::unique_lock<std::mutex> queue_lock(buffer_queue_lock_);
+  buffer_creation_queue_.push({filename, file_type, index});
+  buffer_thread_cv_.notify_all();
+  return index;
+}
+
+void AudioManager::QueueThreadfunc() {
+  queue_info info_queue;
+  while (buffer_thread_flag_.test_and_set()) {
+    { // fetch entry from queue and place in info
+      std::unique_lock<std::mutex> buffer_queue_lock(buffer_queue_lock_);
+      while (buffer_creation_queue_.empty()) {
+        buffer_thread_cv_.wait(buffer_queue_lock);
+      }
+
+      info_queue = buffer_creation_queue_.front();
+      buffer_creation_queue_.pop();
+    }
+
+    buffer_info* info_buffer;
+
+    info_buffer = &buffers_[info_queue.index];
+
+    switch (info_queue.type) {
+      case OGG:
+        info_buffer->buffer = new AudioBufferOgg(16384, info_queue.filename);
+        info_buffer->status = USED;
+        info_buffer->buffer->StartWriteThread();
+        break;
+      default:
+        BOOST_LOG_TRIVIAL(error) << "Unknown buffer type received -- " << info_queue.type;
+    }
+  }
 }
 
 int AudioManager::RemoveFileFromBuffer(int stream) {
@@ -107,7 +128,6 @@ int AudioManager::CallbackFunc(const void* input,
   buffer_info* info;
   int samples_read;
   for (int i = 0; i < frameCount; i++) {
-    // zero the output buffer
     output_buffer[2 * i] = output_buffer[2 * i + 1] = 0.0f;
   }
 
@@ -148,6 +168,10 @@ AudioManager::~AudioManager() {
       delete buffers_[i].buffer;
     }
   }
+
+  buffer_thread_flag_.clear();
+  buffer_thread_cv_.notify_all();
+  buffer_creation_thread_.join();
 }
 
 }

@@ -136,7 +136,7 @@ void main(int argc, char** argv) {
   event_mgr.RegisterKeyListener(GLFW_KEY_A, key_func);
   event_mgr.RegisterKeyListener(GLFW_KEY_D, key_func);
 
-  glfwSwapInterval(0);
+  glfwSwapInterval(1);
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LEQUAL);
 
@@ -145,7 +145,19 @@ void main(int argc, char** argv) {
   uint64_t timer_now, timer_last;
   timer_last = glfwGetTimerValue();
 
+  auto start = std::chrono::high_resolution_clock::now();
+  auto finish = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double, std::micro> dur = (finish - start);
   while (!glfwWindowShouldClose(window)) {
+    start = std::chrono::high_resolution_clock::now();
+    glfwPollEvents();
+    finish = std::chrono::high_resolution_clock::now();
+    dur = finish - start;
+    double count = dur.count();
+    if (count > 700) {
+      BOOST_LOG_TRIVIAL(trace) << "Poll time: " << count << "us";
+    }
+    start = std::chrono::high_resolution_clock::now();
     event_mgr.ProcessWaitingEvents();
     timer_now = glfwGetTimerValue();
     rot += 0.2f * ((timer_now - timer_last) / timer_freq);
@@ -177,10 +189,15 @@ void main(int argc, char** argv) {
     test_material.SetLights(lights);
     test_material.UseMaterial();
     test_model_two->RenderMaterial();
+    finish = std::chrono::high_resolution_clock::now();
+    dur = finish - start;
     glfwSwapBuffers(window);
     // lol this does it :)
     glFinish();
-    glfwPollEvents();
+    count = dur.count();
+    if (count > 100) {
+      BOOST_LOG_TRIVIAL(trace) << "Render time: " << count << "us";
+    }
   }
 
   glfwDestroyWindow(window);
