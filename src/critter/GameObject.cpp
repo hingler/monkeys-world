@@ -10,18 +10,15 @@ namespace monkeysworld {
 namespace critter {
 
 using utils::IDGenerator;
-IDGenerator GameObject::id_generator_;
 
 GameObject::GameObject() : GameObject(nullptr) { }
 
-GameObject::GameObject(Context* ctx) {
+GameObject::GameObject(Context* ctx) : Object(ctx) {
   this->parent_ = std::weak_ptr<GameObject>();
-  this->ctx_ = ctx;
   this->dirty_ = true;
   this->position = glm::vec3(0);
   this->rotation = glm::vec3(0);
   this->scale = glm::vec3(1);
-  this->id_ = id_generator_.GetUniqueId();
 }
 
 void GameObject::AddChild(std::shared_ptr<GameObject> child) {
@@ -66,10 +63,6 @@ GameObject* GameObject::GetChild(uint64_t id) {
 
 GameObject* GameObject::GetParent() {
   return parent_.lock().get();
-}
-
-uint64_t GameObject::GetId() {
-  return id_;
 }
 
 void GameObject::SetPosition(const glm::vec3& new_pos) {
@@ -117,15 +110,14 @@ void GameObject::RemoveChild(uint64_t id) {
   }
 }
 
-GameObject::GameObject(const GameObject& other) {
+// superctor for gameobject :)
+GameObject::GameObject(const GameObject& other) : Object(other) {
   position = other.position;
   rotation = other.rotation;
   scale = other.scale;
 
   parent_ = std::weak_ptr<GameObject>();
   dirty_ = true;
-  ctx_ = other.ctx_;
-  id_ = id_generator_.GetUniqueId();
 
   // deep copy the children
   for (auto child : other.children_) {
@@ -134,7 +126,7 @@ GameObject::GameObject(const GameObject& other) {
   }
 }
 
-GameObject::GameObject(GameObject&& other) {
+GameObject::GameObject(GameObject&& other) : Object(other) {
   position = std::move(other.position);
   rotation = std::move(other.rotation);
   scale = std::move(other.scale);
@@ -144,8 +136,6 @@ GameObject::GameObject(GameObject&& other) {
     other_parent->AddChild(shared_from_this());
   }
 
-  ctx_ = other.ctx_;
-  id_ = other.id_;
   dirty_ = true;
 
   // cannot copy over parent/child relationship
@@ -155,12 +145,12 @@ GameObject::GameObject(GameObject&& other) {
 }
 
 GameObject& GameObject::operator=(const GameObject& other) {
+  Object::operator=(other);
   position = other.position;
   rotation = other.rotation;
   scale = other.scale;
 
   parent_ = std::weak_ptr<GameObject>();
-  id_ = other.id_;
   dirty_ = true;
 
   for (auto child : other.children_) {
@@ -171,6 +161,7 @@ GameObject& GameObject::operator=(const GameObject& other) {
 }
 
 GameObject& GameObject::operator=(GameObject&& other) {
+  Object::operator=(other);
   position = std::move(other.position);
   rotation = std::move(other.rotation);
   scale = std::move(other.scale);
@@ -180,8 +171,6 @@ GameObject& GameObject::operator=(GameObject&& other) {
     other_parent->AddChild(shared_from_this());
   }
 
-  ctx_ = other.ctx_;
-  id_ = other.id_;
   dirty_ = true;
 
   children_ = std::move(other.children_);

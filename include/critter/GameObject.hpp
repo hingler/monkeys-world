@@ -4,6 +4,7 @@
 #include <utils/IDGenerator.hpp>
 
 #include <critter/Context.hpp>
+#include <critter/Object.hpp>
 
 
 #include <glm/glm.hpp>
@@ -25,20 +26,11 @@ namespace critter {
  *  and more*
  * 
  */ 
-class GameObject : public std::enable_shared_from_this<GameObject> {
+class GameObject : public Object, public std::enable_shared_from_this<GameObject> {
  public:
 
   GameObject(Context* ctx);
 
-  /**
-   *  Sets up all attributes required to draw this object.
-   */ 
-  virtual void PrepareAttributes() = 0;
-
-  /**
-   *  Renders the desired material onto the scene. Assumes that attributes
-   *  have already been set up.
-   */ 
   virtual void RenderMaterial() = 0;
 
   /**
@@ -63,13 +55,6 @@ class GameObject : public std::enable_shared_from_this<GameObject> {
    *  Returns the transformation matrix associated with this object.
    */ 
   glm::mat4 GetTransformationMatrix();
-
-  /**
-   *  Get the ID currently associated with an object
-   * 
-   *  @returns ID, if not valid. 0 is reserved for an invalid ID.
-   */ 
-  uint64_t GetId();
 
   /**
    *  Sets XYZ position.
@@ -101,11 +86,6 @@ class GameObject : public std::enable_shared_from_this<GameObject> {
   void RemoveChild(uint64_t id);
 
   /**
-   *  Returns ptr to context.
-   */ 
-  Context* GetContext();
-
-  /**
    *  0-arg ctor for tests only.
    */ 
   GameObject();
@@ -124,20 +104,11 @@ class GameObject : public std::enable_shared_from_this<GameObject> {
   // set of all children associated with this object
   std::vector<std::shared_ptr<GameObject>> children_;
 
-  // ID associated with this object.
-  uint64_t id_;
-
   // cached transformation matrix
   glm::mat4 tf_matrix_cache_;
 
   // whether or not the transformation matrix on store is safe.
   std::atomic_bool dirty_;
-
-  // context associated with this "scene"
-  Context* ctx_;
-
-  // id generator for new game objects
-  static utils::IDGenerator id_generator_;
 
   // TODO: is a lock on transformation calls necessary, or will access be limited to a single thread?
 };

@@ -42,6 +42,7 @@ int AudioBuffer::ReadAddInterleaved(int n, float* output) {
   }
 
   bytes_read_.fetch_add(n, std::memory_order_release);
+
   return n;
 }
 
