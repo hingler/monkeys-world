@@ -297,7 +297,6 @@ bool Mesh<storage::VertexPacket3D>::AddPolygon(const std::vector<unsigned int>& 
 }
 // bool Mesh<storage::VertexPacket2D>::AddPolygon(const std::vector<unsigned int>& indices);
 
-
 };  // namespace storage
 };  // namespace monkeysworld
 

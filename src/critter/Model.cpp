@@ -90,13 +90,13 @@ void Model::SetMesh(const std::shared_ptr<model::Mesh<>>& mesh) {
   mesh_ = mesh;
 }
 
-std::shared_ptr<Model> Model::FromObjFile(Context* ctx, const std::string& path) {
+std::shared_ptr<Mesh<VertexPacket3D>> Model::FromObjFile(Context* ctx, const std::string& path) {
   std::shared_ptr<CachedFileLoader> loader = ctx->GetCachedFileLoader();
   auto obj_reader = loader->LoadFile(path);
   if (obj_reader.get() == nullptr) {
     // invalid model location
     BOOST_LOG_TRIVIAL(error) << "File does not exist!";
-    return std::shared_ptr<Model>();
+    return std::shared_ptr<Mesh<>>();
   }
 
   std::istream obj_stream(obj_reader.get());  
@@ -201,9 +201,7 @@ std::shared_ptr<Model> Model::FromObjFile(Context* ctx, const std::string& path)
     mesh->AddPolygon(poly);
   }
 
-  std::shared_ptr<Model> result = std::make_shared<Model>(ctx);
-  result->SetMesh(mesh);
-  return result;
+  return mesh;
 }
 
 static void TrimHeader(std::string& line) {

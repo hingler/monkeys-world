@@ -4,6 +4,8 @@
 #include <critter/Model.hpp>
 #include <critter/Context.hpp>
 
+#include <model/Mesh.hpp>
+
 #include <shader/light/LightDataTemp.hpp>
 #include <shader/materials/MatteMaterial.hpp>
 
@@ -71,8 +73,12 @@ void main(int argc, char** argv) {
 
   std::shared_ptr<Context> ctx = std::make_shared<Context>();
   
-  std::shared_ptr<Model> test_model = Model::FromObjFile(ctx.get(), "resources/test/untitled4.obj");
-  std::shared_ptr<Model> test_model_two = Model::FromObjFile(ctx.get(), "resources/test/untitled4.obj");
+  std::shared_ptr<::monkeysworld::model::Mesh<>> test_mesh = Model::FromObjFile(ctx.get(), "resources/test/untitled4.obj");
+
+  std::shared_ptr<Model> test_model = std::make_shared<Model>(ctx.get());
+  std::shared_ptr<Model> test_model_two = std::make_shared<Model>(ctx.get());
+  test_model->SetMesh(test_mesh);
+  test_model_two->SetMesh(test_mesh);
   test_model->AddChild(test_model_two);
   test_model->PrepareAttributes();
 

@@ -52,8 +52,9 @@ class Model : public GameObject {
    * 
    *  @param ctx - pointer to the relevant context.
    *  @param path - path to the desired OBJ file.
+   *  @returns newly created mesh.
    */ 
-  static std::shared_ptr<Model> FromObjFile(Context* ctx, const std::string& path);
+  static std::shared_ptr<model::Mesh<>> FromObjFile(Context* ctx, const std::string& path);
 
  private:
   // TODO: need to handle textures as well!
