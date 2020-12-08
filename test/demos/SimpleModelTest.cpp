@@ -71,8 +71,15 @@ void main(int argc, char** argv) {
   #endif
 
 
-  std::shared_ptr<Context> ctx = std::make_shared<Context>();
+  std::shared_ptr<Context> ctx = std::make_shared<Context>(window);
   
+  // a "true" implementation should organize data into 3d/4d vecs
+  // then allow the mesh creator to fetch those alone
+
+  // and lastly place them inside the mesh however we need them
+
+  // as it stands the only good argument for 2d meshes is text so i could probably just implement it as 3d
+  // idk i'll just leave it in model for now
   std::shared_ptr<::monkeysworld::model::Mesh<>> test_mesh = Model::FromObjFile(ctx.get(), "resources/test/untitled4.obj");
 
   std::shared_ptr<Model> test_model = std::make_shared<Model>(ctx.get());

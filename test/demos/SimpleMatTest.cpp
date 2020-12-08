@@ -122,7 +122,7 @@ void main(int argc, char** argv) {
     { 0.1f,  0.1f,  0.1f, 1.0f}
   });
 
-  std::shared_ptr<Context> ctx = std::make_shared<Context>();
+  std::shared_ptr<Context> ctx = std::make_shared<Context>(test_window);
 
   MatteMaterial test_material(ctx);
   
