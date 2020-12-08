@@ -4,7 +4,8 @@ project(monkeys-world VERSION 0.0.1)
 include(CTest)
 enable_testing()
 
-# linting
+# TODO: Need to reorganize so that this whole thing can be imported as
+#       a library into the actual project
 
 set(INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -26,7 +27,8 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/critter/Object.cpp
                                     ${SRC_DIR}/utils/IDGenerator.cpp
                                     ${SRC_DIR}/critter/Model.cpp
-                                    ${SRC_DIR}/input/WindowEventManager.cpp)
+                                    ${SRC_DIR}/input/WindowEventManager.cpp
+                                    ${SRC_DIR}/critter/GameCamera.cpp)
 
 add_library(monkeys-world-audio
                                     ${SRC_DIR}/audio/AudioBuffer.cpp

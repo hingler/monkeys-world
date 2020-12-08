@@ -75,6 +75,8 @@ class Object {
   Object& operator=(const Object& other);
   Object& operator=(Object&& other);
 
+  // tba: noop v. dtor to ensure proper behavior
+
 
 
  private:

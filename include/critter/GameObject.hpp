@@ -25,6 +25,8 @@ namespace critter {
  *  other objects, providing resources for detecting collisions*, local 3D transformations*,
  *  and more*
  * 
+ *  TODO: implement object visitor for identifying components
+ * 
  */ 
 class GameObject : public Object, public std::enable_shared_from_this<GameObject> {
  public:
@@ -70,6 +72,11 @@ class GameObject : public Object, public std::enable_shared_from_this<GameObject
    *  Sets XYZ scale.
    */ 
   void SetScale(const glm::vec3& new_scale);
+
+  // getters for the above.
+  const glm::vec3& GetPosition();
+  const glm::vec3& GetRotation();
+  const glm::vec3& GetScale();
 
   // note: moves DO NOT preserve parent child relationship! this must be restored.
   GameObject(const GameObject& other);
