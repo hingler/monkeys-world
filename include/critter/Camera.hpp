@@ -1,21 +1,24 @@
 #ifndef CAMERA_H_
 #define CAMERA_H_
 
+#include <glm/glm.hpp>
 
-// TODO: camera should inherit GameObject. we'll have some special bobs and bits to identify the
-//       active camera
 namespace monkeysworld {
 namespace critter {
-  /**
-   *  Represents the camera within a scene.
-   */ 
+
 class Camera {
  public:
+  virtual glm::mat4 GetViewMatrix() = 0;
+
+  virtual void SetFov(float deg) = 0;
+
+  virtual void SetAsActive() = 0;
+
   /**
-   *  Constructs a new camera.
+   *  Marks this camera as active, and marks the other cam as inactive.
    */ 
-  Camera(); 
 };
+
 }
 }
 
