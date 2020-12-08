@@ -5,8 +5,6 @@
 #include <critter/Camera.hpp>
 #include <glm/glm.hpp>
 
-// TODO: camera should inherit GameObject. we'll have some special bobs and bits to identify the
-//       active camera
 namespace monkeysworld {
 namespace critter {
   /**

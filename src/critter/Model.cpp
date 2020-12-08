@@ -72,22 +72,12 @@ static data_type GetDataType(const std::string& line);
 
 Model::Model(Context* ctx) : GameObject(ctx) {}
 
-void Model::PrepareAttributes() {
-  if (mesh_) {
-    mesh_->PointToVertexAttribs();
-  }
-}
-
-void Model::RenderMaterial() {
-  glPointSize(16.0f);
-  
-  // TODO: Add material field and prepare material. this requires camera data!
-  mesh_->PointToVertexAttribs();
-  glDrawElements(GL_TRIANGLES, mesh_->GetIndexCount(), GL_UNSIGNED_INT, reinterpret_cast<void*>(0));
-}
-
 void Model::SetMesh(const std::shared_ptr<model::Mesh<>>& mesh) {
   mesh_ = mesh;
+}
+
+std::shared_ptr<Mesh<>> Model::GetMesh() {
+  return mesh_;
 }
 
 std::shared_ptr<Mesh<VertexPacket3D>> Model::FromObjFile(Context* ctx, const std::string& path) {

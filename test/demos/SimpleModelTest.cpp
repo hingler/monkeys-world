@@ -21,6 +21,7 @@
 #endif
 
 #include <chrono>
+#include <memory>
 
 using ::monkeysworld::shader::light::LightData;
 using ::monkeysworld::critter::Model;
@@ -29,8 +30,29 @@ using ::monkeysworld::shader::materials::MatteMaterial;
 using ::monkeysworld::input::WindowEventManager;
 using ::monkeysworld::audio::AudioManager;
 using ::monkeysworld::audio::AudioFiletype;
+using ::monkeysworld::model::Mesh;
 
 using milli = std::chrono::milliseconds;
+
+class DummyModel : public Model {
+ public:
+  DummyModel(Context* ctx) : Model(ctx) {}
+  void PrepareAttributes() override {
+    std::shared_ptr<Mesh<>> mesh;
+    if (mesh = GetMesh()) {
+      mesh->PointToVertexAttribs();
+    }
+  }
+
+  void RenderMaterial() {
+    std::shared_ptr<Mesh<>> mesh;
+    if (mesh = GetMesh()) {
+      mesh->PointToVertexAttribs();
+      // TODO: factor out? if so: i'll add it to Mesh later
+      glDrawElements(GL_TRIANGLES, mesh->GetIndexCount(), GL_UNSIGNED_INT, reinterpret_cast<void*>(0));
+    }
+  }
+};
 
 void main(int argc, char** argv) {
   // initialize GLFW
@@ -82,8 +104,8 @@ void main(int argc, char** argv) {
   // idk i'll just leave it in model for now
   std::shared_ptr<::monkeysworld::model::Mesh<>> test_mesh = Model::FromObjFile(ctx.get(), "resources/test/untitled4.obj");
 
-  std::shared_ptr<Model> test_model = std::make_shared<Model>(ctx.get());
-  std::shared_ptr<Model> test_model_two = std::make_shared<Model>(ctx.get());
+  std::shared_ptr<DummyModel> test_model = std::make_shared<DummyModel>(ctx.get());
+  std::shared_ptr<DummyModel> test_model_two = std::make_shared<DummyModel>(ctx.get());
   test_model->SetMesh(test_mesh);
   test_model_two->SetMesh(test_mesh);
   test_model->AddChild(test_model_two);

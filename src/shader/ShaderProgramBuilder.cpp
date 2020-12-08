@@ -121,7 +121,6 @@ GLuint ShaderProgramBuilder::CreateShaderFromFile(const std::string& shader_path
     throw std::invalid_argument("Invalid shader path " + shader_path);
   }
 
-  // TODO: scope optimization throughout
   std::string contents;
   shader_file.seekg(0, ios_base::end);
   std::streamoff file_size = shader_file.tellg();
