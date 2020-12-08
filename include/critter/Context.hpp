@@ -57,12 +57,6 @@ class Context {
    */  
   void GetFramebufferSize(int* width, int* height);
 
-  /**
-   *  Returns the active camera.
-   *  @returns ptr to active camera.
-   */ 
-  Camera* GetActiveCamera();
-
   // functions to add some object as the root
   // functions to get delta time
   // 
