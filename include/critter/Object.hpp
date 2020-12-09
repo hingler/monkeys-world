@@ -1,7 +1,6 @@
 #ifndef OBJECT_H_
 #define OBJECT_H_
 
-#include <critter/Context.hpp>
 #include <utils/IDGenerator.hpp>
 
 namespace monkeysworld {
@@ -22,7 +21,7 @@ class Object {
   /**
    *  Super ctor for objects
    */ 
-  Object(Context* ctx);
+  Object();
 
   /**
    *  Sets up all attributes required to draw this object.
@@ -53,11 +52,6 @@ class Object {
    */ 
   uint64_t GetId();
 
-  /**
-   *  Returns ptr to the currently active context.
-   */ 
-  Context* GetContext();
-
   // UPDATE FUNCTIONS
 
   /**
@@ -80,8 +74,6 @@ class Object {
 
 
  private:
-    // id generator for new game objects
-  Context* ctx_;
   uint64_t id_;
   static utils::IDGenerator id_generator_;
 };
