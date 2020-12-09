@@ -54,6 +54,11 @@ class GameObject : public Object, public std::enable_shared_from_this<GameObject
   GameObject* GetParent();
 
   /**
+   *  Returns ptr to context.
+   */ 
+  Context* GetContext();
+
+  /**
    *  Returns the transformation matrix associated with this object.
    */ 
   glm::mat4 GetTransformationMatrix();
@@ -116,6 +121,8 @@ class GameObject : public Object, public std::enable_shared_from_this<GameObject
 
   // whether or not the transformation matrix on store is safe.
   std::atomic_bool dirty_;
+
+  Context* ctx_;
 
   // TODO: is a lock on transformation calls necessary, or will access be limited to a single thread?
 };

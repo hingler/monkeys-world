@@ -4,17 +4,12 @@ namespace monkeysworld {
 namespace critter {
 
 utils::IDGenerator Object::id_generator_;
-Object::Object(Context* ctx) {
-  ctx_ = ctx;
+Object::Object() {
   id_ = id_generator_.GetUniqueId();
 }
 
 uint64_t Object::GetId() {
   return id_;
-}
-
-Context* Object::GetContext() {
-  return ctx_;
 }
 
 // non problem, but:
@@ -33,25 +28,21 @@ void Object::Destroy() {
 
 Object::Object(const Object& other) {
   id_ = id_generator_.GetUniqueId();
-  ctx_ = other.ctx_;
 }
 
 Object& Object::operator=(const Object& other) {
   id_ = id_generator_.GetUniqueId();
-  ctx_ = other.ctx_;
   return *this;
 }
 
 Object::Object(Object&& other) {
   id_ = other.id_;
   other.id_ = 0;
-  ctx_ = other.ctx_;
 }
 
 Object& Object::operator=(Object&& other) {
   id_ = other.id_;
   other.id_ = 0;
-  ctx_ = other.ctx_;
 
   return *this;
 }
