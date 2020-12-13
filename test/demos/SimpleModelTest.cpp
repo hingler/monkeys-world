@@ -54,6 +54,12 @@ class DummyModel : public Model {
   }
 };
 
+class TestingEventManager : public WindowEventManager {
+ public:
+  TestingEventManager(GLFWwindow* window) : WindowEventManager(window) {};
+  void ProcessEvents() {ProcessWaitingEvents();}
+};
+
 void main(int argc, char** argv) {
   // initialize GLFW
   // load model from sample OBJ
@@ -84,7 +90,7 @@ void main(int argc, char** argv) {
     exit(EXIT_FAILURE);
   }
 
-  WindowEventManager event_mgr(window);
+  TestingEventManager event_mgr(window);
   AudioManager audio_mgr;
 
 
@@ -198,7 +204,8 @@ void main(int argc, char** argv) {
     //   BOOST_LOG_TRIVIAL(trace) << "Poll time avg: " << poll_time_sum / frame_count << "us";
     // }
     start = std::chrono::high_resolution_clock::now();
-    event_mgr.ProcessWaitingEvents();
+    //
+    event_mgr.ProcessEvents();
     timer_now = glfwGetTimerValue();
     rot += 0.2f * ((timer_now - timer_last) / timer_freq);
     key_x += (1.4f * ((timer_now - timer_last) / timer_freq) * x_mod);

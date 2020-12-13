@@ -3,6 +3,8 @@
 
 #include <utils/IDGenerator.hpp>
 
+#include <vector>
+
 namespace monkeysworld {
 namespace critter {
 
@@ -39,6 +41,11 @@ class Object {
    *  @returns Pointer to child, or NULL if invalid.
    */ 
   virtual Object* GetChild(uint64_t id) = 0;
+
+  /**
+   *  Returns a list of all children.
+   */ 
+  virtual std::vector<std::weak_ptr<Object>> GetChildren() = 0;
 
   /**
    *  Returns ptr to the parent object.

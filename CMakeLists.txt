@@ -28,7 +28,9 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/utils/IDGenerator.cpp
                                     ${SRC_DIR}/critter/Model.cpp
                                     ${SRC_DIR}/input/WindowEventManager.cpp
-                                    ${SRC_DIR}/critter/GameCamera.cpp)
+                                    ${SRC_DIR}/critter/GameCamera.cpp
+                                    
+                                    ${SRC_DIR}/engine/BaseEngine.cpp)
 
 add_library(monkeys-world-audio
                                     ${SRC_DIR}/audio/AudioBuffer.cpp
@@ -155,3 +157,4 @@ set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
  
+### ONCE COMPLETE: provide a single import which will pull in all of these components under a unified library, or something

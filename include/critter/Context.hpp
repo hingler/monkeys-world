@@ -2,17 +2,35 @@
 #define CONTEXT_H_
 
 #include <file/CachedFileLoader.hpp>
-// how best to include camera?
+#include <engine/Scene.hpp>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 #include <critter/Camera.hpp>
+#include <input/WindowEventManager.hpp>
 
 #include <memory>
 
 namespace monkeysworld {
 namespace critter {
+
+class Context;
+
+}
+}
+
+namespace monkeysworld {
+namespace engine {
+namespace baseengine {
+void UpdateCtx(double, critter::Context*);
+}
+}
+}
+
+namespace monkeysworld {
+namespace critter {
+
 
 /**
  *  The `Context` class intends to provide access to components for which a single instance will be associated
@@ -22,24 +40,12 @@ namespace critter {
  *  All resources here *should* be threadsafe.
  */ 
 class Context {
-  // ctor, or get/set?
-  // store shared ptr
-  // other context objects can "get" from last context (probably a good idea to port over like audio handler for inst)
-  // use a builder pattern to create the context
-    // use premade assets if available, or construct from defaults if not
-  // something for borrowing components
-  // create a context builder which can be used to pass in components?
-  // data class which contains dependencies
-  // and which can be fetched from the struct
-
-  // this should make it easier to add components and shit
-
-  // note: the CONTEXT should be detached from state. this thing should exist from start to finish,
-  // and should be closely tied to system components which require a rooted
+  friend void ::monkeysworld::engine::baseengine::UpdateCtx(double, Context*);
  public:
   /**
    *  Default constructor which attempts to initialize all fields.
    *  @param window - reference to the GLFWwindow this context occupies
+   *  TODO: Reconfigure the context so that we can spin it up on each scene.
    */ 
   Context(GLFWwindow* window);
 
@@ -50,6 +56,8 @@ class Context {
   // file loader
   const std::shared_ptr<file::CachedFileLoader> GetCachedFileLoader();
 
+  const std::shared_ptr<input::WindowEventManager> GetEventManager();
+
   /**
    *  Returns the size of the framebuffer.
    *  @param width -  output param for width.
@@ -57,18 +65,28 @@ class Context {
    */  
   void GetFramebufferSize(int* width, int* height);
 
+  /**
+   *  Notifies the context that it should swap to the next scene
+   */ 
+  void SwapScene(std::shared_ptr<engine::Scene> scene);
+
+  /**
+   *  If a new scene has been set, this will return it.
+   */ 
+  std::shared_ptr<engine::Scene> GetNextScene();
   // functions to add some object as the root
   // functions to get delta time
-  // 
-  // functions to find objects in ui/game hierarchy
+  double GetDeltaTime();
 
  private:
-  /**
-   *  Called by engine loop per-frame to update the context state
-   */ 
-  void CtxUpdate_();
   std::shared_ptr<file::CachedFileLoader> file_loader_;
+  std::shared_ptr<input::WindowEventManager> event_mgr_;
   GLFWwindow* window_;
+  double frame_delta_;
+
+ protected:
+  // anything which a transitive relationship cant solve
+  void FrameUpdate();
 };
 
 } // namespace critter

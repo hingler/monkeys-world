@@ -12,11 +12,11 @@ class Camera {
 
   virtual void SetFov(float deg) = 0;
 
+  /**
+   *  Marks this camera as active.
+   */ 
   virtual void SetAsActive() = 0;
 
-  /**
-   *  Marks this camera as active, and marks the other cam as inactive.
-   */ 
 };
 
 }

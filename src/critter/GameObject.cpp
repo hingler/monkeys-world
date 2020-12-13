@@ -66,6 +66,18 @@ GameObject* GameObject::GetChild(uint64_t id) {
   return nullptr;
 }
 
+std::vector<std::weak_ptr<Object>> GameObject::GetChildren() {
+  // for all children:
+  // we have a shared ptr so they definitely exist
+  // the trouble would be that a sibling decides to remove another sibling
+  std::vector<std::weak_ptr<Object>> res;
+  for (auto child : children_) {
+    res.push_back(std::weak_ptr<Object>(std::reinterpret_pointer_cast<Object>(child)));
+  }
+
+  return res;
+}
+
 GameObject* GameObject::GetParent() {
   return parent_.lock().get();
 }

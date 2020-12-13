@@ -39,6 +39,12 @@ void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<critter::Context> ct
 
 // various functions which help push the engine along
 
+/**
+ *  Updates the context in one pass.
+ *  @param delta - number of seconds required to render the last frame.
+ */ 
+void UpdateCtx(double delta, critter::Context* ctx);
+
 }
 }
 }

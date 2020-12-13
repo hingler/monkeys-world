@@ -6,7 +6,6 @@
 #include <critter/Context.hpp>
 #include <critter/Object.hpp>
 
-
 #include <glm/glm.hpp>
 
 #include <atomic>
@@ -46,12 +45,14 @@ class GameObject : public Object, public std::enable_shared_from_this<GameObject
    *  @param id - the ID of the desired child.
    *  @returns Pointer to child, or NULL if invalid.
    */ 
-  GameObject* GetChild(uint64_t id);
+  GameObject* GetChild(uint64_t id) override;
+
+  std::vector<std::weak_ptr<Object>> GetChildren() override;
 
   /**
    *  Returns ptr to the object associated with this object.
    */ 
-  GameObject* GetParent();
+  GameObject* GetParent() override;
 
   /**
    *  Returns ptr to context.

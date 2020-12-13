@@ -38,7 +38,7 @@ class Scene {
    *  Our engine only really needs to know that it's an object,
    *  and our components will know better. So this should be OK.
    */ 
-  virtual std::shared_ptr<critter::Object> GetGameObjectRoot();
+  virtual std::shared_ptr<critter::Object> GetGameObjectRoot() = 0;
 };
 
 }

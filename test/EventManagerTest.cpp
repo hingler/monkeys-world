@@ -9,7 +9,8 @@ using monkeysworld::input::WindowEventManager;
  */ 
 class TestingEventManager : public WindowEventManager {
  public:
-  TestingEventManager() : WindowEventManager() {}
+  TestingEventManager() : WindowEventManager() {};
+  void ProcessEvents() {ProcessWaitingEvents();}
 };
 
 class EventManagerTests : public ::testing::Test {
@@ -33,12 +34,12 @@ TEST_F(EventManagerTests, CreateEvent) {
 
   ASSERT_EQ(0, good);
 
-  event_mgr->ProcessWaitingEvents();
+  event_mgr->ProcessEvents();
   ASSERT_EQ(1, good);
 
   good = 0;
   event_mgr->GenerateKeyEvent(NULL, 15, 0, 0, 0);
-  event_mgr->ProcessWaitingEvents();
+  event_mgr->ProcessEvents();
   ASSERT_EQ(0, good);
 }
 
@@ -57,7 +58,7 @@ TEST_F(EventManagerTests, CreateMultipleEventsOnSameKey) {
   uint64_t event_paric = event_mgr->RegisterKeyListener(1, lambda_paric);
   ASSERT_NE(event_sogob, event_paric);
   event_mgr->GenerateKeyEvent(NULL, 1, 0, 0, 0);
-  event_mgr->ProcessWaitingEvents();
+  event_mgr->ProcessEvents();
   ASSERT_EQ(1, sogob);
   ASSERT_EQ(1, paric);
 
@@ -66,7 +67,7 @@ TEST_F(EventManagerTests, CreateMultipleEventsOnSameKey) {
   // remove event and see what hapen
   event_mgr->RemoveKeyListener(event_sogob);
   event_mgr->GenerateKeyEvent(NULL, 1, 0, 0, 0);
-  event_mgr->ProcessWaitingEvents();
+  event_mgr->ProcessEvents();
   ASSERT_EQ(0, sogob);
   ASSERT_EQ(1, paric);
 }
@@ -97,21 +98,21 @@ TEST_F(EventManagerTests, CreateMultipleEventsOnDifferentKeys) {
   ASSERT_NE(event_d, event_fe);
 
   event_mgr->GenerateKeyEvent(NULL, 1, 0, 0, 0);
-  event_mgr->ProcessWaitingEvents();
+  event_mgr->ProcessEvents();
 
   ASSERT_EQ(0, fortnite);
   ASSERT_EQ(0, feet_pic);
   ASSERT_EQ(1, dogecoin);
 
   event_mgr->GenerateKeyEvent(NULL, 2, 0, 0, 0);
-  event_mgr->ProcessWaitingEvents();
+  event_mgr->ProcessEvents();
 
   ASSERT_EQ(1, fortnite);
   ASSERT_EQ(0, feet_pic);
   ASSERT_EQ(1, dogecoin);
 
   event_mgr->GenerateKeyEvent(NULL, 3, 0, 0, 0);
-  event_mgr->ProcessWaitingEvents();
+  event_mgr->ProcessEvents();
 
   ASSERT_EQ(1, fortnite);
   ASSERT_EQ(1, feet_pic);
@@ -119,7 +120,7 @@ TEST_F(EventManagerTests, CreateMultipleEventsOnDifferentKeys) {
 
   event_mgr->RemoveKeyListener(event_d);
   event_mgr->GenerateKeyEvent(NULL, 1, 0, 0, 0);
-  event_mgr->ProcessWaitingEvents();
+  event_mgr->ProcessEvents();
   
   ASSERT_EQ(1, fortnite);
   ASSERT_EQ(1, feet_pic);
