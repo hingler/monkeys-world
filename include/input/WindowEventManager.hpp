@@ -12,6 +12,12 @@
 #include <utils/IDGenerator.hpp>
 
 namespace monkeysworld {
+namespace critter {
+class Context;
+}
+}
+
+namespace monkeysworld {
 namespace input {
 
 /**
@@ -40,6 +46,7 @@ struct event_info {
  *  called once per frame, after `glfwPollEvents` is called.
  */ 
 class WindowEventManager {
+  friend class ::monkeysworld::critter::Context;
  public:
 
   /**
@@ -51,11 +58,6 @@ class WindowEventManager {
    *  Handles incoming GLFW events.
    */ 
   void GenerateKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods);
-
-  /**
-   *  Process all waiting events.
-   */  
-  void ProcessWaitingEvents();
 
   /**
    * Register a listener which will be called when an event is generated for the desired key.
@@ -94,8 +96,13 @@ class WindowEventManager {
 
   // lock for event queue
   std::shared_timed_mutex event_mutex_;
-
  protected:
+
+    /**
+   *  Process all waiting events.
+   */  
+  void ProcessWaitingEvents();
+
   /**
    *  Protected ctor for testing purposes.
    *  Tests should subclass this object and then define a nop ctor which uses this.
