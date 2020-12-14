@@ -127,6 +127,17 @@ void GameObject::RemoveChild(uint64_t id) {
   }
 }
 
+const glm::vec3& GameObject::GetRotation() {
+  return rotation;
+}
+
+const glm::vec3& GameObject::GetPosition() {
+  return position;
+}
+const glm::vec3& GameObject::GetScale() {
+  return scale;
+}
+
 // superctor for gameobject :)
 GameObject::GameObject(const GameObject& other) : Object(other) {
   position = other.position;
