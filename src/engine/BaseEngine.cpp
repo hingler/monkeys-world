@@ -42,7 +42,9 @@ void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<critter::Context> ct
     // visit objects in our component tree and call their "update" funcs
     UpdateObjects(current_scene->GetGameObjectRoot());
     // visit objects again with a "renderer"
+    RenderObjects(current_scene->GetGameObjectRoot());
     // swap buffers
+    glfwSwapBuffers(window);
     // loop back
     glfwPollEvents();
   }
@@ -57,6 +59,21 @@ void UpdateObjects(std::shared_ptr<critter::Object> obj) {
     auto child_shared = child.lock();
     if (child_shared) {
       UpdateObjects(child_shared);
+    }
+  }
+}
+
+// simple render pass (albedo only)
+// TODO: expand so that we prepare the render context,
+//       then visit each component with shadows, etc
+//       prepared!
+void RenderObjects(std::shared_ptr<critter::Object> obj) {
+  obj->PrepareAttributes();
+  obj->RenderMaterial();
+  for (auto child : obj->GetChildren()) {
+    auto child_shared = child.lock();
+    if (child_shared) {
+      RenderObjects(child_shared);
     }
   }
 }
