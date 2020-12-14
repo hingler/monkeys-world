@@ -18,6 +18,9 @@ class GameCamera : public Camera, public GameObject {
    */ 
   GameCamera(Context* ctx);
 
+  void Accept(Visitor& v) override;
+
+  // lazy noops
   void RenderMaterial() override {}
   void PrepareAttributes() override {}
   void SetAsActive() override {}

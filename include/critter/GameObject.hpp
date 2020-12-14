@@ -32,6 +32,8 @@ class GameObject : public Object, public std::enable_shared_from_this<GameObject
 
   GameObject(Context* ctx);
 
+  void Accept(Visitor& v) override;
+
   /**
    *  Adds a child to this GameObject.
    *  @param child - shared pointer to the new child.

@@ -8,6 +8,8 @@
 namespace monkeysworld {
 namespace critter {
 
+class Visitor;
+
 /**
  *  Superclass for all objects which occupy space in the scene.
  *  Basic routines for nesting, revealing children,
@@ -24,6 +26,11 @@ class Object {
    *  Super ctor for objects
    */ 
   Object();
+
+  /**
+   *  Visitor for identifying components :)
+   */ 
+  virtual void Accept(Visitor& v);
 
   /**
    *  Sets up all attributes required to draw this object.

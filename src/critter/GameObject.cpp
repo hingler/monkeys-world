@@ -1,4 +1,5 @@
 #include <critter/GameObject.hpp>
+#include <critter/Visitor.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
@@ -20,6 +21,10 @@ GameObject::GameObject(Context* ctx) : Object() {
   this->rotation = glm::vec3(0);
   this->scale = glm::vec3(1);
   this->ctx_ = ctx;
+}
+
+void GameObject::Accept(Visitor& v) {
+  v.Visit(this);
 }
 
 Context* GameObject::GetContext() {
