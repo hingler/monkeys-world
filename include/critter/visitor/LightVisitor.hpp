@@ -26,6 +26,11 @@ class LightVisitor : public critter::Visitor {
    */ 
   virtual void Visit(shader::light::SpotLight* o) override;
   
+  /**
+   *  Resets the state of the visitor.
+   */ 
+  void Clear();
+  
   // returns a list of all spotlights visited.
   const std::vector<const std::shared_ptr<shader::light::SpotLight>>& GetSpotLights();
   

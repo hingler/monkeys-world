@@ -3,6 +3,8 @@
 
 #include <engine/BaseEngine.hpp>
 
+#include <critter/visitor/LightVisitor.hpp>
+
 // TODO: create an actual logging setup -- we can config it in init :)
 #include <boost/log/trivial.hpp>
 
@@ -12,6 +14,8 @@
 namespace monkeysworld {
 namespace engine {
 namespace baseengine {
+
+using ::monkeysworld::critter::visitor::LightVisitor;
 
 static void UpdateObjects(std::shared_ptr<critter::Object>);
 
@@ -25,7 +29,13 @@ void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<critter::Context> ct
   auto finish = std::chrono::high_resolution_clock::now();
   std::shared_ptr<Scene> current_scene = scene;
   std::chrono::duration<double, std::ratio<1, 1>> dur = finish - start;
+
+  LightVisitor light_visitor;
+  
+
   for (;;) {
+    // reset any visitors which store info
+    light_visitor.Clear();
     start = std::chrono::high_resolution_clock::now();
     // poll for events
     // check to see if a new scene needs to be initialized
@@ -41,8 +51,14 @@ void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<critter::Context> ct
     //   ex. the frame delta
     // visit objects in our component tree and call their "update" funcs
     UpdateObjects(current_scene->GetGameObjectRoot());
-    // visit objects again with a "renderer"
-    RenderObjects(current_scene->GetGameObjectRoot());
+    light_visitor.Visit(current_scene->GetGameObjectRoot().get());
+    // for each light:
+    //   - do a depth render from the perspective of our lights
+
+    // for now: put the lights by themselves in our render context
+    // prepare the render context
+    // lights should be able to generate some packet which the renderer can use
+    // render objects, using the render context
     // swap buffers
     glfwSwapBuffers(window);
     // loop back
