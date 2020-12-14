@@ -1,5 +1,5 @@
-#ifndef RENDERER_H_
-#define RENDERER_H_
+#ifndef VISITOR_H_
+#define VISITOR_H_
 
 #include <critter/Object.hpp>
 #include <critter/GameObject.hpp>
