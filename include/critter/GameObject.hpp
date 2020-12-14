@@ -32,8 +32,6 @@ class GameObject : public Object, public std::enable_shared_from_this<GameObject
 
   GameObject(Context* ctx);
 
-  virtual void RenderMaterial() = 0;
-
   /**
    *  Adds a child to this GameObject.
    *  @param child - shared pointer to the new child.

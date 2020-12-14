@@ -16,7 +16,7 @@ glm::mat4 GameCamera::GetViewMatrix() {
   int width, height;
   // we could inverse scale this
   GetContext()->GetFramebufferSize(&width, &height);
-  glm::mat4 persp = glm::perspective(fov_deg_, (float)width / height, 0.01f, 100.0f);
+  glm::mat4 persp = glm::perspective(glm::radians(fov_deg_), (float)width / height, 0.01f, 100.0f);
   // view tf should be inverse of model tf
   // cache this op whenever we can!
   return persp * glm::inverse(GetTransformationMatrix());

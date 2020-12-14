@@ -9,7 +9,7 @@ namespace monkeysworld {
 namespace critter {
   /**
    *  Represents the camera within a scene.
-   *  TODO: inherit camera template, change name to GameCamera
+   *  TODO: Work this into the model test to ensure that it functions properly
    */ 
 class GameCamera : public Camera, public GameObject {
  public:
@@ -17,6 +17,10 @@ class GameCamera : public Camera, public GameObject {
    *  Constructs a new camera.
    */ 
   GameCamera(Context* ctx);
+
+  void RenderMaterial() override {}
+  void PrepareAttributes() override {}
+  void SetAsActive() override {}
 
   /**
    *  Returns the view+proj matrix associated with this camera.

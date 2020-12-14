@@ -3,6 +3,7 @@
 
 #include <critter/Model.hpp>
 #include <critter/Context.hpp>
+#include <critter/GameCamera.hpp>
 
 #include <model/Mesh.hpp>
 
@@ -188,6 +189,11 @@ void main(int argc, char** argv) {
 
   auto start = std::chrono::high_resolution_clock::now();
   auto finish = std::chrono::high_resolution_clock::now();
+
+  ::monkeysworld::critter::GameCamera gc(ctx.get());
+  gc.SetPosition(glm::vec3(0, 0, -8));
+  gc.SetRotation(glm::vec3(0, 1.6, 0));
+  gc.SetFov(45.0f);
   std::chrono::duration<double, std::micro> dur = (finish - start);
   double render_time_sum = 0;
   double poll_time_sum = 0;
@@ -204,7 +210,8 @@ void main(int argc, char** argv) {
     //   BOOST_LOG_TRIVIAL(trace) << "Poll time avg: " << poll_time_sum / frame_count << "us";
     // }
     start = std::chrono::high_resolution_clock::now();
-    //
+    gc.SetRotation(glm::vec3(0, 3.1415, 0));
+    gc.SetFov(45.0f + glm::sin(rot * 6.5) * 10.0f);
     event_mgr.ProcessEvents();
     timer_now = glfwGetTimerValue();
     rot += 0.2f * ((timer_now - timer_last) / timer_freq);
@@ -213,10 +220,9 @@ void main(int argc, char** argv) {
     timer_last = timer_now;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glm::mat4 persp = glm::perspective(0.78f, 1.85f, 0.01f, 100.0f);
-    glm::mat4 vp_matrix = glm::lookAt(glm::vec3(0, 0, -8), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     test_material.SetSurfaceColor(glm::vec4(1.0, 0.6, glm::fract(rot), 1.0));
-    vp_matrix = persp * vp_matrix;
+    glm::mat4 vp_matrix = gc.GetViewMatrix();
+
     test_model->SetPosition(glm::vec3(0, 0, 0));
     test_model->SetRotation(glm::vec3(key_x, key_y, 0));
     test_model->SetScale(glm::vec3(1.4));
