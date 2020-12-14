@@ -30,7 +30,10 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/input/WindowEventManager.cpp
                                     ${SRC_DIR}/critter/GameCamera.cpp
                                     
-                                    ${SRC_DIR}/engine/BaseEngine.cpp)
+                                    ${SRC_DIR}/engine/BaseEngine.cpp
+                                    
+                                    ${SRC_DIR}/critter/visitor/LightVisitor.cpp
+                                    ${SRC_DIR}/critter/visitor/SpotLightRenderVisitor.cpp)
 
 add_library(monkeys-world-audio
                                     ${SRC_DIR}/audio/AudioBuffer.cpp
