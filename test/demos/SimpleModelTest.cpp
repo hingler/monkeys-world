@@ -211,7 +211,7 @@ void main(int argc, char** argv) {
     // }
     start = std::chrono::high_resolution_clock::now();
     gc.SetRotation(glm::vec3(0, 3.1415, 0));
-    gc.SetFov(45.0f + glm::sin(rot * 6.5) * 10.0f);
+    gc.SetScale(glm::vec3(2.0 + 0.5 * glm::sin(rot * 8)));
     event_mgr.ProcessEvents();
     timer_now = glfwGetTimerValue();
     rot += 0.2f * ((timer_now - timer_last) / timer_freq);
