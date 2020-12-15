@@ -56,6 +56,9 @@ void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<critter::Context> ct
     //   - do a depth render from the perspective of our lights
 
     // for now: put the lights by themselves in our render context
+    for (auto light : light_visitor.GetSpotLights()) {
+      
+    }
     // prepare the render context
     // lights should be able to generate some packet which the renderer can use
     // render objects, using the render context
