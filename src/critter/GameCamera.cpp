@@ -27,7 +27,6 @@ glm::mat4 GameCamera::GetViewMatrix() {
   // cache this op whenever we can!
   glm::mat4 vm = GetTransformationMatrix();
   // undo scaling effects
-  glm::vec3 inverse_scale = GetScale();
   return persp * glm::inverse(vm);
 }
 
