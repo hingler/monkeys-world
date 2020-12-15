@@ -5,6 +5,8 @@
 #include <critter/GameObject.hpp>
 #include <critter/Context.hpp>
 
+#include <shader/light/LightTypes.hpp>
+
 namespace monkeysworld {
 namespace critter {
 namespace visitor {
@@ -36,7 +38,7 @@ class SpotLight : public critter::GameObject {
   /**
    *  Returns the matrix associated with this spot light.
    */ 
-  glm::mat4 GetLightMatrix();
+  const glm::mat4& GetLightMatrix();
 
   /**
    *  Modifies the angle of the spotlight.
@@ -44,6 +46,12 @@ class SpotLight : public critter::GameObject {
    *  @param deg - the angle, in degrees, of this spot light.
    */ 
   void SetAngle(float deg);
+
+  /**
+   *  Generates a spotlight_info struct which represents this spotlight within
+   *  a render context.
+   */ 
+  spotlight_info GetSpotLightInfo();
 
  protected:
   /**

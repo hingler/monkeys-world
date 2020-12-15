@@ -33,10 +33,38 @@ void SpotLight::SetAngle(float deg) {
   angle_ = deg;
 }
 
-glm::mat4 SpotLight::GetLightMatrix() {
+const glm::mat4& SpotLight::GetLightMatrix() {
   // ballparking these numbers -- may need better ones :)
   glm::mat4 persp = glm::perspective(glm::radians(angle_), 1.0f, 0.01f, 100.0f);
   return persp * glm::inverse(GetTransformationMatrix());
+}
+
+spotlight_info SpotLight::GetSpotLightInfo() {
+  spotlight_info res;
+
+  res.spotlight_view_matrix = GetLightMatrix();
+
+  // TODO: add tweaks for this light shit
+  // actually ... might be good to use a light class for this stuff!
+  // have the "light" parts be separate and just call at them
+  res.color = glm::vec3(1.0);
+  res.spec_falloff = 32.0;
+  res.intensity_spec = 1.0;
+  res.intensity_diff = 1.0;
+
+  res.atten_quad = 0.0f;
+  res.atten_linear = 0.0f;
+  res.atten_const = 1.0f;
+
+  // initial direction is always the -Z axis, like a camera.
+  res.direction = glm::mat3(GetTransformationMatrix()) * glm::vec3(0, 0, -1);
+  res.position = GetPosition();
+
+  res.fd.height = GetMapSize();
+  res.fd.width = GetMapSize();
+  res.fd.map = GetMapDesc();
+
+  return res;
 }
 
 void SpotLight::ChangeMapSize(int px) {
