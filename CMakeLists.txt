@@ -33,7 +33,7 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/engine/BaseEngine.cpp
                                     
                                     ${SRC_DIR}/critter/visitor/LightVisitor.cpp
-                                    ${SRC_DIR}/critter/visitor/SpotLightRenderVisitor.cpp)
+                                    ${SRC_DIR}/shader/light/SpotLight.cpp)
 
 add_library(monkeys-world-audio
                                     ${SRC_DIR}/audio/AudioBuffer.cpp
