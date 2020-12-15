@@ -57,7 +57,7 @@ spotlight_info SpotLight::GetSpotLightInfo() {
   res.atten_const = 1.0f;
 
   // initial direction is always the -Z axis, like a camera.
-  res.direction = glm::mat3(GetTransformationMatrix()) * glm::vec3(0, 0, -1);
+  res.direction = glm::normalize(glm::mat3(GetTransformationMatrix()) * glm::vec3(0, 0, -1));
   res.position = GetPosition();
 
   res.fd.height = GetMapSize();
