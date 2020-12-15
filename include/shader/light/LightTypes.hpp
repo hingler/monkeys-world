@@ -17,6 +17,12 @@ enum LightTypes {
   SPOTLIGHT
 };
 
+struct frame_info {
+  int width;          // fb width
+  int height;         // fb height
+  GLuint map;         // shadow map fd
+};
+
 /**
  *  Render context's representation of a spotlight.
  */ 
@@ -44,7 +50,7 @@ struct spotlight_info {
   float atten_linear;
   float atten_const;
 
-  GLuint shadow_fb_;
+  frame_info fd;
 };
 
 }
