@@ -12,6 +12,17 @@
 
 #include <memory>
 
+/**
+ *  TODO (while i remember it): if we want to alter vertex positions in shader, pass it to the shadow renderer
+ * 
+ *  Unity abstracts this via surface shaders which handle the crap
+ *  But if you write your own, you have some param representing a tag which
+ *  determines which pass you're rendering, and then the implementor is required to return
+ *  the proper data from that shader.
+ * 
+ *  This would be an option later down the line, but for now i'm just going to keep it simple
+ *  and handle anything like that in CPU
+ */
 namespace monkeysworld {
 namespace critter {
 
