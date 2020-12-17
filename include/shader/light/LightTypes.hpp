@@ -30,9 +30,6 @@ struct spotlight_info {
   glm::mat4 spotlight_view_matrix;      // view matrix for drawing spotlight
   
   glm::vec3 color;                      // spotlight color
-
-  float spec_falloff;                   // spotlight specularity (32.0 = smooth, lower = rougher)
-
   float intensity_spec;                 // intensity of specular
   float intensity_diff;                 // intensity of diffuse
 

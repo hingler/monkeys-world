@@ -6,6 +6,7 @@
 #include <critter/Context.hpp>
 
 #include <shader/light/LightTypes.hpp>
+#include <shader/light/Light.hpp>
 
 namespace monkeysworld {
 namespace critter {
@@ -26,7 +27,7 @@ namespace light {
  *  Controls similar to a camera.
  *  By default, points along the negative Z axis.
  */ 
-class SpotLight : public critter::GameObject {
+class SpotLight : public critter::GameObject, Light {
   // for accessing framebuffer methods
   friend class ::monkeysworld::critter::visitor::LightVisitor;
  public:

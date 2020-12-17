@@ -10,7 +10,7 @@ namespace light {
 using critter::GameObject;
 using critter::Context;
 
-SpotLight::SpotLight(Context* ctx) : GameObject(ctx) {
+SpotLight::SpotLight(Context* ctx) : GameObject(ctx), Light() {
   angle_ = 45.0f; // simple default
   // setup the framebuffer
   glGenTextures(1, &map_);
@@ -47,14 +47,13 @@ spotlight_info SpotLight::GetSpotLightInfo() {
   // TODO: add tweaks for this light shit
   // actually ... might be good to use a light class for this stuff!
   // have the "light" parts be separate and just call at them
-  res.color = glm::vec3(1.0);
-  res.spec_falloff = 32.0;
-  res.intensity_spec = 1.0;
-  res.intensity_diff = 1.0;
+  res.color = GetColor();
+  res.intensity_spec = GetSpecularIntensity();
+  res.intensity_diff = GetDiffuseIntensity();
 
-  res.atten_quad = 0.0f;
-  res.atten_linear = 0.0f;
-  res.atten_const = 1.0f;
+  res.atten_quad = GetAttenuationQuad();
+  res.atten_linear = GetAttenuationLinear();
+  res.atten_const = GetAttenuationConst();
 
   // initial direction is always the -Z axis, like a camera.
   res.direction = glm::normalize(glm::mat3(GetTransformationMatrix()) * glm::vec3(0, 0, -1));
