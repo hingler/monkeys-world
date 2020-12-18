@@ -84,6 +84,10 @@ void AudioManager::QueueThreadfunc() {
 
     switch (info_queue.type) {
       case OGG:
+        if (info_buffer->buffer != nullptr) {
+          delete info_buffer->buffer;
+        }
+
         info_buffer->buffer = new AudioBufferOgg(16384, info_queue.filename);
         info_buffer->status = USED;
         info_buffer->buffer->StartWriteThread();
