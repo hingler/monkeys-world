@@ -66,6 +66,15 @@ class Object {
    */ 
   uint64_t GetId();
 
+  /**
+   *  Changes the ID associated with this view.
+   * 
+   *  For now, does not freak out if duplicate IDs are generated.
+   *  Assigned IDs might conflict with default IDs, keep the custom value
+   *  sufficiently high to avoid clashes.
+   */ 
+  void SetId(uint64_t new_id);
+
   // UPDATE FUNCTIONS
 
   /**

@@ -17,6 +17,10 @@ uint64_t Object::GetId() {
   return id_;
 }
 
+void Object::SetId(uint64_t new_id) {
+  id_generator_.RegisterUniqueId(new_id);
+  id_ = new_id;
+}
 // non problem, but:
 // if multiple methods perform some setup per-frame,
 // how will we fare?
