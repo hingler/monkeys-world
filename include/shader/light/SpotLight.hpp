@@ -36,6 +36,10 @@ class SpotLight : public critter::GameObject, Light {
    */ 
   SpotLight(critter::Context* ctx);
 
+  // nop
+  void PrepareAttributes() override {}
+  void RenderMaterial() override {}
+
   /**
    *  Returns the matrix associated with this spot light.
    */ 
