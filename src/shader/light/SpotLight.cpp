@@ -9,8 +9,9 @@ namespace light {
 
 using critter::GameObject;
 using critter::Context;
+using materials::ShadowMapMaterial;
 
-SpotLight::SpotLight(Context* ctx) : GameObject(ctx), Light() {
+SpotLight::SpotLight(Context* ctx) : GameObject(ctx), Light(), mat_(ctx) {
   angle_ = 45.0f; // simple default
   // setup the framebuffer
   glGenTextures(1, &map_);
@@ -33,7 +34,7 @@ void SpotLight::SetAngle(float deg) {
   angle_ = deg;
 }
 
-const glm::mat4& SpotLight::GetLightMatrix() {
+glm::mat4 SpotLight::GetLightMatrix() {
   // ballparking these numbers -- may need better ones :)
   glm::mat4 persp = glm::perspective(glm::radians(angle_), 1.0f, 0.01f, 100.0f);
   return persp * glm::inverse(GetTransformationMatrix());
@@ -88,6 +89,10 @@ GLuint SpotLight::GetFramebuffer() {
 
 int SpotLight::GetMapSize() {
   return map_size_;
+}
+
+ShadowMapMaterial& SpotLight::GetShadowProgram() {
+  return mat_;
 }
 
 }
