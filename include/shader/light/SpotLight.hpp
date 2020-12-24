@@ -7,6 +7,7 @@
 
 #include <shader/light/LightTypes.hpp>
 #include <shader/light/Light.hpp>
+#include <shader/materials/ShadowMapMaterial.hpp>
 
 namespace monkeysworld {
 namespace critter {
@@ -43,7 +44,7 @@ class SpotLight : public critter::GameObject, Light {
   /**
    *  Returns the matrix associated with this spot light.
    */ 
-  const glm::mat4& GetLightMatrix();
+  glm::mat4 GetLightMatrix();
 
   /**
    *  Modifies the angle of the spotlight.
@@ -57,6 +58,8 @@ class SpotLight : public critter::GameObject, Light {
    *  a render context.
    */ 
   spotlight_info GetSpotLightInfo();
+
+  materials::ShadowMapMaterial& GetShadowProgram();
 
  protected:
   /**
@@ -80,10 +83,14 @@ class SpotLight : public critter::GameObject, Light {
    */ 
   int GetMapSize();
 
+
  private:
-  int map_size_;      // size of shadow map, in px
-  GLuint map_;        // descriptor for map
-  GLuint shadow_fb_;  // framebuffer for shadow map
+  int map_size_;                      // size of shadow map, in px
+  GLuint map_;                        // descriptor for map
+  GLuint shadow_fb_;                  // framebuffer for shadow map
+  materials::ShadowMapMaterial mat_;  // material assc'd with shadow map generation
+  // TODO: I think this is the best way to handle this for now
+  //       It might be better to move GetShadowProgDesc to the light prototype
 
   float angle_;
 };
