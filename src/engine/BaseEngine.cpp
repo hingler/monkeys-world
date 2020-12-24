@@ -16,9 +16,10 @@ namespace engine {
 namespace baseengine {
 
 using ::monkeysworld::critter::visitor::LightVisitor;
+using ::monkeysworld::shader::Material;
+using ::monkeysworld::shader::light::SpotLight;
 
 static void UpdateObjects(std::shared_ptr<critter::Object>);
-
 // subtype context to enable access to frequent update functions
 // pass supertype to scene
 void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<critter::Context> ctx, GLFWwindow* window) {
@@ -31,6 +32,8 @@ void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<critter::Context> ct
   std::chrono::duration<double, std::ratio<1, 1>> dur = finish - start;
 
   LightVisitor light_visitor;
+
+
   
 
   for (;;) {
@@ -57,12 +60,33 @@ void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<critter::Context> ct
 
     // for now: put the lights by themselves in our render context
     for (auto light : light_visitor.GetSpotLights()) {
-      
+      // no render context needed -- we're just preparing attributes and calling a default shadow func
+      // we want to have the shadow map shader prepared beforehand
+
+      // create a simple visitor which will pass this light's properties to the program and render to the map
+      // lastly: add the light to the render context
     }
-    // prepare the render context
     // lights should be able to generate some packet which the renderer can use
     // render objects, using the render context
     // swap buffers
+
+    // SHADOW PASS -- get shadow info
+    // add light info to the render context, in appropriate places
+
+    // only spotlights for now -- the goal:
+    //   - see which lights are in the scene
+    //   - run the light pass for each one
+    //   - note: there should be a method which contains all GL calls required to draw the object
+    //   - that way, we can separate material configuration from drawing
+    //   - add a method to Object which accomplishes this
+
+    // then: just draw (for now)
+    //    if needed, we can start to collect additional information and add it to the context
+    //    however -- for now, just this.
+
+    // create render context
+    // add lights to the render context
+    // then: render!
     glfwSwapBuffers(window);
     // loop back
     glfwPollEvents();
