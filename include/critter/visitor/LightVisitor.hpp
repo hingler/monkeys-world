@@ -13,20 +13,23 @@ namespace monkeysworld {
 namespace critter {
 namespace visitor {
 
+/**
+ *  Passes through the object hierarchy, isolating any lights that it comes by.
+ */ 
 class LightVisitor : public critter::Visitor {
  public:
   LightVisitor();
 
   // noop
-  virtual void Visit(critter::Object* o) override {}
-  virtual void Visit(critter::GameObject* o) override {}
-  virtual void Visit(critter::GameCamera* o) override {}
+  void Visit(critter::Object* o) override {}
+  void Visit(critter::GameObject* o) override {}
+  void Visit(critter::GameCamera* o) override {}
 
   /**
    *  Adds the discovered spotlight to the list of known spotlights.
    *  @param o - visited spotlight.
    */ 
-  virtual void Visit(shader::light::SpotLight* o) override;
+  void Visit(shader::light::SpotLight* o) override;
   
   /**
    *  Resets the state of the visitor.
