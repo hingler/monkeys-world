@@ -17,7 +17,7 @@ namespace monkeysworld {
 namespace shader {
 namespace materials {
 
-class ShadowMapMaterial : ::monkeysworld::shader::Material {
+class ShadowMapMaterial : public ::monkeysworld::shader::Material {
  public:
   /**
    *  Creates a new ShadowMapMaterial.
