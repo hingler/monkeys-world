@@ -23,6 +23,7 @@ class GameCamera : public Camera, public GameObject {
   // lazy noops
   void RenderMaterial() override {}
   void PrepareAttributes() override {}
+  void Draw() override {}
   void SetAsActive() override {}
 
   /**

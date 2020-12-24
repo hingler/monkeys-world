@@ -34,6 +34,8 @@ class Model : public GameObject {
    */ 
   std::shared_ptr<model::Mesh<>> GetMesh();
 
+  void Draw() override;
+
   Model(const Model& other);
   Model(Model&& other);
   Model& operator=(const Model& other);

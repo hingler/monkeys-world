@@ -43,6 +43,12 @@ class Object {
   virtual void RenderMaterial() = 0;
 
   /**
+   *  Minimal commands necessary to draw this object onto the screen.
+   *  Pairs with PrepareAttributes.
+   */ 
+  virtual void Draw() = 0;
+
+  /**
    *  Finds a child by ID.
    *  @param id - The ID of the desired child.
    *  @returns Pointer to child, or NULL if invalid.

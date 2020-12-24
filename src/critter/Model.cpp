@@ -282,6 +282,10 @@ static data_type GetDataType(const std::string& line) {
   }
 }
 
+void Model::Draw() {
+  glDrawElements(GL_TRIANGLES, mesh_->GetIndexCount(), GL_UNSIGNED_INT, (void*)0);
+}
+
 Model::Model(const Model& other) : GameObject(other) {
   mesh_ = other.mesh_;
 }
