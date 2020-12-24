@@ -1,3 +1,6 @@
+#ifndef SPOT_LIGHT_MAP_VISITOR_H_
+#define SPOT_LIGHT_MAP_VISITOR_H_
+
 #include <shader/light/SpotLight.hpp>
 
 #include <critter/Visitor.hpp>
@@ -43,3 +46,5 @@ class SpotLightMapVisitor : public critter::Visitor {
 }
 }
 }
+
+#endif
