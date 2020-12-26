@@ -7,7 +7,6 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-#include <critter/Camera.hpp>
 #include <input/WindowEventManager.hpp>
 
 #include <memory>

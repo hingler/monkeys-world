@@ -30,8 +30,19 @@ glm::mat4 GameCamera::GetViewMatrix() {
   return persp * glm::inverse(vm);
 }
 
+void GameCamera::SetActive(bool isActive) {
+  this->active_ = isActive;
+
+  // TODO: when first creating the scene,
+  //       assume the camera with the lowest ID is active.
+}
+
 void GameCamera::SetFov(float deg) {
   fov_deg_ = deg;
+}
+
+bool GameCamera::IsActive() {
+  return active_;
 }
 
 }

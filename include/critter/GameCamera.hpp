@@ -2,7 +2,6 @@
 #define GAME_CAMERA_H_
 
 #include <critter/GameObject.hpp>
-#include <critter/Camera.hpp>
 #include <glm/glm.hpp>
 
 namespace monkeysworld {
@@ -11,7 +10,7 @@ namespace critter {
    *  Represents the camera within a scene.
    *  TODO: Work this into the model test to ensure that it functions properly
    */ 
-class GameCamera : public Camera, public GameObject {
+class GameCamera : public GameObject {
  public:
   /**
    *  Constructs a new camera.
@@ -24,17 +23,25 @@ class GameCamera : public Camera, public GameObject {
   void RenderMaterial() override {}
   void PrepareAttributes() override {}
   void Draw() override {}
-  void SetAsActive() override {}
+
+  /**
+   *  Sets the current active state of this camera.
+   *  If the camera is inactive, does nothing.
+   */ 
+  void SetActive(bool isActive);
 
   /**
    *  Returns the view+proj matrix associated with this camera.
    */ 
-  glm::mat4 GetViewMatrix() override;
+  glm::mat4 GetViewMatrix();
 
   /**
    *  Sets the field of view of the camera.
+   *  @param deg - the new FOV, in degrees.
    */ 
-  void SetFov(float deg) override;
+  void SetFov(float deg);
+
+  bool IsActive();
  private:
   float fov_deg_;
   bool active_;
