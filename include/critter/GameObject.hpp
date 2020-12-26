@@ -5,7 +5,7 @@
 
 #include <critter/Context.hpp>
 #include <critter/Object.hpp>
-#include <critter/GameCamera.hpp>
+#include <critter/Camera.hpp>
 
 #include <glm/glm.hpp>
 
@@ -83,7 +83,7 @@ class GameObject : public Object, public std::enable_shared_from_this<GameObject
   /**
    *  Returns a pointer to the currently active camera.
    */ 
-  virtual std::shared_ptr<GameCamera> GetActiveCamera();
+  virtual std::shared_ptr<Camera> GetActiveCamera();
 
   // getters for the above.
   const glm::vec3& GetPosition();
