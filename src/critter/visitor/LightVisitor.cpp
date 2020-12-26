@@ -14,10 +14,10 @@ const spotlight_list& LightVisitor::GetSpotLights() {
   return spotlights_; 
 }
 
-void LightVisitor::Visit(SpotLight* o) {
+void LightVisitor::Visit(std::shared_ptr<SpotLight> o) {
   // add to the spotlight list
   // i already know it's a spotlight, so this should be fine
-  spotlights_.push_back(std::reinterpret_pointer_cast<SpotLight>(o->shared_from_this()));
+  spotlights_.push_back(o);
 }
 
 void LightVisitor::Clear() {

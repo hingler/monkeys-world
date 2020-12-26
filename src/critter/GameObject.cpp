@@ -24,7 +24,7 @@ GameObject::GameObject(Context* ctx) : Object() {
 }
 
 void GameObject::Accept(Visitor& v) {
-  v.Visit(this);
+  v.Visit(std::reinterpret_pointer_cast<GameObject>(this->shared_from_this()));
 }
 
 Context* GameObject::GetContext() {

@@ -54,7 +54,7 @@ void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<critter::Context> ct
     //   ex. the frame delta
     // visit objects in our component tree and call their "update" funcs
     UpdateObjects(current_scene->GetGameObjectRoot());
-    light_visitor.Visit(current_scene->GetGameObjectRoot().get());
+    current_scene->GetGameObjectRoot()->Accept(light_visitor);
     // for each light:
     //   - do a depth render from the perspective of our lights
 

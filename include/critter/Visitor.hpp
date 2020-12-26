@@ -8,6 +8,8 @@
 
 #include <shader/light/SpotLight.hpp>
 
+#include <memory>
+
 namespace monkeysworld {
 namespace critter {
 
@@ -25,12 +27,12 @@ namespace critter {
 class Visitor {
  public:
   // object default
-  virtual void Visit(Object* o) = 0;
+  virtual void Visit(std::shared_ptr<Object> o) = 0;
   // game object implementors
-  virtual void Visit(GameObject* o) = 0;
+  virtual void Visit(std::shared_ptr<GameObject> o) = 0;
   // and other special object types
-  virtual void Visit(GameCamera* o) = 0;
-  virtual void Visit(shader::light::SpotLight* o) = 0;
+  virtual void Visit(std::shared_ptr<GameCamera> o) = 0;
+  virtual void Visit(std::shared_ptr<shader::light::SpotLight> o) = 0;
 };
 
 } // namespace render

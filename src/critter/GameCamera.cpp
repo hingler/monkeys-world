@@ -14,7 +14,7 @@ GameCamera::GameCamera(Context* ctx) : GameObject(ctx) {
 }
 
 void GameCamera::Accept(Visitor& v) {
-  v.Visit(this);
+  v.Visit(std::reinterpret_pointer_cast<GameCamera>(this->shared_from_this()));
 }
 
 glm::mat4 GameCamera::GetViewMatrix() {

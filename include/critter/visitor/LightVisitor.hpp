@@ -21,15 +21,15 @@ class LightVisitor : public critter::Visitor {
   LightVisitor();
 
   // noop
-  void Visit(critter::Object* o) override {}
-  void Visit(critter::GameObject* o) override {}
-  void Visit(critter::GameCamera* o) override {}
+  void Visit(std::shared_ptr<Object> o) override {}
+  void Visit(std::shared_ptr<GameObject> o) override {}
+  void Visit(std::shared_ptr<GameCamera> o) override {}
 
   /**
    *  Adds the discovered spotlight to the list of known spotlights.
    *  @param o - visited spotlight.
    */ 
-  void Visit(shader::light::SpotLight* o) override;
+  void Visit(std::shared_ptr<shader::light::SpotLight> o) override;
   
   /**
    *  Resets the state of the visitor.
@@ -39,6 +39,7 @@ class LightVisitor : public critter::Visitor {
   // returns a list of all spotlights visited.
   const std::vector<std::shared_ptr<shader::light::SpotLight>>& GetSpotLights();
  private:
+ 
   std::vector<std::shared_ptr<shader::light::SpotLight>> spotlights_;
 
 };
