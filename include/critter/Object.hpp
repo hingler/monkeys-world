@@ -30,7 +30,7 @@ class Object {
   /**
    *  Visitor for identifying components :)
    */ 
-  virtual void Accept(Visitor& v);
+  virtual void Accept(Visitor& v) = 0;
 
   /**
    *  Sets up all attributes required to draw this object.

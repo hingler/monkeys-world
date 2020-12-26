@@ -29,7 +29,7 @@ TEST(LightVisitorTests, CreateLightVisitor) {
 
   e->AddChild(s);
 
-  visitor.Visit(e.get());
+  e->Accept(visitor);
 
   auto list = visitor.GetSpotLights();
 
@@ -59,7 +59,7 @@ TEST(LightVisitorTests, MultipleLightHierarchy) {
   e1->AddChild(e2);
   e2->AddChild(e3);
 
-  visitor.Visit(e1.get());
+  e1->Accept(visitor);
   auto list = visitor.GetSpotLights();
 
   // ensure one light has 2048, and one has 2049

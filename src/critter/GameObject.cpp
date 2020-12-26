@@ -84,7 +84,8 @@ std::vector<std::weak_ptr<Object>> GameObject::GetChildren() {
 }
 
 GameObject* GameObject::GetParent() {
-  return parent_.lock().get();
+  auto temp = parent_.lock();
+  return temp.get();
 }
 
 void GameObject::SetPosition(const glm::vec3& new_pos) {
@@ -226,8 +227,9 @@ std::shared_ptr<Camera> GameObject::GetActiveCamera() {
   }
 
   // visit all components and look for a game camera
-  
-  
+
+  // jank shit for now
+  return std::shared_ptr<Camera>(nullptr);
 }
 
 } // namespace critter

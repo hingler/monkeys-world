@@ -19,6 +19,10 @@ ShadowMapMaterial::ShadowMapMaterial(Context* ctx) {
   
 }
 
+void ShadowMapMaterial::UseMaterial() {
+  glUseProgram(shadow_prog_.GetProgramDescriptor());
+}
+
 void ShadowMapMaterial::SetCameraTransforms(const glm::mat4& vp_matrix) {
   glProgramUniformMatrix4fv(shadow_prog_.GetProgramDescriptor(),
                             1,
@@ -35,8 +39,6 @@ void ShadowMapMaterial::SetModelTransforms(const glm::mat4& model_matrix) {
                             glm::value_ptr(model_matrix));
 }
 
-// nop
-void ShadowMapMaterial::SetLights(const std::vector<light::LightData>& lights) {}
 GLuint ShadowMapMaterial::GetProgramDescriptor() {
   return shadow_prog_.GetProgramDescriptor();
 }

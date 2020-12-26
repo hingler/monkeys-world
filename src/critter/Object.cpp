@@ -9,10 +9,6 @@ Object::Object() {
   id_ = id_generator_.GetUniqueId();
 }
 
-void Object::Accept(Visitor& v) {
-  v.Visit(this);
-}
-
 uint64_t Object::GetId() {
   return id_;
 }

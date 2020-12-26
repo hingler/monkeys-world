@@ -19,6 +19,7 @@ class Empty : public GameObject {
   // nop
   void PrepareAttributes() override {}
   void RenderMaterial() override {}
+  void Draw() override {}
 };
 
 
