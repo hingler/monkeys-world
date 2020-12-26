@@ -20,6 +20,10 @@ class DummyGameObject : public GameObject {
     void RenderMaterial() override {
       // also do nothing
     }
+
+    void Draw() override {
+      // also also do nothing
+    }
 };
 
 TEST(GameObjectTests, CreateGameObject) {

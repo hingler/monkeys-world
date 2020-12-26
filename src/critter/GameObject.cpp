@@ -219,7 +219,7 @@ GameObject& GameObject::operator=(GameObject&& other) {
   return *this;
 }
 
-std::shared_ptr<GameCamera> GameObject::GetActiveCamera() {
+std::shared_ptr<Camera> GameObject::GetActiveCamera() {
   GameObject* parent;
   if ((parent = GetParent()) != nullptr) {
     return parent->GetActiveCamera();
