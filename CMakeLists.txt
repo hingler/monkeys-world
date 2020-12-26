@@ -11,6 +11,8 @@ set(INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(TST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)
 
+set(compile_tests ON)
+
 add_executable(monkeys-world main.cpp)
 
 # separate out a bit better for testing
@@ -92,71 +94,78 @@ target_include_directories(monkeys-world-audio PUBLIC ${Boost_INCLUDE_DIRS})
 
 target_link_libraries(monkeys-world monkeys-world-components)
 
-add_executable(mesh-test test/MeshTest.cpp)
-target_include_directories(mesh-test PRIVATE ${INC_DIR})
-target_link_libraries(mesh-test GTest::gtest_main GTest::gmock_main monkeys-world-components)
-target_include_directories(mesh-test PRIVATE ${Boost_INCLUDE_DIRS})
-add_test(NAME mesh-test COMMAND mesh-test WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
+if(compile_tests)
+  add_executable(mesh-test test/MeshTest.cpp)
+  target_include_directories(mesh-test PRIVATE ${INC_DIR})
+  target_link_libraries(mesh-test GTest::gtest_main GTest::gmock_main monkeys-world-components)
+  target_include_directories(mesh-test PRIVATE ${Boost_INCLUDE_DIRS})
+  add_test(NAME mesh-test COMMAND mesh-test WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
 
-add_executable(shader-compile-test test/ShaderCompilationTest.cpp)
-target_include_directories(shader-compile-test PRIVATE ${INC_DIR})
-target_link_libraries(shader-compile-test GTest::gtest_main GTest::gmock_main monkeys-world-components)
-add_test(NAME shader-compile-test COMMAND shader-compile-test
+  add_executable(shader-compile-test test/ShaderCompilationTest.cpp)
+  target_include_directories(shader-compile-test PRIVATE ${INC_DIR})
+  target_link_libraries(shader-compile-test GTest::gtest_main GTest::gmock_main monkeys-world-components)
+  add_test(NAME shader-compile-test COMMAND shader-compile-test
+              WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
+
+  add_executable(mat-test test/demos/SimpleMatTest.cpp)
+  target_include_directories(mat-test PRIVATE ${INC_DIR})
+  target_link_libraries(mat-test glad::glad glm monkeys-world-components)
+
+  add_executable(model-test test/demos/SimpleModelTest.cpp)
+  target_include_directories(model-test PRIVATE ${INC_DIR})
+  target_link_libraries(model-test glad::glad glm monkeys-world-components monkeys-world-audio)
+
+  add_executable(streambuf-test test/CacheStreambufTest.cpp)
+  target_include_directories(streambuf-test PRIVATE ${INC_DIR})
+  target_link_libraries(streambuf-test GTest::gtest_main monkeys-world-components)
+  add_test(NAME streambuf-test COMMAND streambuf-test
+              WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
+
+  add_custom_command(TARGET mat-test POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/resources $<TARGET_FILE_DIR:monkeys-world>/resources)
+
+  add_executable(loader-test test/CacheFileLoaderTest.cpp)
+  target_include_directories(loader-test PRIVATE ${INC_DIR})
+  target_link_libraries(loader-test GTest::gtest_main monkeys-world-components)
+  add_test(NAME loader-test COMMAND loader-test
+              WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
+
+  add_executable(generator-test test/IDGeneratorTest.cpp)
+  target_include_directories(generator-test PRIVATE ${INC_DIR})
+  target_link_libraries(generator-test GTest::gtest_main monkeys-world-components)
+  add_test(NAME generator-test COMMAND generator-test
+              WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
+
+  add_executable(object-test test/GameObjectTest.cpp)
+  target_include_directories(object-test PRIVATE ${INC_DIR})
+  target_link_libraries(object-test GTest::gtest_main monkeys-world-components)
+  add_test(NAME object-test COMMAND object-test
+              WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
+
+  add_executable(events-test test/EventManagerTest.cpp)
+  target_include_directories(events-test PRIVATE ${INC_DIR})
+  target_link_libraries(events-test GTest::gtest_main monkeys-world-components)
+  add_test(NAME events-test COMMAND events-test
+              WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
+
+  add_executable(audio-buffer-test test/AudioBufferTest.cpp)
+  target_include_directories(audio-buffer-test PRIVATE ${INC_DIR})
+  target_link_libraries(audio-buffer-test GTest::gtest_main monkeys-world-audio)
+  add_test(NAME audio-buffer-test COMMAND audio-buffer-test
+              WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
+
+  add_executable(audio-buffer-test-ogg test/AudioBufferOggTest.cpp)
+  target_include_directories(audio-buffer-test-ogg PRIVATE ${INC_DIR})
+  target_link_libraries(audio-buffer-test-ogg GTest::gtest_main monkeys-world-audio)
+  add_test(NAME audio-buffer-test-ogg COMMAND audio-buffer-test-ogg
+              WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
+
+  add_executable(light-visitor-test test/LightVisitorTest.cpp)
+  target_include_directories(light-visitor-test PRIVATE ${INC_DIR})
+  target_link_libraries(light-visitor-test GTest::gtest_main monkeys-world-components)
+  add_test(NAME light-visitor-test COMMAND audio-buffer-test
             WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
-
-add_executable(mat-test test/demos/SimpleMatTest.cpp)
-target_include_directories(mat-test PRIVATE ${INC_DIR})
-target_link_libraries(mat-test glad::glad glm monkeys-world-components)
-
-add_executable(model-test test/demos/SimpleModelTest.cpp)
-target_include_directories(model-test PRIVATE ${INC_DIR})
-target_link_libraries(model-test glad::glad glm monkeys-world-components monkeys-world-audio)
-
-add_executable(streambuf-test test/CacheStreambufTest.cpp)
-target_include_directories(streambuf-test PRIVATE ${INC_DIR})
-target_link_libraries(streambuf-test GTest::gtest_main monkeys-world-components)
-add_test(NAME streambuf-test COMMAND streambuf-test
-            WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
-
-add_custom_command(TARGET mat-test POST_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/resources $<TARGET_FILE_DIR:monkeys-world>/resources)
-
-add_executable(loader-test test/CacheFileLoaderTest.cpp)
-target_include_directories(loader-test PRIVATE ${INC_DIR})
-target_link_libraries(loader-test GTest::gtest_main monkeys-world-components)
-add_test(NAME loader-test COMMAND loader-test
-            WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
-
-add_executable(generator-test test/IDGeneratorTest.cpp)
-target_include_directories(generator-test PRIVATE ${INC_DIR})
-target_link_libraries(generator-test GTest::gtest_main monkeys-world-components)
-add_test(NAME generator-test COMMAND generator-test
-            WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
-
-add_executable(object-test test/GameObjectTest.cpp)
-target_include_directories(object-test PRIVATE ${INC_DIR})
-target_link_libraries(object-test GTest::gtest_main monkeys-world-components)
-add_test(NAME object-test COMMAND object-test
-            WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
-
-add_executable(events-test test/EventManagerTest.cpp)
-target_include_directories(events-test PRIVATE ${INC_DIR})
-target_link_libraries(events-test GTest::gtest_main monkeys-world-components)
-add_test(NAME events-test COMMAND events-test
-            WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
-
-add_executable(audio-buffer-test test/AudioBufferTest.cpp)
-target_include_directories(audio-buffer-test PRIVATE ${INC_DIR})
-target_link_libraries(audio-buffer-test GTest::gtest_main monkeys-world-audio)
-add_test(NAME audio-buffer-test COMMAND audio-buffer-test
-            WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
-
-add_executable(audio-buffer-test-ogg test/AudioBufferOggTest.cpp)
-target_include_directories(audio-buffer-test-ogg PRIVATE ${INC_DIR})
-target_link_libraries(audio-buffer-test-ogg GTest::gtest_main monkeys-world-audio)
-add_test(NAME audio-buffer-test-ogg COMMAND audio-buffer-test-ogg
-            WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
-
+endif()
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
