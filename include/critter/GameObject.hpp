@@ -5,6 +5,7 @@
 
 #include <critter/Context.hpp>
 #include <critter/Object.hpp>
+#include <critter/GameCamera.hpp>
 
 #include <glm/glm.hpp>
 
@@ -78,6 +79,11 @@ class GameObject : public Object, public std::enable_shared_from_this<GameObject
    *  Sets XYZ scale.
    */ 
   void SetScale(const glm::vec3& new_scale);
+
+  /**
+   *  Returns a pointer to the currently active camera.
+   */ 
+  virtual std::shared_ptr<GameCamera> GetActiveCamera();
 
   // getters for the above.
   const glm::vec3& GetPosition();

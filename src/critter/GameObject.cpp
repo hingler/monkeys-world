@@ -219,5 +219,16 @@ GameObject& GameObject::operator=(GameObject&& other) {
   return *this;
 }
 
+std::shared_ptr<GameCamera> GameObject::GetActiveCamera() {
+  GameObject* parent;
+  if ((parent = GetParent()) != nullptr) {
+    return parent->GetActiveCamera();
+  }
+
+  // visit all components and look for a game camera
+  
+  
+}
+
 } // namespace critter
 } // namespace monkeysworld
