@@ -9,8 +9,10 @@ namespace engine {
  *  by components while being rendered.
  */ 
 class RenderContext {
-
-}
+  // lights
+  // current active camera
+  // i think thats all we need for now
+};
 
 }
 }
