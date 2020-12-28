@@ -33,6 +33,9 @@ class Visitor {
   // and other special object types
   virtual void Visit(std::shared_ptr<GameCamera> o) = 0;
   virtual void Visit(std::shared_ptr<shader::light::SpotLight> o) = 0;
+ protected:
+  /** ### ASSISTING FUNCTIONS ### **/
+  void VisitChildren(std::shared_ptr<Object> o);
 };
 
 } // namespace render
