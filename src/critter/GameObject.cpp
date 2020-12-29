@@ -24,7 +24,7 @@ GameObject::GameObject(Context* ctx) : Object() {
 }
 
 void GameObject::Accept(Visitor& v) {
-  v.Visit(std::reinterpret_pointer_cast<GameObject>(this->shared_from_this()));
+  v.Visit(std::dynamic_pointer_cast<GameObject>(this->shared_from_this()));
 }
 
 Context* GameObject::GetContext() {
@@ -77,7 +77,7 @@ std::vector<std::weak_ptr<Object>> GameObject::GetChildren() {
   // the trouble would be that a sibling decides to remove another sibling
   std::vector<std::weak_ptr<Object>> res;
   for (auto child : children_) {
-    res.push_back(std::weak_ptr<Object>(std::reinterpret_pointer_cast<Object>(child)));
+    res.push_back(std::weak_ptr<Object>(std::dynamic_pointer_cast<Object>(child)));
   }
 
   return res;
