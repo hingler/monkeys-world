@@ -9,6 +9,8 @@
 #include <shader/light/SpotLight.hpp>
 #include <critter/GameObject.hpp>
 
+#include <atomic>
+
 namespace monkeysworld {
 namespace critter {
 namespace visitor {
@@ -33,7 +35,10 @@ class ActiveCameraFindVisitor : public critter::Visitor {
    */ 
   std::shared_ptr<GameCamera> GetActiveCamera();
  private:
+  void ActiveCameraVisitChildren(std::vector<std::weak_ptr<Object>>&);
+
   std::shared_ptr<GameCamera> active_camera_;
+  std::atomic_bool cam_found_;
 };
 
 }
