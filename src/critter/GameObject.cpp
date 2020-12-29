@@ -7,10 +7,13 @@
 
 #include <boost/log/trivial.hpp>
 
+#include <critter/visitor/ActiveCameraFindVisitor.hpp>
+
 namespace monkeysworld {
 namespace critter {
 
 using utils::IDGenerator;
+using critter::visitor::ActiveCameraFindVisitor;
 
 GameObject::GameObject() : GameObject(nullptr) { }
 
@@ -226,10 +229,10 @@ std::shared_ptr<Camera> GameObject::GetActiveCamera() {
     return parent->GetActiveCamera();
   }
 
-  // visit all components and look for a game camera
-
-  // jank shit for now
-  return std::shared_ptr<Camera>(nullptr);
+  // at the root -- read full tree
+  ActiveCameraFindVisitor v;
+  Accept(v);
+  return v.GetActiveCamera();
 }
 
 } // namespace critter
