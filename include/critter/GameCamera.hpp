@@ -34,7 +34,7 @@ class GameCamera : public GameObject, public Camera {
   /**
    *  Returns the view+proj matrix associated with this camera.
    */ 
-  glm::mat4 GetViewMatrix() override;
+  glm::mat4 GetViewMatrix() const override;
 
   /**
    *  Sets the field of view of the camera.

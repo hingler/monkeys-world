@@ -30,7 +30,7 @@ void GameObject::Accept(Visitor& v) {
   v.Visit(std::dynamic_pointer_cast<GameObject>(this->shared_from_this()));
 }
 
-Context* GameObject::GetContext() {
+Context* GameObject::GetContext() const {
   return ctx_;
 }
 
@@ -106,13 +106,16 @@ void GameObject::SetScale(const glm::vec3& new_scale) {
   scale = new_scale;
 }
 
-glm::mat4 GameObject::GetTransformationMatrix() {
+glm::mat4 GameObject::GetTransformationMatrix() const {
   if (dirty_) {
-    tf_matrix_cache_ = glm::mat4(1.0);
+    // const cast this cache var
+    // the external state does not change, the cache only exists to save some matrix calcs
+    glm::mat4& matrix_cache = const_cast<glm::mat4&>(tf_matrix_cache_);
+    matrix_cache = glm::mat4(1.0);
     // scales, then rotates, then translates
-    tf_matrix_cache_ = glm::translate(tf_matrix_cache_, position);
-    tf_matrix_cache_ *= glm::eulerAngleXYZ(rotation.x, rotation.y, rotation.z);
-    tf_matrix_cache_ = glm::scale(tf_matrix_cache_, scale);
+    matrix_cache = glm::translate(tf_matrix_cache_, position);
+    matrix_cache *= glm::eulerAngleXYZ(rotation.x, rotation.y, rotation.z);
+    matrix_cache = glm::scale(tf_matrix_cache_, scale);
   }
 
   if (auto parent = parent_.lock()) {
@@ -136,14 +139,14 @@ void GameObject::RemoveChild(uint64_t id) {
   }
 }
 
-const glm::vec3& GameObject::GetRotation() {
+const glm::vec3& GameObject::GetRotation() const {
   return rotation;
 }
 
-const glm::vec3& GameObject::GetPosition() {
+const glm::vec3& GameObject::GetPosition() const {
   return position;
 }
-const glm::vec3& GameObject::GetScale() {
+const glm::vec3& GameObject::GetScale() const {
   return scale;
 }
 

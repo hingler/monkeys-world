@@ -8,7 +8,7 @@ namespace critter {
 
 class Camera {
  public:
-  virtual glm::mat4 GetViewMatrix() = 0;
+  virtual glm::mat4 GetViewMatrix() const = 0;
 
   virtual void SetFov(float deg) = 0;
 

@@ -58,12 +58,12 @@ class GameObject : public Object, public std::enable_shared_from_this<GameObject
   /**
    *  Returns ptr to context.
    */ 
-  Context* GetContext();
+  Context* GetContext() const;
 
   /**
    *  Returns the transformation matrix associated with this object.
    */ 
-  glm::mat4 GetTransformationMatrix();
+  glm::mat4 GetTransformationMatrix() const;
 
   /**
    *  Sets XYZ position.
@@ -86,9 +86,9 @@ class GameObject : public Object, public std::enable_shared_from_this<GameObject
   virtual std::shared_ptr<Camera> GetActiveCamera();
 
   // getters for the above.
-  const glm::vec3& GetPosition();
-  const glm::vec3& GetRotation();
-  const glm::vec3& GetScale();
+  const glm::vec3& GetPosition() const;
+  const glm::vec3& GetRotation() const;
+  const glm::vec3& GetScale() const;
 
   // note: moves DO NOT preserve parent child relationship! this must be restored.
   GameObject(const GameObject& other);

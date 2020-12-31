@@ -17,7 +17,7 @@ void GameCamera::Accept(Visitor& v) {
   v.Visit(std::dynamic_pointer_cast<GameCamera>(this->shared_from_this()));
 }
 
-glm::mat4 GameCamera::GetViewMatrix() {
+glm::mat4 GameCamera::GetViewMatrix() const {
   // this should work :)
   int width, height;
   // we could inverse scale this
