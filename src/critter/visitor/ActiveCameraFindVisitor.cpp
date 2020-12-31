@@ -34,6 +34,14 @@ void ActiveCameraFindVisitor::Visit(std::shared_ptr<shader::light::SpotLight> o)
   ActiveCameraVisitChildren(children);
 }
 
+std::shared_ptr<GameCamera> ActiveCameraFindVisitor::GetActiveCamera() {
+  if (cam_found_) {
+    return active_camera_;
+  }
+
+  return std::shared_ptr<GameCamera>();
+}
+
 void ActiveCameraFindVisitor::ActiveCameraVisitChildren(std::vector<std::weak_ptr<Object>>& ol) {
   // visit all children
   // check if flag is raised
