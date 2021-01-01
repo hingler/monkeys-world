@@ -40,7 +40,6 @@ void GameObject::AddChild(std::shared_ptr<GameObject> child) {
     return;
   }
 
-  BOOST_LOG_TRIVIAL(trace) << child->parent_.expired();
   auto test = child->parent_.lock();
   BOOST_LOG_TRIVIAL(trace) << "Adding child with ID " << child->GetId();
 
