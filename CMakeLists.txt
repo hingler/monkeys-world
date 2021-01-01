@@ -168,6 +168,12 @@ if(compile_tests)
   target_link_libraries(light-visitor-test GTest::gtest_main monkeys-world-components)
   add_test(NAME light-visitor-test COMMAND audio-buffer-test
             WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
+
+  add_executable(camera-find-visitor-test test/ActiveCameraFindVisitorTest.cpp)
+  target_include_directories(camera-find-visitor-test PRIVATE ${INC_DIR})
+  target_link_libraries(camera-find-visitor-test GTest::gtest_main monkeys-world-components)
+  add_test(NAME camera-find-visitor-test COMMAND camera-find-visitor-test
+             WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
 endif()
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
