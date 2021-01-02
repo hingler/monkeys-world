@@ -39,7 +39,7 @@ class SpotLight : public critter::GameObject, Light {
 
   // nop
   void PrepareAttributes() override {}
-  void RenderMaterial() override {}
+  void RenderMaterial(const engine::RenderContext& rc) override {}
   void Draw() override {}
 
   /**

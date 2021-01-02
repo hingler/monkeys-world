@@ -8,6 +8,7 @@
 // add child and verify that child matrix is correct
 
 using ::monkeysworld::critter::GameObject;
+using ::monkeysworld::engine::RenderContext;
 
 
 class DummyGameObject : public GameObject {
@@ -17,7 +18,7 @@ class DummyGameObject : public GameObject {
       // do nothing
     }
 
-    void RenderMaterial() override {
+    void RenderMaterial(const RenderContext& rc) override {
       // also do nothing
     }
 

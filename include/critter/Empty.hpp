@@ -18,7 +18,7 @@ class Empty : public GameObject {
 
   // nop
   void PrepareAttributes() override {}
-  void RenderMaterial() override {}
+  void RenderMaterial(const engine::RenderContext& rc) override {}
   void Draw() override {}
 };
 

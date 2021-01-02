@@ -32,6 +32,7 @@ using ::monkeysworld::input::WindowEventManager;
 using ::monkeysworld::audio::AudioManager;
 using ::monkeysworld::audio::AudioFiletype;
 using ::monkeysworld::model::Mesh;
+using ::monkeysworld::engine::RenderContext;
 
 using milli = std::chrono::milliseconds;
 
@@ -45,7 +46,7 @@ class DummyModel : public Model {
     }
   }
 
-  void RenderMaterial() {
+  void RenderMaterial(const RenderContext& rc) override {
     std::shared_ptr<Mesh<>> mesh;
     if (mesh = GetMesh()) {
       mesh->PointToVertexAttribs();
@@ -99,6 +100,7 @@ void main(int argc, char** argv) {
   ::monkeysworld::shader::gldebug::SetupGLDebug();
   #endif
 
+  RenderContext rc;
 
   std::shared_ptr<Context> ctx = std::make_shared<Context>(window);
   
@@ -231,7 +233,7 @@ void main(int argc, char** argv) {
     test_material.SetLights(lights);
     test_material.UseMaterial();
     
-    test_model->RenderMaterial();
+    test_model->RenderMaterial(rc);
 
     test_model_two->SetPosition(glm::vec3(glm::sin(rot * 1.2) * 3, glm::cos(rot * 1.4 + 3.1415) * 1.4, glm::cos(rot * 1.2) * 3));
     test_model_two->SetRotation(glm::vec3(rot * 1.7, rot * 2, rot * -0.3));
@@ -241,7 +243,7 @@ void main(int argc, char** argv) {
     test_material.SetCameraTransforms(vp_matrix);
     test_material.SetLights(lights);
     test_material.UseMaterial();
-    test_model_two->RenderMaterial();
+    test_model_two->RenderMaterial(rc);
     finish = std::chrono::high_resolution_clock::now();
     dur = finish - start;
     glfwSwapBuffers(window);

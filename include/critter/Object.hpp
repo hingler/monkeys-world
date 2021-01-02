@@ -3,6 +3,8 @@
 
 #include <utils/IDGenerator.hpp>
 
+#include <engine/RenderContext.hpp>
+
 #include <vector>
 
 namespace monkeysworld {
@@ -39,12 +41,15 @@ class Object {
 
   /**
    *  Renders the material itself.
+   *  @param rc - Render context containing important scene information.
    */ 
-  virtual void RenderMaterial() = 0;
+  virtual void RenderMaterial(const engine::RenderContext& rc) = 0;
 
   /**
    *  Minimal commands necessary to draw this object onto the screen.
    *  Pairs with PrepareAttributes.
+   * 
+   *  Should be called by RenderMaterial, as well as other methods which intend to display info on screen.
    */ 
   virtual void Draw() = 0;
 

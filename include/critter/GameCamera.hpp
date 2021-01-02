@@ -5,6 +5,8 @@
 #include <critter/GameObject.hpp>
 #include <glm/glm.hpp>
 
+#include <engine/RenderContext.hpp>
+
 namespace monkeysworld {
 namespace critter {
   /**
@@ -21,7 +23,7 @@ class GameCamera : public GameObject, public Camera {
   void Accept(Visitor& v) override;
 
   // lazy noops
-  void RenderMaterial() override {}
+  void RenderMaterial(const engine::RenderContext& rc) override {}
   void PrepareAttributes() override {}
   void Draw() override {}
 

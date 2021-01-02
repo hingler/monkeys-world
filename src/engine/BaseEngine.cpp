@@ -18,6 +18,7 @@ namespace baseengine {
 using ::monkeysworld::critter::visitor::LightVisitor;
 using ::monkeysworld::shader::Material;
 using ::monkeysworld::shader::light::SpotLight;
+using ::monkeysworld::engine::RenderContext;
 
 static void UpdateObjects(std::shared_ptr<critter::Object>);
 // subtype context to enable access to frequent update functions
@@ -111,8 +112,10 @@ void UpdateObjects(std::shared_ptr<critter::Object> obj) {
 //       then visit each component with shadows, etc
 //       prepared!
 void RenderObjects(std::shared_ptr<critter::Object> obj) {
+  // todo: generate this on the fly!
+  RenderContext rc;
   obj->PrepareAttributes();
-  obj->RenderMaterial();
+  obj->RenderMaterial(rc);
   for (auto child : obj->GetChildren()) {
     auto child_shared = child.lock();
     if (child_shared) {
