@@ -64,8 +64,10 @@ void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<critter::Context> ct
     // poll for events
     // check to see if a new scene needs to be initialized
     // if so: do that
-    if (ctx->GetNextScene()) {
-      // get ready to swap the scene
+    if (auto s = ctx->GetNextScene()) {
+      // swap out the scene!
+      s->Initialize();
+      scene = s;
     }
 
     UpdateCtx(dur.count(), ctx.get());
