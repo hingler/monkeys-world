@@ -18,41 +18,45 @@ add_executable(monkeys-world main.cpp)
 # separate out a bit better for testing
 add_library(monkeys-world-components 
                                     ${SRC_DIR}/storage/VertexPacketTypes.cpp
+
                                     ${SRC_DIR}/shader/ShaderProgramBuilder.cpp
                                     ${SRC_DIR}/shader/ShaderProgram.cpp
                                     ${SRC_DIR}/shader/materials/MatteMaterial.cpp
                                     ${SRC_DIR}/shader/materials/ShadowMapMaterial.cpp
+
                                     ${SRC_DIR}/file/CacheStreambuf.cpp
                                     ${SRC_DIR}/file/CachedFileLoader.cpp
+
                                     ${SRC_DIR}/utils/FileUtils.cpp
+                                    ${SRC_DIR}/utils/IDGenerator.cpp
+
+                                    ${SRC_DIR}/input/WindowEventManager.cpp
+
                                     ${SRC_DIR}/critter/Context.cpp
                                     ${SRC_DIR}/critter/GameObject.cpp
                                     ${SRC_DIR}/critter/Object.cpp
-                                    ${SRC_DIR}/utils/IDGenerator.cpp
                                     ${SRC_DIR}/critter/Model.cpp
-                                    ${SRC_DIR}/input/WindowEventManager.cpp
                                     ${SRC_DIR}/critter/GameCamera.cpp
+
+                                    ${SRC_DIR}/critter/visitor/LightVisitor.cpp
+                                    ${SRC_DIR}/critter/visitor/ActiveCameraFindVisitor.cpp
                                     
                                     ${SRC_DIR}/engine/BaseEngine.cpp
                                     ${SRC_DIR}/engine/RenderContext.cpp
-                                    
-                                    ${SRC_DIR}/critter/visitor/LightVisitor.cpp
-                                    ${SRC_DIR}/critter/visitor/ActiveCameraFindVisitor.cpp
 
                                     ${SRC_DIR}/shader/light/SpotLight.cpp
-                                    ${SRC_DIR}/shader/light/Light.cpp)
+                                    ${SRC_DIR}/shader/light/Light.cpp
 
-add_library(monkeys-world-audio
                                     ${SRC_DIR}/audio/AudioBuffer.cpp
                                     ${SRC_DIR}/audio/AudioBufferOgg.cpp
                                     ${SRC_DIR}/audio/AudioManager.cpp
                                     ${SRC_DIR}/_stb_libs/stb_vorbis.c)
 
+add_library(MonkeysWorld::Engine ALIAS monkeys-world-components)
+
 set_property(TARGET monkeys-world-components PROPERTY CXX_STANDARD 14)
 
-target_include_directories(monkeys-world-components PUBLIC ${INC_DIR})
-target_include_directories(monkeys-world-audio PUBLIC ${INC_DIR})
-target_include_directories(monkeys-world-audio PUBLIC ${STB_INCLUDE_DIRS})
+target_include_directories(monkeys-world-components PUBLIC ${INC_DIR} ${STB_INCLUDE_DIRS})
 
 ### GLFW ###
 
@@ -91,9 +95,8 @@ set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG ${CMAKE_CXX_FLAGS_DEBUG}")
 
 target_link_libraries(monkeys-world-components glm glad::glad)
 target_include_directories(monkeys-world-components PUBLIC ${Boost_INCLUDE_DIRS} ${STB_INCLUDE_DIRS})
-target_link_libraries(monkeys-world-components ${Boost_LIBRARIES})
-target_link_libraries(monkeys-world-audio ${Boost_LIBRARIES} portaudio)
-target_include_directories(monkeys-world-audio PUBLIC ${Boost_INCLUDE_DIRS})
+target_link_libraries(monkeys-world-components ${Boost_LIBRARIES} portaudio)
+target_include_directories(monkeys-world-components PUBLIC ${Boost_INCLUDE_DIRS})
 
 
 target_link_libraries(monkeys-world monkeys-world-components)
@@ -117,7 +120,7 @@ if(compile_tests)
 
   add_executable(model-test test/demos/SimpleModelTest.cpp)
   target_include_directories(model-test PRIVATE ${INC_DIR})
-  target_link_libraries(model-test glad::glad glm monkeys-world-components monkeys-world-audio)
+  target_link_libraries(model-test glad::glad glm monkeys-world-components )
 
   add_executable(streambuf-test test/CacheStreambufTest.cpp)
   target_include_directories(streambuf-test PRIVATE ${INC_DIR})
@@ -154,13 +157,13 @@ if(compile_tests)
 
   add_executable(audio-buffer-test test/AudioBufferTest.cpp)
   target_include_directories(audio-buffer-test PRIVATE ${INC_DIR})
-  target_link_libraries(audio-buffer-test GTest::gtest_main monkeys-world-audio)
+  target_link_libraries(audio-buffer-test GTest::gtest_main monkeys-world-components)
   add_test(NAME audio-buffer-test COMMAND audio-buffer-test
               WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
 
   add_executable(audio-buffer-test-ogg test/AudioBufferOggTest.cpp)
   target_include_directories(audio-buffer-test-ogg PRIVATE ${INC_DIR})
-  target_link_libraries(audio-buffer-test-ogg GTest::gtest_main monkeys-world-audio)
+  target_link_libraries(audio-buffer-test-ogg GTest::gtest_main monkeys-world-components)
   add_test(NAME audio-buffer-test-ogg COMMAND audio-buffer-test-ogg
               WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
 
