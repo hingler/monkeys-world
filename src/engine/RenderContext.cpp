@@ -19,6 +19,7 @@ void RenderContext::SetActiveCamera(std::shared_ptr<Camera> cam) {
   cam_info_ = cam->GetCameraInfo();
 }
 
+// store ref to vector instead of storing the vector itself? we set it up in engine and don't touch it
 void RenderContext::SetSpotlights(const std::vector<spotlight_info>& spotlights) {
   // this copy could incur a cost? idk
   spotlights_ = spotlights;

@@ -34,6 +34,7 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/critter/GameCamera.cpp
                                     
                                     ${SRC_DIR}/engine/BaseEngine.cpp
+                                    ${SRC_DIR}/engine/RenderContext.cpp
                                     
                                     ${SRC_DIR}/critter/visitor/LightVisitor.cpp
                                     ${SRC_DIR}/critter/visitor/ActiveCameraFindVisitor.cpp
