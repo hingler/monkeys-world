@@ -34,6 +34,11 @@ class ActiveCameraFindVisitor : public critter::Visitor {
    *  Returns the active camera, or nullptr if it cannot be found.
    */ 
   std::shared_ptr<GameCamera> GetActiveCamera();
+
+  /**
+   *  Ensure that the state of the visitor is reset.
+   */ 
+  void Clear();
  private:
   void ActiveCameraVisitChildren(std::vector<std::weak_ptr<Object>>&);
 

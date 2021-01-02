@@ -7,14 +7,19 @@ namespace visitor {
 ActiveCameraFindVisitor::ActiveCameraFindVisitor() : active_camera_(nullptr), cam_found_(false) {}
 
 void ActiveCameraFindVisitor::Visit(std::shared_ptr<Object> o) {
-  auto children = o->GetChildren();
-  ActiveCameraVisitChildren(children);
-
+  // only visits if the active cam still needs to be found
+  // TODO: factor out redundancy between visit funcs
+  if (!cam_found_.load()) {
+    auto children = o->GetChildren();
+    ActiveCameraVisitChildren(children);
+  }
 }
 
 void ActiveCameraFindVisitor::Visit(std::shared_ptr<GameObject> o) {
-  auto children = o->GetChildren();
-  ActiveCameraVisitChildren(children);
+  if (!cam_found_.load()) {
+    auto children = o->GetChildren();
+    ActiveCameraVisitChildren(children);
+  }
 }
 
 void ActiveCameraFindVisitor::Visit(std::shared_ptr<GameCamera> o) {
@@ -30,8 +35,10 @@ void ActiveCameraFindVisitor::Visit(std::shared_ptr<GameCamera> o) {
 }
 
 void ActiveCameraFindVisitor::Visit(std::shared_ptr<shader::light::SpotLight> o) {
-  auto children = o->GetChildren();
-  ActiveCameraVisitChildren(children);
+  if (!cam_found_.load()) {
+    auto children = o->GetChildren();
+    ActiveCameraVisitChildren(children);
+  }
 }
 
 std::shared_ptr<GameCamera> ActiveCameraFindVisitor::GetActiveCamera() {
@@ -40,6 +47,11 @@ std::shared_ptr<GameCamera> ActiveCameraFindVisitor::GetActiveCamera() {
   }
 
   return std::shared_ptr<GameCamera>();
+}
+
+void ActiveCameraFindVisitor::Clear() {
+  active_camera_ = std::shared_ptr<GameCamera>();
+  cam_found_.store(false);
 }
 
 void ActiveCameraFindVisitor::ActiveCameraVisitChildren(std::vector<std::weak_ptr<Object>>& ol) {
