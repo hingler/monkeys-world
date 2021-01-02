@@ -37,6 +37,11 @@ class GameCamera : public GameObject, public Camera {
   glm::mat4 GetViewMatrix() const override;
 
   /**
+   *  Impl for GetCameraInfo
+   */ 
+  camera_info GetCameraInfo() const override;
+
+  /**
    *  Sets the field of view of the camera.
    *  @param deg - the new FOV, in degrees.
    */ 

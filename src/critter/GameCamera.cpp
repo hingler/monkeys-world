@@ -41,6 +41,13 @@ void GameCamera::SetFov(float deg) {
   fov_deg_ = deg;
 }
 
+camera_info GameCamera::GetCameraInfo() const {
+  camera_info res;
+  res.position = GetPosition();
+  res.view_matrix = GetViewMatrix();
+  return res;
+}
+
 bool GameCamera::IsActive() {
   return active_;
 }
