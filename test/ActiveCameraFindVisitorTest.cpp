@@ -42,6 +42,9 @@ TEST(ActiveCameraFindVisitorTests, FindActiveCamera) {
   auto cam_find = v.GetActiveCamera();
   ASSERT_NE(nullptr, cam_find.get());
   ASSERT_EQ(TEST_ID1, cam_find->GetId());
+
+  v.Clear();
+  ASSERT_EQ(nullptr, v.GetActiveCamera().get());
 }
 
 TEST(ActiveCameraFindVisitorTests, FindActiveCameraInHierarchy) {
