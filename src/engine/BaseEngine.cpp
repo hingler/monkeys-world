@@ -2,8 +2,12 @@
 #include <GLFW/glfw3.h>
 
 #include <engine/BaseEngine.hpp>
+#include <engine/RenderContext.hpp>
 
+#include <critter/visitor/ActiveCameraFindVisitor.hpp>
 #include <critter/visitor/LightVisitor.hpp>
+
+#include <shader/light/LightTypes.hpp>
 
 // TODO: create an actual logging setup -- we can config it in init :)
 #include <boost/log/trivial.hpp>
@@ -15,12 +19,25 @@ namespace monkeysworld {
 namespace engine {
 namespace baseengine {
 
+using ::monkeysworld::critter::Camera;
+using ::monkeysworld::critter::visitor::ActiveCameraFindVisitor;
 using ::monkeysworld::critter::visitor::LightVisitor;
+
 using ::monkeysworld::shader::Material;
 using ::monkeysworld::shader::light::SpotLight;
+using ::monkeysworld::shader::light::spotlight_info;
+
 using ::monkeysworld::engine::RenderContext;
 
+/**
+ *  Calls update funcs on all objects.
+ */ 
 static void UpdateObjects(std::shared_ptr<critter::Object>);
+
+/**
+ *  Renders all objects nested within the passed root.
+ */ 
+static void RenderObjects(std::shared_ptr<critter::Object>, RenderContext&);
 // subtype context to enable access to frequent update functions
 // pass supertype to scene
 void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<critter::Context> ctx, GLFWwindow* window) {
@@ -33,14 +50,17 @@ void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<critter::Context> ct
   std::chrono::duration<double, std::ratio<1, 1>> dur = finish - start;
 
   LightVisitor light_visitor;
-
-
+  ActiveCameraFindVisitor cam_visitor;
   
 
+  RenderContext rc;
+  std::vector<spotlight_info> spotlights;
+
   for (;;) {
+    start = std::chrono::high_resolution_clock::now();
     // reset any visitors which store info
     light_visitor.Clear();
-    start = std::chrono::high_resolution_clock::now();
+    cam_visitor.Clear();
     // poll for events
     // check to see if a new scene needs to be initialized
     // if so: do that
@@ -56,23 +76,16 @@ void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<critter::Context> ct
     // visit objects in our component tree and call their "update" funcs
     UpdateObjects(current_scene->GetGameObjectRoot());
     current_scene->GetGameObjectRoot()->Accept(light_visitor);
+    current_scene->GetGameObjectRoot()->Accept(cam_visitor);
     // for each light:
     //   - do a depth render from the perspective of our lights
 
-    // for now: put the lights by themselves in our render context
-    for (auto light : light_visitor.GetSpotLights()) {
-      // no render context needed -- we're just preparing attributes and calling a default shadow func
-      // we want to have the shadow map shader prepared beforehand
 
-      // create a simple visitor which will pass this light's properties to the program and render to the map
-      // lastly: add the light to the render context
-    }
-    // lights should be able to generate some packet which the renderer can use
-    // render objects, using the render context
-    // swap buffers
+    // for now: put the lights by themselves in our render context
 
     // SHADOW PASS -- get shadow info
     // add light info to the render context, in appropriate places
+    // shadow pass is still a TODO. :)
 
     // only spotlights for now -- the goal:
     //   - see which lights are in the scene
@@ -80,10 +93,23 @@ void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<critter::Context> ct
     //   - note: there should be a method which contains all GL calls required to draw the object
     //   - that way, we can separate material configuration from drawing
     //   - add a method to Object which accomplishes this
+    for (auto light : light_visitor.GetSpotLights()) {
+      // no render context needed -- we're just preparing attributes and calling a default shadow func
+      // we want to have the shadow map shader prepared beforehand
 
+      // create a simple visitor which will pass this light's properties to the program and render to the map
+      // lastly: add the light to the render context
+      spotlights.push_back(light->GetSpotLightInfo());
+    }
+    // lights should be able to generate some packet which the renderer can use
+    // render objects, using the render context
+    // swap buffers
+    rc.SetSpotlights(spotlights);
+    rc.SetActiveCamera(std::dynamic_pointer_cast<Camera>(cam_visitor.GetActiveCamera()));
     // then: just draw (for now)
     //    if needed, we can start to collect additional information and add it to the context
     //    however -- for now, just this.
+    RenderObjects(scene->GetGameObjectRoot(), rc);
 
     // create render context
     // add lights to the render context
@@ -91,6 +117,8 @@ void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<critter::Context> ct
     glfwSwapBuffers(window);
     // loop back
     glfwPollEvents();
+    finish = std::chrono::high_resolution_clock::now();
+    dur = finish - start;
   }
 }
 
@@ -111,15 +139,14 @@ void UpdateObjects(std::shared_ptr<critter::Object> obj) {
 // TODO: expand so that we prepare the render context,
 //       then visit each component with shadows, etc
 //       prepared!
-void RenderObjects(std::shared_ptr<critter::Object> obj) {
+void RenderObjects(std::shared_ptr<critter::Object> obj, RenderContext& rc) {
   // todo: generate this on the fly!
-  RenderContext rc;
   obj->PrepareAttributes();
   obj->RenderMaterial(rc);
   for (auto child : obj->GetChildren()) {
     auto child_shared = child.lock();
     if (child_shared) {
-      RenderObjects(child_shared);
+      RenderObjects(child_shared, rc);
     }
   }
 }

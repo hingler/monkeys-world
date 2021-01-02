@@ -12,7 +12,6 @@ Context::Context(GLFWwindow* window) {
 
 void Context::GetFramebufferSize(int* width, int* height) {
   glfwGetFramebufferSize(window_, width, height);
-  // event_mgr_->ProcessWaitingEvents();
 }
 
 const std::shared_ptr<CachedFileLoader> Context::GetCachedFileLoader() {

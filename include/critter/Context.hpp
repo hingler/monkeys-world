@@ -95,7 +95,11 @@ class Context {
   double frame_delta_;
 
  protected:
-  // anything which a transitive relationship cant solve
+  /**
+   *  Calls all functions necessary when updating to the next frame.
+   *  Thus far, this includes:
+   *  - Processing any waiting events. 
+   */ 
   void FrameUpdate();
 };
 
