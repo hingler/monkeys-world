@@ -56,7 +56,8 @@ add_library(MonkeysWorld::Engine ALIAS monkeys-world-components)
 
 set_property(TARGET monkeys-world-components PROPERTY CXX_STANDARD 14)
 
-target_include_directories(monkeys-world-components PUBLIC ${INC_DIR} ${STB_INCLUDE_DIRS})
+target_include_directories(monkeys-world-components PUBLIC ${INC_DIR})
+target_include_directories(monkeys-world-components PRIVATE ${STB_INCLUDE_DIRS})
 
 ### GLFW ###
 
