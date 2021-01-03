@@ -124,7 +124,7 @@ void main(int argc, char** argv) {
 
   audio_mgr.AddFileToBuffer("resources/irememberyou.ogg", AudioFiletype::OGG);
 
-  MatteMaterial test_material(ctx);
+  MatteMaterial test_material(ctx.get());
   float rot = 0.0f;
   float key_y = 0.0f;
   float key_x = 0.0f;

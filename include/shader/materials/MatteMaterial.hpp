@@ -23,7 +23,7 @@ class MatteMaterial : ::monkeysworld::shader::Material {
    *  Creates a new MatteMaterial instance.
    *  @param context - Context object
    */ 
-  MatteMaterial(std::shared_ptr<critter::Context> context);
+  MatteMaterial(critter::Context* context);
 
   /**
    *  Makes the material active and passes all uniforms.

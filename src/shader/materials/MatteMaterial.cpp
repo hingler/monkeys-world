@@ -17,7 +17,7 @@ namespace materials {
 using critter::Context;
 using file::FileLoader;
 
-MatteMaterial::MatteMaterial(std::shared_ptr<Context> context) {
+MatteMaterial::MatteMaterial(Context* context) {
   std::shared_ptr<FileLoader> loader = std::dynamic_pointer_cast<FileLoader>(context->GetCachedFileLoader());
   matte_prog_ = ShaderProgramBuilder(loader)
                 .WithVertexShader("resources/glsl/matte-material/matte-material.vert")

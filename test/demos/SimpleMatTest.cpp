@@ -124,7 +124,7 @@ void main(int argc, char** argv) {
 
   std::shared_ptr<Context> ctx = std::make_shared<Context>(test_window);
 
-  MatteMaterial test_material(ctx);
+  MatteMaterial test_material(ctx.get());
   
   test_material.SetSurfaceColor(glm::vec4(1.0, 0.6, 0.0, 1.0));
 
