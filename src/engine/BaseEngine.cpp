@@ -12,6 +12,10 @@
 // TODO: create an actual logging setup -- we can config it in init :)
 #include <boost/log/trivial.hpp>
 
+#ifdef DEBUG
+#include <shader/GLDebugSetup.hpp>
+#endif
+
 #include <chrono>
 
 
@@ -41,6 +45,9 @@ static void RenderObjects(std::shared_ptr<critter::Object>, RenderContext&);
 // subtype context to enable access to frequent update functions
 // pass supertype to scene
 void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<critter::Context> ctx, GLFWwindow* window) {
+  #ifdef DEBUG
+  ::monkeysworld::shader::gldebug::SetupGLDebug();
+  #endif
   // initialize the scene
   scene->Initialize();
   // setup timing
