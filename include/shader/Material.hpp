@@ -2,6 +2,7 @@
 #define MATERIAL_H_
 
 #include <shader/light/LightDataTemp.hpp>
+#include <shader/light/LightTypes.hpp>
 
 #include <glm/glm.hpp>
 
@@ -37,9 +38,16 @@ class Material {
 
   /**
    *  Passes light data to the material.
+   *  (depreciated -- remove later)
    *  @param lights - a list containing all lights in the scene, in global coords.
    */ 
   virtual void SetLights(const std::vector<light::LightData>& lights) = 0;
+
+  /**
+   *  Passes spotlights to the material.
+   *  @param lights - a list containing all spotlights in the scene.
+   */ 
+  virtual void SetSpotlights(const std::vector<light::spotlight_info>& lights) = 0;
 
   virtual GLuint GetProgramDescriptor() = 0;
 };

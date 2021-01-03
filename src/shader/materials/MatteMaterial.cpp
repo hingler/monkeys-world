@@ -16,6 +16,7 @@ namespace materials {
 
 using critter::Context;
 using file::FileLoader;
+using shader::light::spotlight_info;
 
 MatteMaterial::MatteMaterial(Context* context) {
   std::shared_ptr<FileLoader> loader = std::dynamic_pointer_cast<FileLoader>(context->GetCachedFileLoader());
@@ -61,6 +62,21 @@ void MatteMaterial::SetLights(const std::vector<light::LightData>& lights) {
     glProgramUniform1f(prog, 5, light.intensity);
     glProgramUniform4fv(prog, 6, 1, glm::value_ptr(light.diffuse));
     glProgramUniform4fv(prog, 7, 1, glm::value_ptr(light.ambient));
+  }
+}
+
+void MatteMaterial::SetSpotlights(const std::vector<spotlight_info>& lights) {
+  // well now i need to rewrite the material to do this
+  // let's just use the setlights code again
+  if (lights.size() > 0) {
+    spotlight_info info = lights[0];
+    GLuint prog = matte_prog_.GetProgramDescriptor();
+    // TODO: add ambient to spotlight_info (and probably others :)
+    glm::vec4 ambient(0);
+    glProgramUniform4fv(prog, 4, 1, glm::value_ptr(info.position));
+    glProgramUniform1f(prog, 5, info.intensity_diff);
+    glProgramUniform4fv(prog, 6, 1, glm::value_ptr(info.color));
+    glProgramUniform4fv(prog, 7, 1, glm::value_ptr(ambient));
   }
 }
 
