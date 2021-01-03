@@ -57,8 +57,14 @@ spotlight_info SpotLight::GetSpotLightInfo() {
   res.atten_const = GetAttenuationConst();
 
   // initial direction is always the -Z axis, like a camera.
-  res.direction = glm::normalize(glm::mat3(GetTransformationMatrix()) * glm::vec3(0, 0, -1));
-  res.position = GetPosition();
+  res.direction = glm::normalize(glm::mat3(GetTransformationMatrix()) * glm::vec3(0, 0, -1)); 
+  if (auto p = GetParent()) {
+    // position is in parent object coords -- transform to world
+    res.position = (glm::mat3(GetParent()->GetTransformationMatrix()) * GetPosition());
+  } else {
+    // object is root -- already specified in world coords
+    res.position = GetPosition();
+  }
 
   res.fd.height = GetMapSize();
   res.fd.width = GetMapSize();
