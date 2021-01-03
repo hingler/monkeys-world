@@ -13,6 +13,7 @@ namespace critter {
 
 /**
  *  A type of GameObject which contains visible geometry.
+ *  Client is required to implement update funcs, as well as RenderMaterial.
  */ 
 class Model : public GameObject {
  public:
@@ -34,6 +35,7 @@ class Model : public GameObject {
    */ 
   std::shared_ptr<model::Mesh<>> GetMesh();
 
+  void PrepareAttributes() override;
   void Draw() override;
 
   Model(const Model& other);

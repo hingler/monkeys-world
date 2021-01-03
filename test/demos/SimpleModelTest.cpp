@@ -39,12 +39,6 @@ using milli = std::chrono::milliseconds;
 class DummyModel : public Model {
  public:
   DummyModel(Context* ctx) : Model(ctx) {}
-  void PrepareAttributes() override {
-    std::shared_ptr<Mesh<>> mesh;
-    if (mesh = GetMesh()) {
-      mesh->PointToVertexAttribs();
-    }
-  }
 
   void RenderMaterial(const RenderContext& rc) override {
     std::shared_ptr<Mesh<>> mesh;

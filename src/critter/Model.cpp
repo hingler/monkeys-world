@@ -282,6 +282,12 @@ static data_type GetDataType(const std::string& line) {
   }
 }
 
+void Model::PrepareAttributes() {
+  if (mesh_ != nullptr) {
+    mesh_->PointToVertexAttribs();
+  }
+}
+
 void Model::Draw() {
   glDrawElements(GL_TRIANGLES, mesh_->GetIndexCount(), GL_UNSIGNED_INT, (void*)0);
 }
