@@ -3,13 +3,36 @@
 
 #include <boost/log/trivial.hpp>
 
+// 32Kb borrowed from https://github.com/nothings/stb/issues/114
+#define ALLOC_INC 32768
+
+// 512 kb alloc max (i think suggested max is like 250 or so)
+#define ALLOC_MAX (ALLOC_INC * 16)
+
 namespace monkeysworld {
 namespace audio {
 
 AudioBufferOgg::AudioBufferOgg(int capacity, const std::string& filename) : AudioBuffer(capacity) {
+
+
   int err;
-  vorbis_file_ = stb_vorbis_open_filename(filename.c_str(), &err, NULL);
+  int memsize = ALLOC_INC;
+  vorbis_buf_.alloc_buffer = nullptr;
+
+  do {
+    BOOST_LOG_TRIVIAL(trace) << "open " << filename << " -- trying " << memsize << " bytes of mem";
+    if (vorbis_buf_.alloc_buffer != nullptr) {
+      delete[] vorbis_buf_.alloc_buffer;
+    }
+
+    vorbis_buf_.alloc_buffer = new char[memsize];
+    vorbis_buf_.alloc_buffer_length_in_bytes = memsize;
+    vorbis_file_ = stb_vorbis_open_filename(filename.c_str(), &err, &vorbis_buf_);
+    memsize += ALLOC_INC;
+  } while (vorbis_file_ == NULL && err == STBVorbisError::VORBIS_outofmem && memsize <= ALLOC_MAX);
+
   if (vorbis_file_ == NULL) {
+    // some other error occurred
     BOOST_LOG_TRIVIAL(error) << "Vorbis open failed with err code " << err;
   }
 
@@ -107,6 +130,8 @@ AudioBufferOgg::~AudioBufferOgg() {
   if (vorbis_file_ != nullptr) {
     stb_vorbis_close(vorbis_file_);
   }
+
+  delete[] vorbis_buf_.alloc_buffer;
 }
 
 AudioBufferOgg& AudioBufferOgg::operator=(AudioBufferOgg&& other) {
