@@ -3,12 +3,15 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <critter/Visitor.hpp>
+
 namespace monkeysworld {
 namespace shader {
 namespace light {
 
 using critter::GameObject;
 using critter::Context;
+using critter::Visitor;
 using materials::ShadowMapMaterial;
 
 SpotLight::SpotLight(Context* ctx) : GameObject(ctx), Light(), mat_(ctx) {
@@ -22,12 +25,16 @@ SpotLight::SpotLight(Context* ctx) : GameObject(ctx), Light(), mat_(ctx) {
   glBindFramebuffer(GL_FRAMEBUFFER, shadow_fb_);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, map_, 0);
 
-  if (!glCheckFramebufferStatus(GL_FRAMEBUFFER_COMPLETE)) {
-    BOOST_LOG_TRIVIAL(warning) << "Framebuffer not complete!";
-  }
+  // if (!glCheckFramebufferStatus(GL_FRAMEBUFFER_COMPLETE)) {
+  //   BOOST_LOG_TRIVIAL(warning) << "Framebuffer not complete!";
+  // }
 
   glDrawBuffer(GL_NONE);
   glReadBuffer(GL_NONE);
+}
+
+void SpotLight::Accept(Visitor& v) {
+  v.Visit(std::dynamic_pointer_cast<SpotLight>(this->shared_from_this()));
 }
 
 void SpotLight::SetAngle(float deg) {

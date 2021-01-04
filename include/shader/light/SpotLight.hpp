@@ -28,7 +28,7 @@ namespace light {
  *  Controls similar to a camera.
  *  By default, points along the negative Z axis.
  */ 
-class SpotLight : public critter::GameObject, Light {
+class SpotLight : public critter::GameObject, public Light {
   // for accessing framebuffer methods
   friend class ::monkeysworld::critter::visitor::LightVisitor;
  public:
@@ -36,6 +36,8 @@ class SpotLight : public critter::GameObject, Light {
    *  Constructs a new spotlight
    */ 
   SpotLight(critter::Context* ctx);
+
+  void Accept(critter::Visitor& v) override;
 
   // nop
   void PrepareAttributes() override {}
