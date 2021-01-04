@@ -8,6 +8,7 @@
 #include <GLFW/glfw3.h>
 
 #include <input/WindowEventManager.hpp>
+#include <audio/AudioManager.hpp>
 
 #include <memory>
 
@@ -64,9 +65,12 @@ class Context {
   // add timer + timed event handler
 
   // file loader
+  // TODO: "Why is this const?"
   const std::shared_ptr<file::CachedFileLoader> GetCachedFileLoader();
 
   const std::shared_ptr<input::WindowEventManager> GetEventManager();
+
+  const std::shared_ptr<audio::AudioManager> GetAudioManager();
 
   /**
    *  Returns the size of the framebuffer.
@@ -91,6 +95,7 @@ class Context {
  private:
   std::shared_ptr<file::CachedFileLoader> file_loader_;
   std::shared_ptr<input::WindowEventManager> event_mgr_;
+  std::shared_ptr<audio::AudioManager> audio_mgr_;
   GLFWwindow* window_;
   double frame_delta_;
 
