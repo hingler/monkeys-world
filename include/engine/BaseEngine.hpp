@@ -15,9 +15,11 @@ namespace baseengine {
 
 /**
  *  Initializes GLFW context.
- *  @param win_width - width of result window
+ *  @param win_width - width Gaof result window
  *  @param win_height - height of result window
  *  @returns the window associated with this engine instance.
+ * 
+ *  TODO: Separate glad/GLFW initialization from window creation
  */  
 GLFWwindow* InitializeGLFW(int win_width, int win_height, const std::string& window_name);
 

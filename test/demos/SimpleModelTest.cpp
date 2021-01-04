@@ -122,7 +122,7 @@ void main(int argc, char** argv) {
     { 0.1f,  0.1f,  0.1f, 1.0f}
   });
 
-  audio_mgr.AddFileToBuffer("resources/irememberyou.ogg", AudioFiletype::OGG);
+  audio_mgr.AddFileToBuffer("resources/chamberofreflection.ogg", AudioFiletype::OGG);
 
   MatteMaterial test_material(ctx.get());
   float rot = 0.0f;
