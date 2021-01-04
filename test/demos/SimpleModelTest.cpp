@@ -86,7 +86,6 @@ void main(int argc, char** argv) {
     exit(EXIT_FAILURE);
   }
 
-  TestingEventManager event_mgr(window);
   AudioManager audio_mgr;
 
 
@@ -97,7 +96,8 @@ void main(int argc, char** argv) {
   RenderContext rc;
 
   std::shared_ptr<Context> ctx = std::make_shared<Context>(window);
-  
+    
+  TestingEventManager event_mgr(window);
   // a "true" implementation should organize data into 3d/4d vecs
   // then allow the mesh creator to fetch those alone
 
