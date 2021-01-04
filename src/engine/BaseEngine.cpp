@@ -63,11 +63,17 @@ void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<critter::Context> ct
   RenderContext rc;
   std::vector<spotlight_info> spotlights;
 
-  for (;;) {
+  glfwSwapInterval(1);
+  glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LEQUAL);
+
+  while(!glfwWindowShouldClose(window)) {
     start = std::chrono::high_resolution_clock::now();
     // reset any visitors which store info
     light_visitor.Clear();
     cam_visitor.Clear();
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // poll for events
     // check to see if a new scene needs to be initialized
     // if so: do that
@@ -114,10 +120,12 @@ void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<critter::Context> ct
     // render objects, using the render context
     // swap buffers
     rc.SetSpotlights(spotlights);
+    // TODO: handle null case with a default camera :(
     rc.SetActiveCamera(std::static_pointer_cast<Camera>(cam_visitor.GetActiveCamera()));
     // then: just draw (for now)
     //    if needed, we can start to collect additional information and add it to the context
     //    however -- for now, just this.
+    glBindFramebuffer(GL_FRAMEBUFFER, NULL);
     RenderObjects(scene->GetGameObjectRoot(), rc);
 
     // create render context
