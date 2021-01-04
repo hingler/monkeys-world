@@ -19,7 +19,7 @@ using file::FileLoader;
 using shader::light::spotlight_info;
 
 MatteMaterial::MatteMaterial(Context* context) {
-  std::shared_ptr<FileLoader> loader = std::dynamic_pointer_cast<FileLoader>(context->GetCachedFileLoader());
+  std::shared_ptr<FileLoader> loader = std::static_pointer_cast<FileLoader>(context->GetCachedFileLoader());
   matte_prog_ = ShaderProgramBuilder(loader)
                 .WithVertexShader("resources/glsl/matte-material/matte-material.vert")
                 .WithFragmentShader("resources/glsl/matte-material/matte-material.frag")

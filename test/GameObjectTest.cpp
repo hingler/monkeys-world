@@ -36,7 +36,7 @@ TEST(GameObjectTests, CreateGameObject) {
 TEST(GameObjectTests, NestObject) {
   std::shared_ptr<DummyGameObject> parent = std::make_shared<DummyGameObject>();
   std::shared_ptr<DummyGameObject> child = std::make_shared<DummyGameObject>();
-  std::shared_ptr<GameObject> cast_child = std::dynamic_pointer_cast<GameObject>(child);
+  std::shared_ptr<GameObject> cast_child = std::static_pointer_cast<GameObject>(child);
   parent->AddChild(cast_child);
   ASSERT_EQ(parent.get(), child->GetParent());
   ASSERT_EQ(child.get(), parent->GetChild(child->GetId()));

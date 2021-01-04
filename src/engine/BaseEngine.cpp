@@ -114,7 +114,7 @@ void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<critter::Context> ct
     // render objects, using the render context
     // swap buffers
     rc.SetSpotlights(spotlights);
-    rc.SetActiveCamera(std::dynamic_pointer_cast<Camera>(cam_visitor.GetActiveCamera()));
+    rc.SetActiveCamera(std::static_pointer_cast<Camera>(cam_visitor.GetActiveCamera()));
     // then: just draw (for now)
     //    if needed, we can start to collect additional information and add it to the context
     //    however -- for now, just this.
