@@ -68,9 +68,16 @@ int AudioManager::AddFileToBuffer(const std::string& filename, AudioFiletype fil
 void AudioManager::QueueThreadfunc() {
   queue_info info_queue;
   while (buffer_thread_flag_.test_and_set()) {
+    BOOST_LOG_TRIVIAL(trace) << "queue threadfunc runs once :)";
     { // fetch entry from queue and place in info
       std::unique_lock<std::mutex> buffer_queue_lock(buffer_queue_lock_);
       while (buffer_creation_queue_.empty()) {
+        // looping is beneficial for wait -- check in here if the flag's been cleared, then return if so
+        if (!buffer_thread_flag_.test_and_set()) {
+          return;
+        }
+
+        BOOST_LOG_TRIVIAL(trace) << "no new samples -- waiting...";
         buffer_thread_cv_.wait(buffer_queue_lock);
       }
 
@@ -167,15 +174,16 @@ AudioManager::~AudioManager() {
   if (err != paNoError) {
     BOOST_LOG_TRIVIAL(error) << "Failed to terminate PA";
   }
+
+  buffer_thread_flag_.clear();
+  buffer_thread_cv_.notify_all();
+  buffer_creation_thread_.join();
+
   for (int i = 0; i < AUDIO_MGR_MAX_BUFFER_COUNT; i++) {
     if (buffers_[i].buffer != nullptr) {
       delete buffers_[i].buffer;
     }
   }
-
-  buffer_thread_flag_.clear();
-  buffer_thread_cv_.notify_all();
-  buffer_creation_thread_.join();
 }
 
 }
