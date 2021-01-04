@@ -33,6 +33,7 @@ class ShadowMapMaterial : public ::monkeysworld::shader::Material {
 
   // nop
   void SetLights(const std::vector<light::LightData>& lights) override {};
+  void SetSpotlights(const std::vector<light::spotlight_info>& lights) override {};
 
  private:
   ShaderProgram shadow_prog_;
