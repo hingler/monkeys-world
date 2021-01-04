@@ -3,6 +3,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <boost/log/trivial.hpp>
+
 #include <engine/BaseEngine.hpp>
 #include <engine/Scene.hpp>
 #include <engine/RenderContext.hpp>
@@ -34,19 +36,23 @@ using ::monkeysworld::critter::camera_info;
 
 using ::monkeysworld::shader::light::SpotLight;
 
+using ::monkeysworld::shader::light::spotlight_info;
+
 using ::monkeysworld::shader::materials::MatteMaterial;
 
 class RatModel : public Model {
  public:
   RatModel(Context* ctx) : Model(ctx), rot_(0), m(ctx) {
-    SetMesh(Model::FromObjFile(ctx, "resources/test/rat/Rat.obj"));
+    SetMesh(Model::FromObjFile(ctx, "resources/test/untitled4.obj"));
     // create a key listener which accomplishes rat motion
     // or just rotate consistently with time
   }
 
   void Update() override {
-    rot_ += rot_inc_ * (GetContext()->GetDeltaTime() / 1000);
+    rot_ += rot_inc_ * (GetContext()->GetDeltaTime());
     SetRotation(glm::vec3(0.0, rot_, 0.0));
+    auto gc = std::dynamic_pointer_cast<GameCamera>(GetActiveCamera());
+    gc->SetRotation(glm::vec3(0, 3.14, 0));
   }
 
   void RenderMaterial(const RenderContext& rc) override {
@@ -55,6 +61,7 @@ class RatModel : public Model {
     // matte material doesn't accept spotlights!
     // TODO: modify material to accept different types of lights
     m.SetSpotlights(rc.GetSpotlights());
+    spotlight_info i = rc.GetSpotlights()[0];
     m.SetModelTransforms(tf_matrix);
     m.SetCameraTransforms(cam.view_matrix);
     m.SetSurfaceColor(glm::vec4(1.0, 0.6, 0.0, 1.0));
@@ -84,12 +91,17 @@ class TestScene : public Scene {
     game_object_root_ = std::make_shared<Empty>(ctx);
     auto cam = std::make_shared<GameCamera>(ctx);
     game_object_root_->AddChild(cam);
-    cam->SetPosition(glm::vec3(0, 0, 8));
+    cam->SetPosition(glm::vec3(0, 0, -5));
+    cam->SetRotation(glm::vec3(0, 1.6, 0));
     cam->SetFov(45.0f);
+    cam->SetActive(true);
     auto rat = std::make_shared<RatModel>(ctx);
     game_object_root_->AddChild(rat);
 
     auto light = std::make_shared<SpotLight>(ctx);
+    light->SetPosition(glm::vec3(1, -3, 0));
+    light->SetDiffuseIntensity(1.0);
+    game_object_root_->AddChild(light);
   }
 
   std::shared_ptr<Object> GetGameObjectRoot() {
