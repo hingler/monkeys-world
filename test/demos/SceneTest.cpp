@@ -40,10 +40,13 @@ using ::monkeysworld::shader::light::spotlight_info;
 
 using ::monkeysworld::shader::materials::MatteMaterial;
 
+using ::monkeysworld::audio::AudioFiletype;
+
 class RatModel : public Model {
  public:
   RatModel(Context* ctx) : Model(ctx), rot_(0), m(ctx) {
     SetMesh(Model::FromObjFile(ctx, "resources/test/untitled4.obj"));
+    ctx->GetAudioManager()->AddFileToBuffer("resources/chamberofreflection.ogg", AudioFiletype::OGG);
     // create a key listener which accomplishes rat motion
     // or just rotate consistently with time
   }
@@ -99,7 +102,7 @@ class TestScene : public Scene {
     game_object_root_->AddChild(rat);
 
     auto light = std::make_shared<SpotLight>(ctx);
-    light->SetPosition(glm::vec3(1, -3, 0));
+    light->SetPosition(glm::vec3(1, 4, -2));
     light->SetDiffuseIntensity(1.0);
     game_object_root_->AddChild(light);
   }
@@ -112,10 +115,13 @@ class TestScene : public Scene {
   std::shared_ptr<GameObject> game_object_root_;  // game object root lol
 };
 
-void main(int argc, char** argv) {
+int main(int argc, char** argv) {
   GLFWwindow* main_win = InitializeGLFW(1280, 720, "and he never stoped playing, he always was keep beliving");
   auto ctx = std::make_shared<Context>(main_win);
   auto scene = std::make_shared<TestScene>(ctx.get());
-
   GameLoop(scene, ctx, main_win);
+
+  glfwDestroyWindow(main_win);
+  glfwTerminate();
+  return 0;
 }
