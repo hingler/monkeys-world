@@ -1,0 +1,92 @@
+#ifndef FONT_H_
+#define FONT_H_
+
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
+#include <font/FTLibWrapper.hpp>
+
+#include <glad/glad.h>
+
+#include <model/Mesh.hpp>
+#include <storage/VertexPacketTypes.hpp>
+
+#include <mutex>
+#include <string>
+
+namespace monkeysworld {
+namespace font {
+
+struct glyph_info {
+  // dimensions of glyphs in pixels
+  float width;
+  float height;
+
+  // x/y offset from text origin
+  float bearing_x;
+  float bearing_y;
+
+  // dist to advance origin by for next char
+  float advance;
+};
+
+/**
+ *  Represents a font and all of its glyphs, returning information pertaining to textures, etc.
+ */ 
+class Font {
+ public:
+  /**
+   *  Creates a new Font object.
+   *  @param font_name - the path to the desired font.
+   */ 
+  Font(const std::string& font_path);
+
+  /**
+   *  Generates and returns geometry from text. Initial origin is always <0, 0, 0>, and the glyphs are projected onto the XY plane.
+   *  @param text - the message being read.
+   *  @returns A 3D mesh corresponding with the desired text. Texture coordinates correspond with the
+   *           glyph atlas (see GetGlyphAtlas()).
+   */ 
+  model::Mesh<storage::VertexPacket3D> GetTextGeometry(const std::string& text);
+
+  /**
+   *  Gets the glyph atlas associated with this font.
+   *  @returns a GL descriptor associated with the underlying font atlas.
+   */ 
+  GLuint GetGlyphAtlas();
+ private:
+  // bounds for glyphs
+  const char glyph_lower_ = 0x20;
+  const char glyph_upper_ = 0x7e;
+
+  /**
+   *  MANAGING A LIBRARY
+   *  
+   *  From here, we have no concept of consistent threads, forcing us to use locks
+   *  to access a shared FT_Library across all font instances.
+   * 
+   *  However, this is difficult to actually do.
+   * 
+   *  What we want is an RAII singleton class which wraps `FT_Library`,
+   *  and (i guess?) a static weak_ptr which stores it (wrapping init_freetype and any cleanup funcs)
+   * 
+   *  - Why a weak ptr?
+   *    - seems like a better way to ensure that we initialize it when we get there, and de-initialize when we leave.
+   * 
+   *  First, we grab a mutex lock, and attempt to lock the ptr.
+   *  If that fails, then we create a new instance of `Library,` and continue using the lock.
+   *  If it succeeds, then we store the resulting shared ptr in the class.
+   */ 
+  // static weak ptr for library class (needs to be raii)
+  static std::weak_ptr<FTLibWrapper> lib_singleton_;
+  std::shared_ptr<FTLibWrapper> ft_lib_;
+  // static mutex for risky shared commands
+  static std::mutex ft_lib_lock_;
+  FT_Face face_;                              // face handle
+
+};
+
+}
+}
+
+#endif

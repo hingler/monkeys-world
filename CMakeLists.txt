@@ -94,7 +94,7 @@ find_package(Boost 1.72.0 COMPONENTS log regex REQUIRED)
 # this should be all i need for now
 set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG ${CMAKE_CXX_FLAGS_DEBUG}")
 
-target_link_libraries(monkeys-world-components glm glad::glad)
+target_link_libraries(monkeys-world-components glm glad::glad freetype)
 target_include_directories(monkeys-world-components PUBLIC ${Boost_INCLUDE_DIRS} ${STB_INCLUDE_DIRS})
 target_link_libraries(monkeys-world-components ${Boost_LIBRARIES} portaudio)
 target_include_directories(monkeys-world-components PUBLIC ${Boost_INCLUDE_DIRS})
