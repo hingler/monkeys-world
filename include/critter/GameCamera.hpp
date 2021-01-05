@@ -18,7 +18,7 @@ class GameCamera : public GameObject, public Camera {
   /**
    *  Constructs a new camera.
    */ 
-  GameCamera(Context* ctx);
+  GameCamera(engine::Context* ctx);
 
   void Accept(Visitor& v) override;
 

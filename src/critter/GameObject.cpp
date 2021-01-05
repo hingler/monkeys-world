@@ -14,6 +14,7 @@ namespace critter {
 
 using utils::IDGenerator;
 using critter::visitor::ActiveCameraFindVisitor;
+using engine::Context;
 
 GameObject::GameObject() : GameObject(nullptr) { }
 

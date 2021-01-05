@@ -32,7 +32,6 @@ add_library(monkeys-world-components
 
                                     ${SRC_DIR}/input/WindowEventManager.cpp
 
-                                    ${SRC_DIR}/critter/Context.cpp
                                     ${SRC_DIR}/critter/GameObject.cpp
                                     ${SRC_DIR}/critter/Object.cpp
                                     ${SRC_DIR}/critter/Model.cpp
@@ -41,6 +40,7 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/critter/visitor/LightVisitor.cpp
                                     ${SRC_DIR}/critter/visitor/ActiveCameraFindVisitor.cpp
                                     
+                                    ${SRC_DIR}/engine/Context.cpp
                                     ${SRC_DIR}/engine/BaseEngine.cpp
                                     ${SRC_DIR}/engine/RenderContext.cpp
 

@@ -3,7 +3,7 @@
 
 #include <glad/glad.h>
 #include <critter/GameObject.hpp>
-#include <critter/Context.hpp>
+#include <engine/Context.hpp>
 
 #include <shader/light/LightTypes.hpp>
 #include <shader/light/Light.hpp>
@@ -35,7 +35,7 @@ class SpotLight : public critter::GameObject, public Light {
   /**
    *  Constructs a new spotlight
    */ 
-  SpotLight(critter::Context* ctx);
+  SpotLight(engine::Context* ctx);
 
   void Accept(critter::Visitor& v) override;
 

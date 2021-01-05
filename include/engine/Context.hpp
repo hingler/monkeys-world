@@ -24,7 +24,7 @@
  *  and handle anything like that in CPU
  */
 namespace monkeysworld {
-namespace critter {
+namespace engine {
 
 class Context;
 
@@ -34,13 +34,13 @@ class Context;
 namespace monkeysworld {
 namespace engine {
 namespace baseengine {
-void UpdateCtx(double, critter::Context*);
+void UpdateCtx(double, engine::Context*);
 }
 }
 }
 
 namespace monkeysworld {
-namespace critter {
+namespace engine {
 
 
 /**

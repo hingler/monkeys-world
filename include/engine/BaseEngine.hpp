@@ -2,7 +2,7 @@
 #define BASE_ENGINE_H_
 
 #include <engine/Scene.hpp>
-#include <critter/Context.hpp>
+#include <engine/Context.hpp>
 
 namespace monkeysworld {
 namespace engine {
@@ -28,7 +28,7 @@ GLFWwindow* InitializeGLFW(int win_width, int win_height, const std::string& win
  *  @param window - window used by context to set up events
  *  @returns ptr to new context object :)
  */ 
-std::shared_ptr<critter::Context> CreateContext(GLFWwindow* window);
+std::shared_ptr<engine::Context> CreateContext(GLFWwindow* window);
 // function to start the engine loop with some premade scene
 
 /**
@@ -37,7 +37,7 @@ std::shared_ptr<critter::Context> CreateContext(GLFWwindow* window);
  *  @param ctx - the context associated with this window.
  *  @param window_name - the name associated with this window.
  */ 
-void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<critter::Context> ctx, GLFWwindow* window);
+void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<engine::Context> ctx, GLFWwindow* window);
 
 // various functions which help push the engine along
 
@@ -46,7 +46,7 @@ void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<critter::Context> ct
  *  @param delta - number of seconds required to render the last frame.
  *  TODO: (this should probably be static :)
  */ 
-void UpdateCtx(double delta, critter::Context* ctx);
+void UpdateCtx(double delta, engine::Context* ctx);
 
 }
 }

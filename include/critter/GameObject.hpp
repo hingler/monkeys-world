@@ -3,7 +3,7 @@
 
 #include <utils/IDGenerator.hpp>
 
-#include <critter/Context.hpp>
+#include <engine/Context.hpp>
 #include <critter/Object.hpp>
 #include <critter/Camera.hpp>
 
@@ -31,7 +31,7 @@ namespace critter {
 class GameObject : public Object, public std::enable_shared_from_this<GameObject> {
  public:
 
-  GameObject(Context* ctx);
+  GameObject(engine::Context* ctx);
 
   void Accept(Visitor& v) override;
 
@@ -58,7 +58,7 @@ class GameObject : public Object, public std::enable_shared_from_this<GameObject
   /**
    *  Returns ptr to context.
    */ 
-  Context* GetContext() const;
+  engine::Context* GetContext() const;
 
   /**
    *  Returns the transformation matrix associated with this object.
@@ -129,7 +129,7 @@ class GameObject : public Object, public std::enable_shared_from_this<GameObject
   // whether or not the transformation matrix on store is safe.
   std::atomic_bool dirty_;
 
-  Context* ctx_;
+  engine::Context* ctx_;
 
   // TODO: is a lock on transformation calls necessary, or will access be limited to a single thread?
 };

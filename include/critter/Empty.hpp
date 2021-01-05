@@ -2,7 +2,7 @@
 #define EMPTY_H_
 
 #include <critter/GameObject.hpp>
-#include <critter/Context.hpp>
+#include <engine/Context.hpp>
 
 namespace monkeysworld {
 namespace critter {
@@ -14,7 +14,7 @@ class Empty : public GameObject {
  public:
   
   // create a new empty
-  Empty(Context* ctx) : GameObject(ctx) {}
+  Empty(engine::Context* ctx) : GameObject(ctx) {}
 
   // nop
   void PrepareAttributes() override {}

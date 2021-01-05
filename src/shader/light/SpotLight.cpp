@@ -10,7 +10,7 @@ namespace shader {
 namespace light {
 
 using critter::GameObject;
-using critter::Context;
+using engine::Context;
 using critter::Visitor;
 using materials::ShadowMapMaterial;
 

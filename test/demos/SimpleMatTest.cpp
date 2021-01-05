@@ -11,7 +11,7 @@
 #include <shader/materials/MatteMaterial.hpp>
 #include <shader/ShaderProgramBuilder.hpp>
 #include <shader/ShaderProgram.hpp>
-#include <critter/Context.hpp>
+#include <engine/Context.hpp>
 
 #include <file/FileLoader.hpp>
 #include "../SimpleFileLoader.hpp"
@@ -36,7 +36,7 @@ using ::monkeysworld::shader::light::LightData;
 using ::monkeysworld::shader::materials::MatteMaterial;
 using ::monkeysworld::shader::ShaderProgram;
 using ::monkeysworld::shader::ShaderProgramBuilder;
-using ::monkeysworld::critter::Context;
+using ::monkeysworld::engine::Context;
 
 using ::monkeysworld::storage::VertexPacket3D;
 

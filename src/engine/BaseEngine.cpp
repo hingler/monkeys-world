@@ -44,7 +44,7 @@ static void UpdateObjects(std::shared_ptr<critter::Object>);
 static void RenderObjects(std::shared_ptr<critter::Object>, RenderContext&);
 // subtype context to enable access to frequent update functions
 // pass supertype to scene
-void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<critter::Context> ctx, GLFWwindow* window) {
+void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<engine::Context> ctx, GLFWwindow* window) {
   #ifdef DEBUG
   ::monkeysworld::shader::gldebug::SetupGLDebug();
   #endif
@@ -200,7 +200,7 @@ GLFWwindow* InitializeGLFW(int win_width, int win_height, const std::string& win
   return window;
 }
 
-void UpdateCtx(double delta, critter::Context* ctx) {
+void UpdateCtx(double delta, engine::Context* ctx) {
   ctx->frame_delta_ = delta;
   ctx->FrameUpdate();
 }

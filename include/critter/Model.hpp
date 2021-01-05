@@ -2,7 +2,7 @@
 #define MODEL_H_
 
 #include <critter/GameObject.hpp>
-#include <critter/Context.hpp>
+#include <engine/Context.hpp>
 #include <model/Mesh.hpp>
 #include <storage/VertexPacketTypes.hpp>
 
@@ -22,7 +22,7 @@ class Model : public GameObject {
    *  Creates a new Model with no vertex data attached.
    *  @param ctx - pointer to the relevant context.
    */ 
-  Model(Context* ctx);
+  Model(engine::Context* ctx);
 
   /**
    *  Sets the mesh associated with this model instance.
@@ -50,7 +50,7 @@ class Model : public GameObject {
    *  @param path - path to the desired OBJ file.
    *  @returns newly created mesh.
    */ 
-  static std::shared_ptr<model::Mesh<>> FromObjFile(Context* ctx, const std::string& path);
+  static std::shared_ptr<model::Mesh<>> FromObjFile(engine::Context* ctx, const std::string& path);
 
  private:
   std::shared_ptr<model::Mesh<>> mesh_;

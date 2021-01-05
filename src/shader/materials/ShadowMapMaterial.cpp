@@ -9,7 +9,7 @@ namespace monkeysworld {
 namespace shader {
 namespace materials {
 
-using critter::Context;
+using engine::Context;
 
 ShadowMapMaterial::ShadowMapMaterial(Context* ctx) {
   shadow_prog_ = ShaderProgramBuilder(ctx->GetCachedFileLoader())

@@ -7,7 +7,7 @@
 #include <shader/ShaderProgram.hpp>
 
 
-#include <critter/Context.hpp>
+#include <engine/Context.hpp>
 
 #include <glm/glm.hpp>
 
@@ -23,7 +23,7 @@ class ShadowMapMaterial : public ::monkeysworld::shader::Material {
    *  Creates a new ShadowMapMaterial.
    *  @param ctx - Context ptr.
    */ 
-  ShadowMapMaterial(critter::Context* ctx);
+  ShadowMapMaterial(engine::Context* ctx);
 
   void UseMaterial() override;
 

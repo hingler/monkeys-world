@@ -14,7 +14,7 @@ namespace monkeysworld {
 namespace shader {
 namespace materials {
 
-using critter::Context;
+using engine::Context;
 using file::FileLoader;
 using shader::light::spotlight_info;
 

@@ -1,7 +1,7 @@
-#include <critter/Context.hpp>
+#include <engine/Context.hpp>
 
 namespace monkeysworld {
-namespace critter {
+namespace engine {
 
 using file::CachedFileLoader;
 using input::WindowEventManager;

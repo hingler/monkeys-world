@@ -17,6 +17,9 @@ using storage::VertexPacket3D;
 using file::CachedFileLoader;
 using model::Mesh;
 using boost::lexical_cast;
+
+using engine::Context;
+
 /**
  *  Hashable struct which refers to position, normal, tex indices when loading from obj.
  */ 

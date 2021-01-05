@@ -2,7 +2,7 @@
 #include <GLFW/glfw3.h>
 
 #include <critter/Model.hpp>
-#include <critter/Context.hpp>
+#include <engine/Context.hpp>
 #include <critter/GameCamera.hpp>
 
 #include <model/Mesh.hpp>
@@ -26,7 +26,7 @@
 
 using ::monkeysworld::shader::light::LightData;
 using ::monkeysworld::critter::Model;
-using ::monkeysworld::critter::Context;
+using ::monkeysworld::engine::Context;
 using ::monkeysworld::shader::materials::MatteMaterial;
 using ::monkeysworld::input::WindowEventManager;
 using ::monkeysworld::audio::AudioManager;

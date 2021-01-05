@@ -1,6 +1,6 @@
 #ifndef CONTEXT_UPDATE_H_
 #define CONTEXT_UPDATE_H_
-#include <critter/Context.hpp>
+#include <engine/Context.hpp>
 #include <memory>
 
 namespace monkeysworld {

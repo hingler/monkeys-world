@@ -12,7 +12,7 @@
 #include <utils/IDGenerator.hpp>
 
 namespace monkeysworld {
-namespace critter {
+namespace engine {
 class Context;
 }
 }
@@ -46,7 +46,7 @@ struct event_info {
  *  called once per frame, after `glfwPollEvents` is called.
  */ 
 class WindowEventManager {
-  friend class ::monkeysworld::critter::Context;
+  friend class ::monkeysworld::engine::Context;
  public:
 
   /**

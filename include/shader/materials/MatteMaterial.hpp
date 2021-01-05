@@ -8,7 +8,7 @@
 #include <shader/light/LightDataTemp.hpp>
 #include <glm/glm.hpp>
 
-#include <critter/Context.hpp>
+#include <engine/Context.hpp>
 
 #include <memory>
 
@@ -23,7 +23,7 @@ class MatteMaterial : ::monkeysworld::shader::Material {
    *  Creates a new MatteMaterial instance.
    *  @param context - Context object
    */ 
-  MatteMaterial(critter::Context* context);
+  MatteMaterial(engine::Context* context);
 
   /**
    *  Makes the material active and passes all uniforms.

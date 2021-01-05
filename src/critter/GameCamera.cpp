@@ -8,6 +8,8 @@
 namespace monkeysworld {
 namespace critter {
 
+using engine::Context;
+
 GameCamera::GameCamera(Context* ctx) : GameObject(ctx) {
   fov_deg_ = 45.0f;
   active_ = false;
