@@ -8,6 +8,9 @@
 namespace monkeysworld {
 namespace font {
 
+using model::Mesh;
+using storage::VertexPacket2D;
+
 std::mutex Font::ft_lib_lock_;
 std::weak_ptr<FTLibWrapper> Font::lib_singleton_;
 
@@ -38,7 +41,7 @@ Font::Font(const std::string& font_path) {
 
   // what should char size be?
   // let's go with 256px for now
-  e = FT_Set_Char_Size(face_, 0, 256 * 64, 72, 72);
+  e = FT_Set_Char_Size(face_, 0, bitmap_desired_scale * 64, 72, 72);
 
   // create an array of glyphs we can use from here on out
 
@@ -69,6 +72,9 @@ Font::Font(const std::string& font_path) {
   height_px++;
 
   BOOST_LOG_TRIVIAL(trace) << "tex size: " << width_px << " x " << height_px;
+  
+  atlas_width = width_px;
+  atlas_height = height_px;
 
   glActiveTexture(GL_TEXTURE0);
   // generate the texture
@@ -86,6 +92,7 @@ Font::Font(const std::string& font_path) {
     e = FT_Load_Glyph(face_, glyph_index, FT_LOAD_RENDER);
     if (e) {
       // should have already been handled.
+      temp_info.valid = false;
       continue;
     }
 
@@ -94,6 +101,7 @@ Font::Font(const std::string& font_path) {
       FT_Render_Glyph(temp_glyph, FT_RENDER_MODE_NORMAL);
     }
 
+    temp_info.valid = true;
     temp_glyph = face_->glyph;
     glTexSubImage2D(GL_TEXTURE_2D, 
                     0,
@@ -114,7 +122,9 @@ Font::Font(const std::string& font_path) {
     temp_info.width = temp_glyph->bitmap.width;
     temp_info.height = temp_glyph->bitmap.rows;
 
-    temp_info.origin_x = width_px;
+    temp_info.origin_x = ((float)width_px / atlas_width);
+
+    glyph_cache_[i - glyph_lower_] = temp_info;
 
     width_px += (temp_glyph->bitmap.width + 1);
   }
@@ -130,6 +140,65 @@ Font::Font(const std::string& font_path) {
    * because it saves us lib constructions, the point is solely
    * to ensure that we have a lib to start, and destroy it before we're done.
    */
+}
+
+// advance is stored in 1/64 pixels
+#define ADVANCE_SCALE 64.0f
+
+model::Mesh<storage::VertexPacket2D> Font::GetTextGeometry(const std::string& text, float size_pt) {
+  // scales our fonts down to screenspace scale (roughly:)
+  const float SCREENSPACE_FAC = (960.0f * bitmap_desired_scale) / size_pt;
+  
+  Mesh<VertexPacket2D> result;
+  float origin_x = -0.8f;
+  // bitmap, bearing are in pixels
+  // advance is in 1/64 pixels.
+
+  // origin of glyph, in object space
+  float glyph_origin_x;
+  float glyph_origin_y;
+
+  // texture width and height
+  float tex_width;
+  float tex_height;
+
+  // geometry width and height
+  float geom_width;
+  float geom_height;
+
+  glyph_info* info;
+
+  int cur = 0;
+  for (auto c : text) {
+    if (c < glyph_lower_ || c > glyph_upper_) {
+      // skip, make space
+      origin_x += glyph_cache_[0].advance / (SCREENSPACE_FAC * ADVANCE_SCALE);
+      continue;
+    }
+
+    info = &glyph_cache_[c - glyph_lower_];
+    glyph_origin_x = origin_x + (info->bearing_x / SCREENSPACE_FAC);
+    glyph_origin_y = 0.0f + (info->bearing_y / SCREENSPACE_FAC);
+
+    tex_width = ((float)info->width) / atlas_width;
+    tex_height = ((float)info->height) / atlas_height;
+
+    geom_width = info->width / SCREENSPACE_FAC;
+    geom_height = info->height / SCREENSPACE_FAC;
+
+    result.AddVertex({glm::vec2(glyph_origin_x, glyph_origin_y),                            glm::vec2(info->origin_x, 0.0f)});
+    result.AddVertex({glm::vec2(glyph_origin_x, glyph_origin_y - geom_height),              glm::vec2(info->origin_x, tex_height)});
+    result.AddVertex({glm::vec2(glyph_origin_x + geom_width, glyph_origin_y - geom_height), glm::vec2(info->origin_x + tex_width, tex_height)});
+    result.AddVertex({glm::vec2(glyph_origin_x + geom_width, glyph_origin_y),               glm::vec2(info->origin_x + tex_width, 0.0f)});
+    result.AddPolygon(cur * 4, cur * 4 + 1, cur * 4 + 2);
+    result.AddPolygon(cur * 4 + 2, cur * 4 + 3, cur * 4);
+
+    cur++;
+
+    origin_x += (info->advance / (SCREENSPACE_FAC * ADVANCE_SCALE));
+  }
+
+  return result;
 }
 
 GLuint Font::GetGlyphAtlas() {

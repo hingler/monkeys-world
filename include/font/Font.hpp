@@ -29,8 +29,11 @@ struct glyph_info {
   // dist to advance origin by for next char (horiz only for now)
   float advance;
 
-  // for texture lookup: distance from tex origin (y origin is always 0)
+  // start of glyph on x axis in texture coords
   float origin_x;
+
+  // false for characters which did not load correctly
+  bool valid;
 };
 
 /**
@@ -51,7 +54,7 @@ class Font {
    *  @returns A 3D mesh corresponding with the desired text. Texture coordinates correspond with the
    *           glyph atlas (see GetGlyphAtlas()).
    */ 
-  model::Mesh<storage::VertexPacket3D> GetTextGeometry(const std::string& text, float size_pt);
+  model::Mesh<storage::VertexPacket2D> GetTextGeometry(const std::string& text, float size_pt);
   // probably add a param for some simple font formatting :)
 
   /**
@@ -63,6 +66,8 @@ class Font {
   // bounds for glyphs
   const char glyph_lower_ = 0x20;
   const char glyph_upper_ = 0x7e;
+  // size of loader glyphs
+  const int bitmap_desired_scale = 256;
 
   /**
    *  MANAGING A LIBRARY
@@ -91,6 +96,9 @@ class Font {
   FT_Face face_;
   glyph_info* glyph_cache_;
   GLuint glyph_texture_;
+
+  int atlas_width;
+  int atlas_height;
 };
 
 }

@@ -18,8 +18,8 @@
 #include <map>
 
 // from https://stackoverflow.com/questions/87372/check-if-a-class-has-a-member-function-of-a-given-signature/10707822#10707822
-// todo: enable some R/W on attributes (not sure how yet lol)
 
+// TODO: Meshes cannot be reused. There should be some system by which the context is only engaged when it's needed.
 namespace monkeysworld {
 namespace model {
 
@@ -179,6 +179,8 @@ class Mesh {
       default:
         context_ = std::unique_ptr<VertexDataContext<Packet>>(nullptr);
     }
+
+    dirty_ = true;
   }
 
   Mesh& operator=(const Mesh& other) {
@@ -190,18 +192,24 @@ class Mesh {
       default:
         context_ = std::unique_ptr<VertexDataContext<Packet>>(nullptr);
     }
+
+    dirty_ = true;
+
+    return *this;
   }
 
   Mesh(Mesh&& other) {
+    // don't remove the context -- reuse mine
     data_ = std::move(other.data_);
     indices_ = std::move(other.indices_);
-    context_ = std::move(other.context_);
+    dirty_ = true;
   }
 
   Mesh& operator=(Mesh&& other) {
     data_ = std::move(other.data_);
     indices_ = std::move(other.indices_);
-    context_ = std::move(other.context_);
+    dirty_ = true;
+    return *this;
   }
 
  private:
