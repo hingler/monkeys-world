@@ -50,7 +50,9 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/audio/AudioBuffer.cpp
                                     ${SRC_DIR}/audio/AudioBufferOgg.cpp
                                     ${SRC_DIR}/audio/AudioManager.cpp
-                                    ${SRC_DIR}/_stb_libs/stb_vorbis.c)
+                                    ${SRC_DIR}/_stb_libs/stb_vorbis.c
+                                    
+                                    ${SRC_DIR}/font/Font.cpp)
 
 add_library(MonkeysWorld::Engine ALIAS monkeys-world-components)
 
@@ -124,6 +126,9 @@ if(compile_tests)
 
   add_executable(scene-test test/demos/SceneTest.cpp)
   target_link_libraries(scene-test monkeys-world-components )
+
+  add_executable(font-test test/demos/FontDoubleFeature.cpp)
+  target_link_libraries(font-test monkeys-world-components )
 
   add_executable(streambuf-test test/CacheStreambufTest.cpp)
   target_include_directories(streambuf-test PRIVATE ${INC_DIR})
