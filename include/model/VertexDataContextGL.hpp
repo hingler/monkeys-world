@@ -25,10 +25,7 @@ class VertexDataContextGL : public VertexDataContext<Packet> {
    *  Creates a new VertexDataContext.
    */ 
   VertexDataContextGL() {
-    glGenBuffers(1, &array_buffer_);
-    glGenBuffers(1, &element_buffer_);
-    glGenVertexArrays(1, &vao_);
-    // vao now maps to attribute type
+    gl_alloced_ = false;
   }
 
   /**
@@ -37,21 +34,25 @@ class VertexDataContextGL : public VertexDataContext<Packet> {
    *  @param indices - the associated indices.
    */ 
   void UpdateBuffersAndPoint(const std::vector<Packet>& data, const std::vector<unsigned int>& indices) override {
+    if (!gl_alloced_) {
+      glGenBuffers(1, &array_buffer_);
+      glGenBuffers(1, &element_buffer_);
+      glGenVertexArrays(1, &vao_);
+      gl_alloced_ = true;
+    }
     glBindVertexArray(vao_);
     glBindBuffer(GL_ARRAY_BUFFER, array_buffer_);
-    BOOST_LOG_TRIVIAL(debug) << "Adding " << data.size() << " vertices";
     glBufferData(GL_ARRAY_BUFFER,
                  sizeof(Packet) * data.size(),
                  data.data(),
-                 GL_STATIC_DRAW);
+                 GL_DYNAMIC_DRAW);
 
     
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_);
-    BOOST_LOG_TRIVIAL(debug) << "Adding " << indices.size() << " indices";
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,
                  sizeof(unsigned int) * indices.size(),
                 reinterpret_cast<const void*>(indices.data()),
-                 GL_STATIC_DRAW);
+                 GL_DYNAMIC_DRAW);
 
     Packet::Bind();
 
@@ -69,10 +70,21 @@ class VertexDataContextGL : public VertexDataContext<Packet> {
     return VertexDataContextType::gl;
   }
 
+  ~VertexDataContextGL() {
+    if (gl_alloced_) {
+      glDeleteBuffers(1, &array_buffer_);
+      glDeleteBuffers(1, &element_buffer_);
+      glDeleteVertexArrays(1, &vao_);
+    }
+  }
+
  private:
   GLuint array_buffer_;
   GLuint element_buffer_;
   GLuint vao_;
+
+  // true if our buffers have been created -- false otherwise
+  bool gl_alloced_;
 };
 
 };  // namespace opengl

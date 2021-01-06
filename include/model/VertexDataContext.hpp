@@ -32,6 +32,8 @@ class VertexDataContext {
    *  Returns an enum representing the type of this context.
    */ 
   virtual VertexDataContextType GetType() = 0;
+
+  virtual ~VertexDataContext() {}
 };
 
 }  // namespace opengl
