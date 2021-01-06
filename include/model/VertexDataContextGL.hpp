@@ -45,14 +45,14 @@ class VertexDataContextGL : public VertexDataContext<Packet> {
     glBufferData(GL_ARRAY_BUFFER,
                  sizeof(Packet) * data.size(),
                  data.data(),
-                 GL_DYNAMIC_DRAW);
+                 GL_STATIC_DRAW);
 
     
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,
                  sizeof(unsigned int) * indices.size(),
                 reinterpret_cast<const void*>(indices.data()),
-                 GL_DYNAMIC_DRAW);
+                 GL_STATIC_DRAW);
 
     Packet::Bind();
 
