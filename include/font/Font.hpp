@@ -54,14 +54,20 @@ class Font {
    *  @returns A 3D mesh corresponding with the desired text. Texture coordinates correspond with the
    *           glyph atlas (see GetGlyphAtlas()).
    */ 
-  model::Mesh<storage::VertexPacket2D> GetTextGeometry(const std::string& text, float size_pt);
+  model::Mesh<storage::VertexPacket2D> GetTextGeometry(const std::string& text, float size_pt) const;
   // probably add a param for some simple font formatting :)
 
   /**
    *  Gets the glyph atlas associated with this font.
    *  @returns a GL descriptor associated with the underlying font atlas.
    */ 
-  GLuint GetGlyphAtlas();
+  GLuint GetGlyphAtlas() const;
+
+  ~Font();
+  Font(const Font& other) = delete;
+  Font& operator=(const Font& other) = delete;
+  Font(Font&& other);
+  Font& operator=(Font&& other);
  private:
   // bounds for glyphs
   const char glyph_lower_ = 0x20;
@@ -93,7 +99,6 @@ class Font {
   std::shared_ptr<FTLibWrapper> ft_lib_;
   // static mutex for shared commands
   static std::mutex ft_lib_lock_;
-  FT_Face face_;
   glyph_info* glyph_cache_;
   GLuint glyph_texture_;
 

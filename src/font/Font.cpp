@@ -21,6 +21,7 @@ std::weak_ptr<FTLibWrapper> Font::lib_singleton_;
 // attempt to create the lib at the same time.
 Font::Font(const std::string& font_path) {
   FT_Error e;
+  FT_Face face;
 
   {
     std::lock_guard<std::mutex> lock(ft_lib_lock_);
@@ -29,7 +30,7 @@ Font::Font(const std::string& font_path) {
       lib_singleton_ = ft_lib_;
     }
 
-    e = FT_New_Face(ft_lib_->lib, font_path.c_str(), 0, &face_);
+    e = FT_New_Face(ft_lib_->lib, font_path.c_str(), 0, &face);
     BOOST_LOG_TRIVIAL(trace) << font_path;
     if (e) {
       // complain some more :/
@@ -43,7 +44,7 @@ Font::Font(const std::string& font_path) {
 
   // what should char size be?
   // let's go with 256px for now
-  e = FT_Set_Char_Size(face_, 0, bitmap_desired_scale * 64, 72, 72);
+  e = FT_Set_Char_Size(face, 0, bitmap_desired_scale * 64, 72, 72);
 
   // create an array of glyphs we can use from here on out
 
@@ -58,14 +59,14 @@ Font::Font(const std::string& font_path) {
   FT_GlyphSlot temp_glyph = nullptr;
   FT_UInt glyph_index;
   for (char i = glyph_lower_; i <= glyph_upper_; i++) {
-    glyph_index = FT_Get_Char_Index(face_, i);
-    e = FT_Load_Glyph(face_, glyph_index, FT_LOAD_DEFAULT);
+    glyph_index = FT_Get_Char_Index(face, i);
+    e = FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
     if (e) {
       BOOST_LOG_TRIVIAL(warning) << "Could not load char " << i << " -- skipping...";
       continue;
     }
 
-    temp_glyph = face_->glyph;
+    temp_glyph = face->glyph;
     height_px = std::max(height_px, temp_glyph->bitmap.rows);
     width_px += (temp_glyph->bitmap.width + 1);
   }
@@ -90,8 +91,8 @@ Font::Font(const std::string& font_path) {
   glyph_info temp_info;
 
   for (char i = glyph_lower_; i <= glyph_upper_; i++) {
-    glyph_index = FT_Get_Char_Index(face_, i);
-    e = FT_Load_Glyph(face_, glyph_index, FT_LOAD_RENDER);
+    glyph_index = FT_Get_Char_Index(face, i);
+    e = FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER);
     if (e) {
       // should have already been handled.
       temp_info.valid = false;
@@ -105,7 +106,7 @@ Font::Font(const std::string& font_path) {
     }
 
     temp_info.valid = true;
-    temp_glyph = face_->glyph;
+    temp_glyph = face->glyph;
     glTexSubImage2D(GL_TEXTURE_2D, 
                     0,
                     width_px,
@@ -131,11 +132,6 @@ Font::Font(const std::string& font_path) {
 
     width_px += (temp_glyph->bitmap.width + 1);
   }
-  
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
   /**
    * TODO: can we be done with the face after ctor?
@@ -143,12 +139,22 @@ Font::Font(const std::string& font_path) {
    * because it saves us lib constructions, the point is solely
    * to ensure that we have a lib to start, and destroy it before we're done.
    */
+  {
+    std::lock_guard<std::mutex> lock(ft_lib_lock_);
+    FT_Done_Face(face);
+  }
+  
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
 }
 
 // advance is stored in 1/64 pixels
 #define ADVANCE_SCALE 64.0f
 
-model::Mesh<storage::VertexPacket2D> Font::GetTextGeometry(const std::string& text, float size_pt) {
+model::Mesh<storage::VertexPacket2D> Font::GetTextGeometry(const std::string& text, float size_pt) const {
   // scales our fonts down to screenspace scale (roughly:)
   const float SCREENSPACE_FAC = (960.0f * bitmap_desired_scale) / size_pt;
   
@@ -204,8 +210,46 @@ model::Mesh<storage::VertexPacket2D> Font::GetTextGeometry(const std::string& te
   return result;
 }
 
-GLuint Font::GetGlyphAtlas() {
+GLuint Font::GetGlyphAtlas() const {
   return glyph_texture_;
+}
+
+Font::~Font() {
+  if (glyph_cache_) {
+    delete[] glyph_cache_;
+  }
+
+  if (glyph_texture_ != 0) {
+    glDeleteTextures(1, &glyph_texture_);
+  }
+}
+
+Font::Font(Font&& other) {
+  ft_lib_ = other.ft_lib_;
+  glyph_cache_ = other.glyph_cache_;
+  other.glyph_cache_ = nullptr;
+  glyph_texture_ = other.glyph_texture_;
+  other.glyph_texture_ = 0;
+  atlas_width = other.atlas_width;
+  atlas_height = other.atlas_height;
+}
+
+Font& Font::operator=(Font&& other) {
+  if (glyph_cache_ != nullptr) {
+    delete[] glyph_cache_;
+  }
+
+  if (glyph_texture_ != 0) {
+    glDeleteTextures(1, &glyph_texture_);
+  }
+
+  glyph_cache_ = other.glyph_cache_;
+  other.glyph_cache_ = nullptr;
+  glyph_texture_ = other.glyph_texture_;
+  other.glyph_texture_ = 0;
+  atlas_width = other.atlas_width;
+  atlas_height = other.atlas_height;
+  return *this;
 }
 
 }
