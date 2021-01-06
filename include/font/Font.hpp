@@ -19,15 +19,18 @@ namespace font {
 
 struct glyph_info {
   // dimensions of glyphs in pixels
-  float width;
-  float height;
+  int width;
+  int height;
 
   // x/y offset from text origin
-  float bearing_x;
-  float bearing_y;
+  int bearing_x;
+  int bearing_y;
 
-  // dist to advance origin by for next char
+  // dist to advance origin by for next char (horiz only for now)
   float advance;
+
+  // for texture lookup: distance from tex origin (y origin is always 0)
+  float origin_x;
 };
 
 /**
@@ -44,10 +47,12 @@ class Font {
   /**
    *  Generates and returns geometry from text. Initial origin is always <0, 0, 0>, and the glyphs are projected onto the XY plane.
    *  @param text - the message being read.
+   *  @param size_pt - the size of the text, in pt.
    *  @returns A 3D mesh corresponding with the desired text. Texture coordinates correspond with the
    *           glyph atlas (see GetGlyphAtlas()).
    */ 
-  model::Mesh<storage::VertexPacket3D> GetTextGeometry(const std::string& text);
+  model::Mesh<storage::VertexPacket3D> GetTextGeometry(const std::string& text, float size_pt);
+  // probably add a param for some simple font formatting :)
 
   /**
    *  Gets the glyph atlas associated with this font.
@@ -77,13 +82,15 @@ class Font {
    *  If that fails, then we create a new instance of `Library,` and continue using the lock.
    *  If it succeeds, then we store the resulting shared ptr in the class.
    */ 
-  // static weak ptr for library class (needs to be raii)
+  // weak ptr to static shared lib
   static std::weak_ptr<FTLibWrapper> lib_singleton_;
+  // local shared ptr to lib
   std::shared_ptr<FTLibWrapper> ft_lib_;
-  // static mutex for risky shared commands
+  // static mutex for shared commands
   static std::mutex ft_lib_lock_;
-  FT_Face face_;                              // face handle
-
+  FT_Face face_;
+  glyph_info* glyph_cache_;
+  GLuint glyph_texture_;
 };
 
 }
