@@ -65,9 +65,10 @@ spotlight_info SpotLight::GetSpotLightInfo() {
 
   // initial direction is always the -Z axis, like a camera.
   res.direction = glm::normalize(glm::mat3(GetTransformationMatrix()) * glm::vec3(0, 0, -1)); 
-  if (auto p = GetParent()) {
+  if (auto p = std::dynamic_pointer_cast<GameObject>(GetParent())) {
+    
     // position is in parent object coords -- transform to world
-    res.position = (glm::mat3(GetParent()->GetTransformationMatrix()) * GetPosition());
+    res.position = (glm::mat3(p->GetTransformationMatrix()) * GetPosition());
   } else {
     // object is root -- already specified in world coords
     res.position = GetPosition();

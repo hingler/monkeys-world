@@ -54,16 +54,16 @@ void GameObject::AddChild(std::shared_ptr<GameObject> child) {
   children_.push_back(child);
 }
 
-GameObject* GameObject::GetChild(uint64_t id) {
+std::shared_ptr<Object> GameObject::GetChild(uint64_t id) {
   // direct nesting will probably be common
   for (auto child : children_) {
     if (child->GetId() == id) {
-      return child.get();
+      return child;
     }
   }
 
   // check for multiple nesting levels
-  GameObject* result;
+  std::shared_ptr<Object> result;
   for (auto child : children_) {
     result = child->GetChild(id);
     if (result != nullptr) {
@@ -86,9 +86,9 @@ std::vector<std::weak_ptr<Object>> GameObject::GetChildren() {
   return res;
 }
 
-GameObject* GameObject::GetParent() {
+std::shared_ptr<Object> GameObject::GetParent() {
   auto temp = parent_.lock();
-  return temp.get();
+  return temp;
 }
 
 void GameObject::SetPosition(const glm::vec3& new_pos) {
@@ -227,8 +227,8 @@ GameObject& GameObject::operator=(GameObject&& other) {
 }
 
 std::shared_ptr<Camera> GameObject::GetActiveCamera() {
-  GameObject* parent;
-  if ((parent = GetParent()) != nullptr) {
+  std::shared_ptr<GameObject> parent;
+  if ((parent = std::dynamic_pointer_cast<GameObject>(GetParent())) != nullptr) {
     return parent->GetActiveCamera();
   }
 

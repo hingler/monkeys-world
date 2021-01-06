@@ -46,14 +46,14 @@ class GameObject : public Object, public std::enable_shared_from_this<GameObject
    *  @param id - the ID of the desired child.
    *  @returns Pointer to child, or NULL if invalid.
    */ 
-  GameObject* GetChild(uint64_t id) override;
+  std::shared_ptr<Object> GetChild(uint64_t id) override;
 
   std::vector<std::weak_ptr<Object>> GetChildren() override;
 
   /**
    *  Returns ptr to the object associated with this object.
    */ 
-  GameObject* GetParent() override;
+  std::shared_ptr<Object> GetParent() override;
 
   /**
    *  Returns ptr to context.

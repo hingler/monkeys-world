@@ -58,7 +58,7 @@ class Object {
    *  @param id - The ID of the desired child.
    *  @returns Pointer to child, or NULL if invalid.
    */ 
-  virtual Object* GetChild(uint64_t id) = 0;
+  virtual std::shared_ptr<Object> GetChild(uint64_t id) = 0;
 
   /**
    *  Returns a list of all children.
@@ -68,7 +68,7 @@ class Object {
   /**
    *  Returns ptr to the parent object.
    */ 
-  virtual Object* GetParent() = 0;
+  virtual std::shared_ptr<Object> GetParent() = 0;
 
   /**
    *  Get the ID currently associated with an object.
