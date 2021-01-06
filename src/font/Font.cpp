@@ -1,4 +1,5 @@
 #include <font/Font.hpp>
+#include <font/exception/BadFontPathException.hpp>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -10,6 +11,7 @@ namespace font {
 
 using model::Mesh;
 using storage::VertexPacket2D;
+using exception::BadFontPathException;
 
 std::mutex Font::ft_lib_lock_;
 std::weak_ptr<FTLibWrapper> Font::lib_singleton_;
@@ -32,7 +34,7 @@ Font::Font(const std::string& font_path) {
     if (e) {
       // complain some more :/
       BOOST_LOG_TRIVIAL(error) << "Could not create new face";
-      exit(EXIT_FAILURE);
+      throw BadFontPathException("Could not create new face");
     }
 
   }
@@ -93,6 +95,7 @@ Font::Font(const std::string& font_path) {
     if (e) {
       // should have already been handled.
       temp_info.valid = false;
+      glyph_cache_[i - glyph_lower_] = temp_info;
       continue;
     }
 
