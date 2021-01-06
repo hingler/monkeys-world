@@ -15,11 +15,14 @@ const char* shader_vert =
 \n                                                        \
 \n                                                        \
 layout(location = 0) in vec4 position;\n                  \
+layout(location = 1) in vec4 texcoord;\n                  \
 \n                                                        \
 layout(location = 0) out vec4 position_output;\n          \
+layout(location = 1) out vec4 texcoord_output;\n          \
 \n                                                        \
 void main() {\n                                           \
   position_output = position;\n                           \
+  texcoord_output = texcoord;\n                           \
   gl_Position = position;\n                               \
 }\n                                                       \
 ";
@@ -29,6 +32,7 @@ const char* shader_frag =
 \n                                                        \
 \n                                                        \
 layout(location = 0) in vec4 position;\n                  \
+layout(location = 1) in vec4 texcoord;\n                  \
 \n                                                        \
 layout(location = 0) uniform sampler2D glyph_texture;\n   \
 layout(location = 1) uniform float time;\n                \
@@ -36,12 +40,14 @@ layout(location = 1) uniform float time;\n                \
 layout(location = 0) out vec4 fragColor;\n                \
 \n                                                        \
 void main() {\n                                                             \
-  fragColor = vec4(texture(glyph_texture, position.xy * vec2(0.0625, -1.0) + vec2(0.5 + (time / 64.0), 0.0)).r, 0.1, 0.2, 1.0);\n       \
+  float texval = texture(glyph_texture, texcoord.xy).r;\n\
+  fragColor = vec4(texval, 0.0, 0.0, texval);\n       \
 }\n                                                                         \
 ";
 
 using ::monkeysworld::font::Font;
 using namespace ::monkeysworld::shader::gldebug;
+using namespace ::monkeysworld;
 
 void errorfun(int a, const char* b) {
   std::cout << "error are occur" << std::endl;
@@ -69,7 +75,6 @@ int main(int argc, char** argv) {
   glfwMakeContextCurrent(win);
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-    std::cout << "call load faialed" << std::endl;
     glfwDestroyWindow(win);
     glfwTerminate();
     exit(EXIT_FAILURE);
@@ -127,9 +132,9 @@ int main(int argc, char** argv) {
   Font f("resources/Montserrat-Light.ttf");
   std::cout << "ok" << std::endl;
 
-  glBindBuffer(GL_ARRAY_BUFFER, buf);
-  glVertexAttribPointer(0, 2, GL_FLOAT, false, 2 * sizeof(float), (void*)0);
-  glEnableVertexAttribArray(0);
+  model::Mesh<storage::VertexPacket2D> the;
+
+  the.PointToVertexAttribs();
 
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, f.GetGlyphAtlas());
@@ -141,14 +146,19 @@ int main(int argc, char** argv) {
   // the shit
   glUseProgram(prog);
   glfwSwapInterval(1);
-  std::cout << "ready to go" << std::endl;
   float time = 0.0;
+  glClearColor(0.1, 0.1, 0.1, 1.0);
+  int framecount = 0;
   while (!glfwWindowShouldClose(win)) {
     time += 0.01;
-    glProgramUniform1f(prog, 1, time);
-    glViewport(0, 0, 1024, 768);
+    std::string test = std::to_string(framecount++);
+    the = f.GetTextGeometry(test, 96); 
+    glProgramUniform1f(prog, 1.0f, time);
+    glViewport(0, 0, 1024, 1024);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    the.PointToVertexAttribs();
+
+    glDrawElements(GL_TRIANGLES, the.GetIndexCount(), GL_UNSIGNED_INT, (void*)0);
     glfwSwapBuffers(win);
     glfwPollEvents();
   }
