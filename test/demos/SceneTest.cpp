@@ -15,6 +15,8 @@
 #include <critter/GameObject.hpp>
 #include <critter/Model.hpp>
 
+#include <font/TextObject.hpp>
+
 #include <shader/light/SpotLight.hpp>
 
 #include <shader/materials/MatteMaterial.hpp>
@@ -41,6 +43,8 @@ using ::monkeysworld::shader::light::spotlight_info;
 using ::monkeysworld::shader::materials::MatteMaterial;
 
 using ::monkeysworld::audio::AudioFiletype;
+
+using ::monkeysworld::font::TextObject;
 
 class RatModel : public Model {
  public:
@@ -105,6 +109,13 @@ class TestScene : public Scene {
     light->SetPosition(glm::vec3(1, 4, -2));
     light->SetDiffuseIntensity(1.0);
     game_object_root_->AddChild(light);
+
+    auto t = std::make_shared<TextObject>(ctx, "resources/Montserrat-Light.ttf");
+    t->SetText("hello spongebob");
+    t->SetTextColor(glm::vec4(1.0, 0.5, 1.0, 1.0));
+    t->SetTextSize(384.0f);
+    t->SetPosition(glm::vec3(2, 0, 0));
+    rat->AddChild(t);
   }
 
   std::shared_ptr<Object> GetGameObjectRoot() {

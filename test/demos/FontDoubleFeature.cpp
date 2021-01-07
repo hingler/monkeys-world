@@ -132,9 +132,9 @@ int main(int argc, char** argv) {
   Font f("resources/Montserrat-Light.ttf");
   std::cout << "ok" << std::endl;
 
-  model::Mesh<storage::VertexPacket2D> the = f.GetTextGeometry("hello spongebob", 120);
+  auto the = f.GetTextGeometry("hello spongebob", 120);
 
-  the.PointToVertexAttribs();
+  the->PointToVertexAttribs();
 
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, f.GetGlyphAtlas());
@@ -157,14 +157,14 @@ int main(int argc, char** argv) {
     the = f.GetTextGeometry(test, 96); 
     glProgramUniform1f(prog, 1.0f, time);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    the.PointToVertexAttribs();
+    the->PointToVertexAttribs();
     glUseProgram(prog);
     // streaming on discord for some reason unbinds this active texture
     // be sure to bind it when rendering in the real world! :)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, f.GetGlyphAtlas());
     glUniform1i(0, 0);
-    glDrawElements(GL_TRIANGLES, the.GetIndexCount(), GL_UNSIGNED_INT, (void*)0);
+    glDrawElements(GL_TRIANGLES, the->GetIndexCount(), GL_UNSIGNED_INT, (void*)0);
     glfwSwapBuffers(win);
     glfwPollEvents();
   }

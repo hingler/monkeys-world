@@ -23,6 +23,7 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/shader/ShaderProgram.cpp
                                     ${SRC_DIR}/shader/materials/MatteMaterial.cpp
                                     ${SRC_DIR}/shader/materials/ShadowMapMaterial.cpp
+                                    ${SRC_DIR}/shader/materials/TextMaterial.cpp
 
                                     ${SRC_DIR}/file/CacheStreambuf.cpp
                                     ${SRC_DIR}/file/CachedFileLoader.cpp
@@ -52,7 +53,9 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/audio/AudioManager.cpp
                                     ${SRC_DIR}/_stb_libs/stb_vorbis.c
                                     
-                                    ${SRC_DIR}/font/Font.cpp)
+                                    ${SRC_DIR}/font/Font.cpp
+                                    ${SRC_DIR}/font/Text.cpp
+                                    ${SRC_DIR}/font/TextObject.cpp)
 
 add_library(MonkeysWorld::Engine ALIAS monkeys-world-components)
 
