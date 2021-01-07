@@ -159,7 +159,7 @@ std::shared_ptr<model::Mesh<storage::VertexPacket2D>> Font::GetTextGeometry(cons
   const float SCREENSPACE_FAC = (960.0f * bitmap_desired_scale) / size_pt;
   
   std::shared_ptr<Mesh<VertexPacket2D>> result = std::make_shared<Mesh<VertexPacket2D>>();
-  float origin_x = -0.8f;
+  float origin_x = 0.0f;
   // bitmap, bearing are in pixels
   // advance is in 1/64 pixels.
 
