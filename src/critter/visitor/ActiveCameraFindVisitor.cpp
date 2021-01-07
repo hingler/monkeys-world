@@ -41,6 +41,13 @@ void ActiveCameraFindVisitor::Visit(std::shared_ptr<shader::light::SpotLight> o)
   }
 }
 
+void ActiveCameraFindVisitor::Visit(std::shared_ptr<font::TextObject> o) {
+  if (!cam_found_.load()) {
+    auto children = o->GetChildren();
+    ActiveCameraVisitChildren(children);
+  }
+}
+
 std::shared_ptr<GameCamera> ActiveCameraFindVisitor::GetActiveCamera() {
   if (cam_found_) {
     return active_camera_;

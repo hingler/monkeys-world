@@ -29,6 +29,7 @@ class ActiveCameraFindVisitor : public critter::Visitor {
   void Visit(std::shared_ptr<GameObject> o) override;
   void Visit(std::shared_ptr<GameCamera> o) override;
   void Visit(std::shared_ptr<shader::light::SpotLight> o) override;
+  void Visit(std::shared_ptr<font::TextObject> o) override;
 
   /**
    *  Returns the active camera, or nullptr if it cannot be found.

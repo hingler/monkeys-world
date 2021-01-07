@@ -19,20 +19,22 @@ void LightVisitor::Visit(std::shared_ptr<Object> o) {
 }
 
 void LightVisitor::Visit(std::shared_ptr<GameObject> o) {
-  VisitChildren(std::static_pointer_cast<Object>(o));
+  VisitChildren(o);
 }
 
 void LightVisitor::Visit(std::shared_ptr<GameCamera> o) {
-  VisitChildren(std::static_pointer_cast<Object>(o));
+  VisitChildren(o);
 }
 
-
+void LightVisitor::Visit(std::shared_ptr<font::TextObject> o) {
+  VisitChildren(o);
+}
 
 void LightVisitor::Visit(std::shared_ptr<SpotLight> o) {
   // add to the spotlight list
   // i already know it's a spotlight, so this should be fine
   spotlights_.push_back(o);
-  VisitChildren(std::static_pointer_cast<Object>(o));
+  VisitChildren(o);
 }
 
 void LightVisitor::VisitChildren(std::shared_ptr<Object> o) {

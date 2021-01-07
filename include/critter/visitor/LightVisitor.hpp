@@ -30,6 +30,8 @@ class LightVisitor : public critter::Visitor {
    *  @param o - visited spotlight.
    */ 
   void Visit(std::shared_ptr<shader::light::SpotLight> o) override;
+
+  void Visit(std::shared_ptr<font::TextObject> o) override;
   
   /**
    *  Resets the state of the visitor.
