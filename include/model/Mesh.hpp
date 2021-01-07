@@ -174,7 +174,7 @@ class Mesh {
     data_ = other.data_;
     indices_ = other.indices_;
     switch (context_->GetType()) {
-      case GL:
+      case gl:
         context_ = std::make_unique<VertexDataContextGL<Packet>>();
       default:
         context_ = std::unique_ptr<VertexDataContext<Packet>>(nullptr);
@@ -187,7 +187,7 @@ class Mesh {
     data_ = other.data_;
     indices_ = other.indices_;
     switch (context_->GetType()) {
-      case GL:
+      case gl:
         context_ = std::make_unique<VertexDataContextGL<Packet>>();
       default:
         context_ = std::unique_ptr<VertexDataContext<Packet>>(nullptr);
