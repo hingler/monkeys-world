@@ -56,6 +56,9 @@ void TextMaterial::SetTextColor(const glm::vec4& color) {
 
 void TextMaterial::SetGlyphTexture(GLuint tex) {
   texture_ = tex;
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, texture_);
+  glProgramUniform1i(text_prog_.GetProgramDescriptor(), 2, 0);
 }
 
 }
