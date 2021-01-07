@@ -48,7 +48,7 @@ float Text::GetTextSize() {
   return size_;
 }
 
-model::Mesh<storage::VertexPacket2D> Text::GetGeometry() {
+std::shared_ptr<model::Mesh<storage::VertexPacket2D>> Text::GetGeometry() {
   if (!mesh_valid_) {
     BOOST_LOG_TRIVIAL(trace) << "regenerating geometry...";
     mesh_ = font_->GetTextGeometry(text_, size_);

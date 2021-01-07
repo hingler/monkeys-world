@@ -54,7 +54,7 @@ class Font {
    *  @returns A 3D mesh corresponding with the desired text. Texture coordinates correspond with the
    *           glyph atlas (see GetGlyphAtlas()).
    */ 
-  model::Mesh<storage::VertexPacket2D> GetTextGeometry(const std::string& text, float size_pt) const;
+  std::shared_ptr<model::Mesh<storage::VertexPacket2D>> GetTextGeometry(const std::string& text, float size_pt) const;
   // probably add a param for some simple font formatting :)
 
   /**

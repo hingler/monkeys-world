@@ -4,6 +4,8 @@
 #include <engine/Context.hpp>
 #include <font/Font.hpp>
 
+#include <memory>
+
 namespace monkeysworld {
 namespace font {
 
@@ -67,7 +69,7 @@ class Text {
   /**
    *  @returns geometry corresponding with the text.
    */ 
-  model::Mesh<storage::VertexPacket2D> GetGeometry();
+  std::shared_ptr<model::Mesh<storage::VertexPacket2D>> GetGeometry();
 
   /**
    *  @returns descriptor associated with glyph atals.
@@ -80,7 +82,7 @@ class Text {
   std::shared_ptr<Font> font_;
   float size_;
   bool mesh_valid_;
-  model::Mesh<storage::VertexPacket2D> mesh_;
+  std::shared_ptr<model::Mesh<storage::VertexPacket2D>> mesh_;
 };
 
 }
