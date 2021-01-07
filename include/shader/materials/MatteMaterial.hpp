@@ -17,7 +17,7 @@ namespace monkeysworld {
 namespace shader {
 namespace materials {
 
-class MatteMaterial : ::monkeysworld::shader::Material {
+class MatteMaterial : public ::monkeysworld::shader::Material {
  public:
   /**
    *  Creates a new MatteMaterial instance.
