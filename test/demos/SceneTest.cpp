@@ -83,6 +83,18 @@ class RatModel : public Model {
   MatteMaterial m;
 };
 
+class FrameText : public TextObject {
+ public:
+  FrameText(Context* ctx) : TextObject(ctx, "resources/montserrat-light.ttf") { a = 0; }
+  void Update() override {
+    a += GetContext()->GetDeltaTime();
+    SetText(std::to_string(a));
+    SetRotation(glm::vec3(0, a / 2.5, 0));
+  }
+ private:
+  float a;
+};
+
 /**
  *  Simple test scene
  */ 
@@ -103,6 +115,7 @@ class TestScene : public Scene {
     cam->SetFov(45.0f);
     cam->SetActive(true);
     auto rat = std::make_shared<RatModel>(ctx);
+    rat->SetPosition(glm::vec3(0, 0, 3));
     game_object_root_->AddChild(rat);
 
     auto light = std::make_shared<SpotLight>(ctx);
@@ -110,8 +123,7 @@ class TestScene : public Scene {
     light->SetDiffuseIntensity(1.0);
     game_object_root_->AddChild(light);
 
-    auto t = std::make_shared<TextObject>(ctx, "resources/Montserrat-Light.ttf");
-    t->SetText("hello spongebob");
+    auto t = std::make_shared<FrameText>(ctx);
     t->SetTextColor(glm::vec4(1.0, 0.5, 1.0, 1.0));
     t->SetTextSize(384.0f);
     t->SetPosition(glm::vec3(2, 0, 0));
