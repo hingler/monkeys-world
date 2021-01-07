@@ -22,5 +22,5 @@ void main() {
   float n_b = max(dot(light_vector.xyz, normal), 0.0);
   // no attenuation yet
   vec4 col = surface_color * (n_b * light.intensity);
-  fragColor = col;
+  fragColor = vec4(col.xyz, 1.0);
 }
