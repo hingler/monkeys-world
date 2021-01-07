@@ -66,15 +66,17 @@ class Text {
    */ 
   float GetTextSize();
 
-  /**
-   *  @returns geometry corresponding with the text.
-   */ 
-  std::shared_ptr<model::Mesh<storage::VertexPacket2D>> GetGeometry();
 
   /**
    *  @returns descriptor associated with glyph atals.
    */ 
   GLuint GetTexture();
+
+ protected:
+  /**
+   *  @returns geometry corresponding with the text.
+   */ 
+  std::shared_ptr<model::Mesh<storage::VertexPacket2D>> GetGeometry();
 
  private:
   std::string text_;
