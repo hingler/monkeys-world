@@ -27,6 +27,7 @@ add_library(monkeys-world-components
 
                                     ${SRC_DIR}/file/CacheStreambuf.cpp
                                     ${SRC_DIR}/file/CachedFileLoader.cpp
+                                    ${SRC_DIR}/file/LoaderThreadPool.cpp
 
                                     ${SRC_DIR}/utils/FileUtils.cpp
                                     ${SRC_DIR}/utils/IDGenerator.cpp
@@ -188,6 +189,11 @@ if(compile_tests)
   target_include_directories(camera-find-visitor-test PRIVATE ${INC_DIR})
   target_link_libraries(camera-find-visitor-test GTest::gtest_main monkeys-world-components)
   add_test(NAME camera-find-visitor-test COMMAND camera-find-visitor-test
+             WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
+  
+  add_executable(thread-pool-test test/LoaderThreadPoolTest.cpp)
+  target_link_libraries(thread-pool-test GTest::gtest_main monkeys-world-components)
+  add_test(NAME thread-pool-test COMMAND thread-pool-test
              WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
 endif()
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
