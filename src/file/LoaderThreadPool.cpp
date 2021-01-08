@@ -8,21 +8,21 @@ LoaderThreadPool::LoaderThreadPool(int num_threads) {
   flags_ = new std::atomic_flag[num_threads];
   num_threads_ = num_threads;
   for (int i = 0; i < num_threads_; i++) {
-    threads_[i] = std::thread(&threadfunc_, this, flags_ + i);
+    threads_[i] = std::thread(&LoaderThreadPool::threadfunc_, this, flags_ + i);
   }
 }
 
 void LoaderThreadPool::AddTaskToQueue(std::function<void()> func) {
-  std::unique_lock(queue_lock_);
+  std::unique_lock<std::mutex>(queue_lock_);
   task_queue_.push(func);
   task_condvar_.notify_all();
 }
 
 void LoaderThreadPool::threadfunc_(std::atomic_flag* flag) {
   std::function<void()> task;
-  while (flag->test_and_set()) {
+  for (;;) {
     {
-      std::unique_lock queue_lock(queue_lock_);
+      std::unique_lock<std::mutex> queue_lock(queue_lock_);
       while (task_queue_.empty()) {
         if (!flag->test_and_set()) {
           return;
