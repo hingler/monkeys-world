@@ -14,7 +14,6 @@
 #include <engine/Context.hpp>
 
 #include <file/FileLoader.hpp>
-#include "../SimpleFileLoader.hpp"
 
 #include <storage/VertexPacketTypes.hpp>
 
