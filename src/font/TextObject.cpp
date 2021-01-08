@@ -20,9 +20,7 @@ void TextObject::PrepareAttributes() {
 }
 
 void TextObject::RenderMaterial(const engine::RenderContext& rc) {
-  // TODO: This can prob be consistent throughout the renderer
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  // TODO: manage blend modes efficiently
   mat.SetModelTransforms(GetTransformationMatrix());
   mat.SetCameraTransforms(rc.GetActiveCamera().view_matrix);
   mat.SetGlyphTexture(GetTexture());

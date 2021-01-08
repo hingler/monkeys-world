@@ -9,5 +9,9 @@ layout(location = 0) out vec4 fragColor;
 
 void main() {
   float texval = texture(glyph_texture, texcoord).r;
+  if (texval < 0.05f) {
+    discard;
+  }
+  
   fragColor = texval * text_color;
 }
