@@ -4,7 +4,7 @@
 #include <shader/ShaderProgram.hpp>
 
 #include <file/FileLoader.hpp>
-#include "SimpleFileLoader.hpp"
+#include <file/CachedFileLoader.hpp>
 
 #include <gtest/gtest.h>
 #include <glad/glad.h>
@@ -17,6 +17,7 @@ namespace monkeysworldtest {
 using monkeysworld::shader::ShaderProgramBuilder;
 using monkeysworld::shader::ShaderProgram;
 using monkeysworld::file::FileLoader;
+using monkeysworld::file::CachedFileLoader;
 
 class ShaderBuilderTests : public ::testing::Test {
  public:
@@ -27,7 +28,9 @@ class ShaderBuilderTests : public ::testing::Test {
       // could not initialize glfw, required for shader funcs
       exit(EXIT_FAILURE);
     }
-    FileLoader* loader_ptr = new SimpleFileLoader();
+
+    // you're the one behind all of this
+    CachedFileLoader* loader_ptr = new CachedFileLoader("resources/cache/test_doid.cache");
     loader = std::shared_ptr<FileLoader>(loader_ptr);
 
     test_window = glfwCreateWindow(800, 600, "temp", NULL, NULL);
