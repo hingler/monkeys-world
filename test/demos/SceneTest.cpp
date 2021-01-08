@@ -46,6 +46,29 @@ using ::monkeysworld::audio::AudioFiletype;
 
 using ::monkeysworld::font::TextObject;
 
+class RatModel2 : public Model {
+ public:
+  RatModel2(Context* ctx) : Model(ctx), m(ctx) {
+    SetMesh(Model::FromObjFile(ctx, "resources/test/untitled4.obj"));
+  }
+
+  void RenderMaterial(const RenderContext& rc) override {
+    glm::mat4 tf_matrix = GetTransformationMatrix();
+    camera_info cam = rc.GetActiveCamera();
+    // matte material doesn't accept spotlights!
+    // TODO: modify material to accept different types of lights
+    m.SetSpotlights(rc.GetSpotlights());
+    spotlight_info i = rc.GetSpotlights()[0];
+    m.SetModelTransforms(tf_matrix);
+    m.SetCameraTransforms(cam.view_matrix);
+    m.SetSurfaceColor(glm::vec4(0.0, 1.0, 0.0, 1.0));
+    m.UseMaterial();
+    Draw();
+  }
+ private:
+  MatteMaterial m;
+};
+
 class RatModel : public Model {
  public:
   RatModel(Context* ctx) : Model(ctx), rot_(0), m(ctx) {
@@ -123,11 +146,17 @@ class TestScene : public Scene {
     light->SetDiffuseIntensity(1.0);
     game_object_root_->AddChild(light);
 
+    auto rat_two = std::make_shared<RatModel2>(ctx);
+    rat_two->SetScale(glm::vec3(0.5, 0.5, 0.5));
+    rat_two->SetPosition(glm::vec3(0, 0, -1));
+
     auto t = std::make_shared<FrameText>(ctx);
     t->SetTextColor(glm::vec4(1.0, 0.5, 1.0, 1.0));
     t->SetTextSize(384.0f);
     t->SetPosition(glm::vec3(2, 0, 0));
     rat->AddChild(t);
+    
+    t->AddChild(rat_two);
   }
 
   std::shared_ptr<Object> GetGameObjectRoot() {
