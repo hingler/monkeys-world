@@ -184,10 +184,11 @@ std::shared_ptr<Mesh<VertexPacket3D>> Model::FromObjFile(const std::string& path
     }
   }
   
-  std::shared_ptr<model::Mesh<>> mesh;
+  std::shared_ptr<model::Mesh<>> mesh = std::make_shared<model::Mesh<>>();
 
   VertexPacket3D temp_data;
   BOOST_LOG_TRIVIAL(trace) << "logged " << position_data.size() << "pos, " << texcoord_data.size() << "tex, " << normal_data.size() << "norm.";
+  BOOST_LOG_TRIVIAL(trace) << vert_triplets_ordered.size() << "vertices in total";
   for (auto vert_triplet : vert_triplets_ordered) {
     if (vert_triplet.v_index == 0) {
       temp_data.position = glm::vec3(0);

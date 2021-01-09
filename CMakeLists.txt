@@ -28,6 +28,7 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/file/CacheStreambuf.cpp
                                     ${SRC_DIR}/file/CachedFileLoader.cpp
                                     ${SRC_DIR}/file/LoaderThreadPool.cpp
+                                    ${SRC_DIR}/file/ModelLoader.cpp
 
                                     ${SRC_DIR}/utils/FileUtils.cpp
                                     ${SRC_DIR}/utils/IDGenerator.cpp
@@ -195,6 +196,11 @@ if(compile_tests)
   target_link_libraries(thread-pool-test GTest::gtest_main monkeys-world-components)
   add_test(NAME thread-pool-test COMMAND thread-pool-test
              WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
+
+  add_executable(model-loader-test test/ModelLoaderTest.cpp)
+  target_link_libraries(model-loader-test GTest::gtest_main monkeys-world-components)
+  add_test(NAME model-loader-test COMMAND model-loader-test
+            WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
 endif()
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
