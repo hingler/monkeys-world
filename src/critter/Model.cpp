@@ -20,6 +20,12 @@ using boost::lexical_cast;
 
 using engine::Context;
 
+////////////////////////////////////////////////////////////////////////////////
+//
+// This code is being moved over to file/ModelLoader.cpp. Don't use it :)
+//
+////////////////////////////////////////////////////////////////////////////////
+
 /**
  *  Hashable struct which refers to position, normal, tex indices when loading from obj.
  */ 
@@ -73,6 +79,12 @@ static void InsertFaceIndices(std::unordered_map<vnt_triplet, unsigned int, vnt_
 static void TrimHeader(std::string& line);
 static data_type GetDataType(const std::string& line);
 
+////////////////////////////////////////////////////////////////////////////////
+//
+// DEPRECATED CONTENT ENDS HERE
+//
+////////////////////////////////////////////////////////////////////////////////
+
 Model::Model(Context* ctx) : GameObject(ctx) {}
 
 void Model::SetMesh(const std::shared_ptr<model::Mesh<>>& mesh) {
@@ -82,6 +94,12 @@ void Model::SetMesh(const std::shared_ptr<model::Mesh<>>& mesh) {
 std::shared_ptr<Mesh<>> Model::GetMesh() {
   return mesh_;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// This code is being migrated over to file/ModelLoader.cpp. Don't use it :)
+//
+////////////////////////////////////////////////////////////////////////////////
 
 std::shared_ptr<Mesh<VertexPacket3D>> Model::FromObjFile(Context* ctx, const std::string& path) {
   return FromObjFile(path);
@@ -286,6 +304,11 @@ static data_type GetDataType(const std::string& line) {
     return data_type::ignore;
   }
 }
+////////////////////////////////////////////////////////////////////////////////
+//
+// DEPRECATED CONTENT ENDS HERE
+//
+////////////////////////////////////////////////////////////////////////////////
 
 void Model::PrepareAttributes() {
   if (mesh_ != nullptr) {
