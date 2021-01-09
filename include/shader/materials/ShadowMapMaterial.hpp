@@ -1,7 +1,7 @@
 #ifndef SHADOW_MAP_MATERIAL_H_
 #define SHADOW_MAP_MATERIAL_H_
 
-#include <file/FileLoader.hpp>
+#include <file/CachedFileLoader.hpp>
 
 #include <shader/Material.hpp>
 #include <shader/ShaderProgram.hpp>

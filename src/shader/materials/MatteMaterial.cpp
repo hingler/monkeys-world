@@ -1,4 +1,4 @@
-#include <file/FileLoader.hpp>
+#include <file/CachedFileLoader.hpp>
 #include <shader/materials/MatteMaterial.hpp>
 #include <shader/ShaderProgram.hpp>
 #include <shader/ShaderProgramBuilder.hpp>
@@ -15,11 +15,11 @@ namespace shader {
 namespace materials {
 
 using engine::Context;
-using file::FileLoader;
+using file::CachedFileLoader;
 using shader::light::spotlight_info;
 
 MatteMaterial::MatteMaterial(Context* context) {
-  std::shared_ptr<FileLoader> loader = std::static_pointer_cast<FileLoader>(context->GetCachedFileLoader());
+  std::shared_ptr<CachedFileLoader> loader = std::static_pointer_cast<CachedFileLoader>(context->GetCachedFileLoader());
   matte_prog_ = ShaderProgramBuilder(loader)
                 .WithVertexShader("resources/glsl/matte-material/matte-material.vert")
                 .WithFragmentShader("resources/glsl/matte-material/matte-material.frag")

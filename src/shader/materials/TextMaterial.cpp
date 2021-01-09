@@ -9,11 +9,11 @@ namespace monkeysworld {
 namespace shader {
 namespace materials {
 
-using file::FileLoader;
+using file::CachedFileLoader;
 using engine::Context;
 
 TextMaterial::TextMaterial(Context* context) {
-  std::shared_ptr<FileLoader> loader = std::static_pointer_cast<FileLoader>(context->GetCachedFileLoader());
+  std::shared_ptr<CachedFileLoader> loader = std::static_pointer_cast<CachedFileLoader>(context->GetCachedFileLoader());
   text_prog_ = ShaderProgramBuilder(loader)
                  .WithVertexShader("resources/glsl/text-material/text-material.vert")
                  .WithFragmentShader("resources/glsl/text-material/text-material.frag")

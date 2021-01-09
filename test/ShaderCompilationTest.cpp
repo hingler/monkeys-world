@@ -3,7 +3,7 @@
 #include <shader/ShaderProgramBuilder.hpp>
 #include <shader/ShaderProgram.hpp>
 
-#include <file/FileLoader.hpp>
+#include <file/CachedFileLoader.hpp>
 #include <file/CachedFileLoader.hpp>
 
 #include <gtest/gtest.h>
@@ -16,12 +16,12 @@ namespace monkeysworldtest {
 
 using monkeysworld::shader::ShaderProgramBuilder;
 using monkeysworld::shader::ShaderProgram;
-using monkeysworld::file::FileLoader;
+using monkeysworld::file::CachedFileLoader;
 using monkeysworld::file::CachedFileLoader;
 
 class ShaderBuilderTests : public ::testing::Test {
  public:
-  std::shared_ptr<FileLoader> loader;
+  std::shared_ptr<CachedFileLoader> loader;
  protected:
   void SetUp() override {
     if (!glfwInit()) {
@@ -31,7 +31,7 @@ class ShaderBuilderTests : public ::testing::Test {
 
     // you're the one behind all of this
     CachedFileLoader* loader_ptr = new CachedFileLoader("resources/cache/test_doid.cache");
-    loader = std::shared_ptr<FileLoader>(loader_ptr);
+    loader = std::shared_ptr<CachedFileLoader>(loader_ptr);
 
     test_window = glfwCreateWindow(800, 600, "temp", NULL, NULL);
     if (test_window == NULL) {

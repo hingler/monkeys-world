@@ -6,7 +6,7 @@
 #include <glad/glad.h>
 
 #include <shader/ShaderProgram.hpp>
-#include <file/FileLoader.hpp>
+#include <file/CachedFileLoader.hpp>
 
 namespace monkeysworld {
 namespace shader {
@@ -37,7 +37,7 @@ class ShaderProgramBuilder {
    *  Creates a new shader program builder, using `loader` to access resources.
    *  @param loader - The file loader used to access resources.
    */ 
-  ShaderProgramBuilder(std::shared_ptr<file::FileLoader> loader);
+  ShaderProgramBuilder(std::shared_ptr<file::CachedFileLoader> loader);
 
   ShaderProgramBuilder& WithVertexShader(const std::string& vertex_path);
   ShaderProgramBuilder& WithGeometryShader(const std::string& geometry_path);
@@ -73,7 +73,7 @@ class ShaderProgramBuilder {
   ShaderPacket shaders_;
 
   // cache loader
-  std::shared_ptr<file::FileLoader> loader_;
+  std::shared_ptr<file::CachedFileLoader> loader_;
 
 };
 

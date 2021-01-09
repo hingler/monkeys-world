@@ -2,12 +2,17 @@
 #define CACHED_FILE_LOADER_H_
 
 #include <file/CacheStreambuf.hpp>
-#include <file/FileLoader.hpp>
+#include <file/CachedFileLoader.hpp>
 #include <file/CachedLoader.hpp>
+#include <file/ModelLoader.hpp>
+
+#include <model/Mesh.hpp>
+#include <storage/VertexPacketTypes.hpp>
 
 #include <atomic>
 #include <cinttypes>
 #include <fstream>
+#include <future>
 #include <memory>
 #include <mutex>
 #include <shared_mutex>
@@ -32,7 +37,7 @@ namespace file {
  *  TODO: It looks like there's actually some gains to be made thru multithreading.
  *        It's not a big deal at all but if it comes down to it it might be beneficial lol.
  */ 
-class CachedFileLoader : public FileLoader {
+class CachedFileLoader {
  public:
 
   static const uint32_t CACHE_MAGIC = 0x4D534657;   // WFSM
@@ -59,7 +64,11 @@ class CachedFileLoader : public FileLoader {
   /**
    *  Override for FileLoader::LoadFile.
    */ 
-  std::unique_ptr<std::streambuf> LoadFile(const std::string& path) override;
+  std::unique_ptr<std::streambuf> LoadFile(const std::string& path);
+
+  std::shared_ptr<const model::Mesh<storage::VertexPacket3D>> LoadOBJ(std::string& path);
+  
+  std::future<std::shared_ptr<model::Mesh<storage::VertexPacket3D>>> LoadOBJAsync(std::string& path);
 
   ~CachedFileLoader();
   CachedFileLoader(const CachedFileLoader& other) = delete;
@@ -91,6 +100,9 @@ class CachedFileLoader : public FileLoader {
    */ 
   void setup_ostream_(const std::string& cache_path);
 
+
+  std::shared_ptr<LoaderThreadPool> thread_pool_;
+  std::unique_ptr<ModelLoader> model_loader_;
   loader_progress progress_;                                  // records loading progress
   std::mutex progress_lock_;                                  // must be grabbed when modifying loading progress
   std::unordered_map<std::string, loader_record> cache_;      // internal cache

@@ -13,7 +13,7 @@
 #include <shader/ShaderProgram.hpp>
 #include <engine/Context.hpp>
 
-#include <file/FileLoader.hpp>
+#include <file/CachedFileLoader.hpp>
 
 #include <storage/VertexPacketTypes.hpp>
 
@@ -39,7 +39,7 @@ using ::monkeysworld::engine::Context;
 
 using ::monkeysworld::storage::VertexPacket3D;
 
-using ::monkeysworld::file::FileLoader;
+using ::monkeysworld::file::CachedFileLoader;
 
 static float deg_to_rad(float f) {
   return f * boost::math::constants::pi<float>() / 180.0f;

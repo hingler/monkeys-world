@@ -1,7 +1,7 @@
 #ifndef MATTE_MATERIAL_H_
 #define MATTE_MATERIAL_H_
 
-#include <file/FileLoader.hpp>
+#include <file/CachedFileLoader.hpp>
 
 #include <shader/Material.hpp>
 #include <shader/ShaderProgram.hpp>

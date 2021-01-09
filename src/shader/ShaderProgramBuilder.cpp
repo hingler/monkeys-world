@@ -13,7 +13,7 @@ namespace shader {
 using std::ios_base;
 using exception::InvalidShaderException;
 using exception::LinkFailedException;
-using file::FileLoader;
+using file::CachedFileLoader;
 
 
 static std::string GetShaderType(GLint type) {
@@ -29,7 +29,7 @@ static std::string GetShaderType(GLint type) {
   }
 }
 
-ShaderProgramBuilder::ShaderProgramBuilder(std::shared_ptr<FileLoader> loader) {
+ShaderProgramBuilder::ShaderProgramBuilder(std::shared_ptr<CachedFileLoader> loader) {
   shaders_ = ShaderPacket();
   prog_ = 0;
   loader_ = loader;
