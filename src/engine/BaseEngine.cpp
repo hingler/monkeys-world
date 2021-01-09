@@ -53,9 +53,6 @@ void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<engine::Context> ctx
   }
   #endif
 
-  if (GLAD_GL_EXT_direct_state_access) {
-    BOOST_LOG_TRIVIAL(debug) << "Direct state access supported!";
-  }
   // initialize the scene
   scene->Initialize();
   // setup timing
