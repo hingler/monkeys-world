@@ -114,14 +114,15 @@ class Mesh {
    *  Provides a wrapper for Packet::Bind so that methods working with this data class
    *  need not deduce the template type to bind attributes
    */ 
-  void PointToVertexAttribs() {
+  void PointToVertexAttribs() const {
     if (dirty_) {
       context_->UpdateBuffersAndPoint(data_, indices_);
     } else {
       context_->Point();
     }
 
-    dirty_ = false;
+    bool* dirty_noconst = const_cast<bool*>(&dirty_);
+    *dirty_noconst = false;
   }
 
   /**
@@ -142,14 +143,14 @@ class Mesh {
   /**
    *  Returns a read-only pointer to the underlying vertex data.
    */ 
-  const Packet* GetVertexData() {
+  const Packet* GetVertexData() const {
     return data_.data();
   }
 
   /**
    *  Returns a read-only pointer to the underlying index data.
    */ 
-  const unsigned int* GetIndexData() {
+  const unsigned int* GetIndexData() const {
     return indices_.data();
   }
 

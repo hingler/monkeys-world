@@ -33,12 +33,13 @@ class VertexDataContextGL : public VertexDataContext<Packet> {
    *  @param data - the vertex data being populated.
    *  @param indices - the associated indices.
    */ 
-  void UpdateBuffersAndPoint(const std::vector<Packet>& data, const std::vector<unsigned int>& indices) override {
+  void UpdateBuffersAndPoint(const std::vector<Packet>& data, const std::vector<unsigned int>& indices) const override {
     if (!gl_alloced_) {
-      glGenBuffers(1, &array_buffer_);
-      glGenBuffers(1, &element_buffer_);
-      glGenVertexArrays(1, &vao_);
-      gl_alloced_ = true;
+      glGenBuffers(1, const_cast<GLuint*>(&array_buffer_));
+      glGenBuffers(1, const_cast<GLuint*>(&element_buffer_));
+      glGenVertexArrays(1, const_cast<GLuint*>(&vao_));
+      bool* alloced_nonconst_ = const_cast<bool*>(&gl_alloced_);
+      *alloced_nonconst_ = true;
     }
     glBindVertexArray(vao_);
     glBindBuffer(GL_ARRAY_BUFFER, array_buffer_);
@@ -61,12 +62,12 @@ class VertexDataContextGL : public VertexDataContext<Packet> {
   /**
    *  Points the state machine at the array + element buffers.
    */ 
-  void Point() override {
+  void Point() const override {
     glBindVertexArray(vao_);
     // buffers are bound, data has not changed
   }
 
-  VertexDataContextType GetType() override {
+  VertexDataContextType GetType() const override {
     return VertexDataContextType::gl;
   }
 

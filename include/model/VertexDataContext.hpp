@@ -21,17 +21,17 @@ class VertexDataContext {
    *  @param data - The vertex attribute data.
    *  @param indices - triplets of indices representing triangles.
    */ 
-  virtual void UpdateBuffersAndPoint(const std::vector<Packet>& data, const std::vector<unsigned int>& indices) = 0;
+  virtual void UpdateBuffersAndPoint(const std::vector<Packet>& data, const std::vector<unsigned int>& indices) const = 0;
 
   /**
    *  If no attributes have been modified, then we can simply bind the VAO.
    */ 
-  virtual void Point() = 0;
+  virtual void Point() const = 0;
 
   /**
    *  Returns an enum representing the type of this context.
    */ 
-  virtual VertexDataContextType GetType() = 0;
+  virtual VertexDataContextType GetType() const = 0;
 
   virtual ~VertexDataContext() {}
 };
