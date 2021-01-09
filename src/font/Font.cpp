@@ -237,6 +237,7 @@ GLuint Font::GetGlyphAtlas() const {
   // upload the glyph atlas (we need it now, after all)
   if (memory_cache_ != nullptr) {
     // hasnt been uploaded yet :)
+    // TBA: i could lock this, but all calls should be on the same thread, so no need.
     GLuint* glyph_texture = const_cast<GLuint*>(&glyph_texture_);
     glGenTextures(1, glyph_texture);
     glBindTexture(GL_TEXTURE_2D, *glyph_texture);
