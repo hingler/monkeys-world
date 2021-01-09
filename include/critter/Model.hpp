@@ -51,7 +51,8 @@ class Model : public GameObject {
    *  @returns newly created mesh.
    */ 
   static std::shared_ptr<model::Mesh<>> FromObjFile(engine::Context* ctx, const std::string& path);
-
+  // same as above, but ignore context
+  static std::shared_ptr<model::Mesh<>> FromObjFile(const std::string& path);
  private:
   std::shared_ptr<model::Mesh<>> mesh_;
 };
