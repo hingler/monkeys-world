@@ -56,5 +56,28 @@ CacheStreambuf::int_type CacheStreambuf::overflow(CacheStreambuf::int_type c) {
   return traits_type::eof();
 }
 
+CacheStreambuf::CacheStreambuf(const CacheStreambuf& other) : std::streambuf(other),
+                                                              data_(other.data_) {
+  setg(other.eback(), other.gptr(), other.egptr());
+}
+
+CacheStreambuf& CacheStreambuf::operator=(const CacheStreambuf& other) {
+  std::shared_ptr<std::vector<char>>& data = const_cast<std::shared_ptr<std::vector<char>>&>(data_);
+  data = other.data_;
+  setg(other.eback(), other.gptr(), other.egptr());
+  return *this;
+}
+
+CacheStreambuf::CacheStreambuf(CacheStreambuf&& other) : data_(std::move(other.data_)) {
+  setg(other.eback(), other.gptr(), other.egptr());
+}
+
+CacheStreambuf& CacheStreambuf::operator=(CacheStreambuf&& other) {
+  std::shared_ptr<std::vector<char>>& data = const_cast<std::shared_ptr<std::vector<char>>&>(data_);
+  data = std::move(other.data_);
+  setg(other.eback(), other.gptr(), other.egptr());
+  return *this;
+}
+
 } // namespace file
 } // namespace monkeysworld

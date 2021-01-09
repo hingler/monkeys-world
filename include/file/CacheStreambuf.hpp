@@ -22,6 +22,11 @@ class CacheStreambuf : public std::streambuf {
   // zeroes out inherited output methods to ensure that writing does not occur
   std::streamsize xsputn(const char* s, std::streamsize n) override;
   int_type overflow(int_type c) override;
+
+  CacheStreambuf(const CacheStreambuf& other);
+  CacheStreambuf& operator=(const CacheStreambuf& other);
+  CacheStreambuf(CacheStreambuf&& other);
+  CacheStreambuf& operator=(CacheStreambuf&& other);
  private:
   const std::shared_ptr<std::vector<char>> data_;
 };
