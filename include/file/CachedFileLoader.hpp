@@ -3,6 +3,7 @@
 
 #include <file/CacheStreambuf.hpp>
 #include <file/FileLoader.hpp>
+#include <file/CachedLoader.hpp>
 
 #include <atomic>
 #include <cinttypes>
@@ -17,22 +18,6 @@
 
 namespace monkeysworld {
 namespace file {
-
-/**
- *  Provides information on loader progress.
- */ 
-struct loader_progress {
-  size_t bytes_read;          // number of bytes read thus far
-  size_t bytes_sum;           // number of bytes expected
-};
-
-/**
- *  Internally stores objects contained by the cache.
- */ 
-struct loader_record {
-  size_t file_size;                             // size of an expected file
-  std::shared_ptr<std::vector<char>> data;      // data associated with the file
-};
 
 /**
  *  The CachedFileLoader is designed to streamline the process of loading files,
@@ -52,12 +37,6 @@ class CachedFileLoader : public FileLoader {
 
   static const uint32_t CACHE_MAGIC = 0x4D534657;   // WFSM
   static const uint64_t CACHE_DATA_START = 12;
-
-  /**
-   *  default ctor for CachedFileLoader.
-   *  No set up in here.
-   */ 
-  CachedFileLoader();
 
   /**
    *  Constructs a new CachedFileLoader.
@@ -88,6 +67,15 @@ class CachedFileLoader : public FileLoader {
   CachedFileLoader& operator=(const CachedFileLoader& rhs) = delete;
   CachedFileLoader& operator=(CachedFileLoader&& rhs) = delete;
  private:
+
+  /**
+   *  Internally stores objects contained by the cache.
+   */ 
+  struct loader_record {
+    size_t file_size;                             // size of an expected file
+    std::shared_ptr<std::vector<char>> data;      // data associated with the file
+  };
+
   /**
    *  Thread function used to load in cache.
    */ 
