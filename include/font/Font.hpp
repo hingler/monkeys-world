@@ -100,6 +100,8 @@ class Font {
   // static mutex for shared commands
   static std::mutex ft_lib_lock_;
   glyph_info* glyph_cache_;
+  // TBA: stores glyphs in-memory so they can be xfer'd to GPU all at once
+  char* memory_cache_;
   GLuint glyph_texture_;
 
   int atlas_width;

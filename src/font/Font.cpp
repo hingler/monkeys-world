@@ -1,4 +1,5 @@
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 #include <font/Font.hpp>
 #include <font/exception/BadFontPathException.hpp>
@@ -22,6 +23,10 @@ std::weak_ptr<FTLibWrapper> Font::lib_singleton_;
 // as well as when we check if the weak_ptr is valid, in case two fonts
 // attempt to create the lib at the same time.
 Font::Font(const std::string& font_path) {
+  if (!glfwGetCurrentContext()) {
+    BOOST_LOG_TRIVIAL(warning) << "No context exists on this thread!";
+  }
+
   FT_Error e;
   FT_Face face;
 
@@ -81,10 +86,10 @@ Font::Font(const std::string& font_path) {
   atlas_width = width_px;
   atlas_height = height_px;
 
-  glActiveTexture(GL_TEXTURE0);
-  // generate the texture
-  glGenTextures(1, &glyph_texture_);
-  glTextureImage2DEXT(glyph_texture_, GL_TEXTURE_2D, 0, GL_RED, width_px, height_px, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
+  // create our in-memory store
+  memory_cache_ = new char[atlas_width * atlas_height];
+
+  BOOST_LOG_TRIVIAL(trace) << "allocated " << atlas_width * atlas_height << " bytes for cache";
   // go through the font list again, this time drawing on to the screen
 
   width_px = 0;
@@ -108,16 +113,30 @@ Font::Font(const std::string& font_path) {
 
     temp_info.valid = true;
     temp_glyph = face->glyph;
-    glTextureSubImage2DEXT(glyph_texture_,
-                        GL_TEXTURE_2D,
-                        0,
-                        width_px,
-                        0,
-                        temp_glyph->bitmap.width,
-                        temp_glyph->bitmap.rows,
-                        GL_RED,
-                        GL_UNSIGNED_BYTE,
-                        temp_glyph->bitmap.buffer);
+   
+    // write to memory store
+    int cursor_x;
+    int cursor_y;
+    if (temp_glyph->bitmap.pitch > 0) {
+      cursor_x = width_px;
+      cursor_y = 0;
+      for (int i = 0; i < temp_glyph->bitmap.rows; i++, cursor_y++) {
+        for (int j = 0; j < temp_glyph->bitmap.width; j++) {
+          memory_cache_[cursor_y * atlas_width + cursor_x + j]
+            = temp_glyph->bitmap.buffer[i * temp_glyph->bitmap.pitch + j];
+        }
+      }
+    } else {
+      cursor_x = width_px;
+      cursor_y = height_px - temp_glyph->bitmap.rows;
+      for (int i = 0; cursor_y < atlas_height; cursor_y++, i++) {
+        for (int j = 0; j < temp_glyph->bitmap.width; j++) {
+          memory_cache_[cursor_y * atlas_width + cursor_x + j]
+            = temp_glyph->bitmap.buffer[j - (i * temp_glyph->bitmap.pitch)];
+        }
+      }
+    }
+
     // add glyph data to the glyph info
     temp_info.advance = temp_glyph->advance.x;
 
@@ -148,10 +167,6 @@ Font::Font(const std::string& font_path) {
   // TODO: add ifdef for extension funcs
   // or if i'm feeling devilish
   // kick everyone out who doesn't support them
-  glTextureParameteriEXT(glyph_texture_, GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTextureParameteriEXT(glyph_texture_, GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTextureParameteriEXT(glyph_texture_, GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTextureParameteriEXT(glyph_texture_, GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   // NOTE: dsa extension provides state during modification. nothing is bound to texture_2D afaik,
   // but we ARE telling the functions that this non-specific texture identifier is a texture 2d.
 }
@@ -216,12 +231,36 @@ std::shared_ptr<model::Mesh<storage::VertexPacket2D>> Font::GetTextGeometry(cons
 }
 
 GLuint Font::GetGlyphAtlas() const {
+  // assume that this is being done so that we can performs some action on this value
+  // and that someone isn't fucking around with me
+
+  // upload the glyph atlas (we need it now, after all)
+  if (memory_cache_ != nullptr) {
+    // hasnt been uploaded yet :)
+    GLuint* glyph_texture = const_cast<GLuint*>(&glyph_texture_);
+    glGenTextures(1, glyph_texture);
+    glBindTexture(GL_TEXTURE_2D, *glyph_texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, atlas_width, atlas_height, 0, GL_RED, GL_UNSIGNED_BYTE, memory_cache_);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // unbind, not for any good reason but just because it makes me feel better
+    glBindTexture(GL_TEXTURE_2D, 0);
+    delete[] memory_cache_;
+    char** memcache = const_cast<char**>(&memory_cache_);
+    *memcache = nullptr;
+  }
   return glyph_texture_;
 }
 
 Font::~Font() {
   if (glyph_cache_) {
     delete[] glyph_cache_;
+  }
+
+  if (memory_cache_) {
+    delete[] memory_cache_;
   }
 
   if (glyph_texture_ != 0) {
@@ -233,6 +272,8 @@ Font::Font(Font&& other) {
   ft_lib_ = other.ft_lib_;
   glyph_cache_ = other.glyph_cache_;
   other.glyph_cache_ = nullptr;
+  memory_cache_ = other.memory_cache_;
+  other.memory_cache_ = nullptr;
   glyph_texture_ = other.glyph_texture_;
   other.glyph_texture_ = 0;
   atlas_width = other.atlas_width;
@@ -250,6 +291,8 @@ Font& Font::operator=(Font&& other) {
 
   glyph_cache_ = other.glyph_cache_;
   other.glyph_cache_ = nullptr;
+  memory_cache_ = other.memory_cache_;
+  other.memory_cache_ = nullptr;
   glyph_texture_ = other.glyph_texture_;
   other.glyph_texture_ = 0;
   atlas_width = other.atlas_width;
