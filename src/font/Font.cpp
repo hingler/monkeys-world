@@ -27,6 +27,7 @@ Font::Font(const std::string& font_path) {
     BOOST_LOG_TRIVIAL(warning) << "No context exists on this thread!";
   }
 
+  glyph_texture_ = 0;
   FT_Error e;
   FT_Face face;
 
@@ -46,8 +47,6 @@ Font::Font(const std::string& font_path) {
     }
 
   }
-
-  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
   // what should char size be?
   // let's go with 256px for now
@@ -239,6 +238,7 @@ GLuint Font::GetGlyphAtlas() const {
     // hasnt been uploaded yet :)
     // TBA: i could lock this, but all calls should be on the same thread, so no need.
     GLuint* glyph_texture = const_cast<GLuint*>(&glyph_texture_);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glGenTextures(1, glyph_texture);
     glBindTexture(GL_TEXTURE_2D, *glyph_texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, atlas_width, atlas_height, 0, GL_RED, GL_UNSIGNED_BYTE, memory_cache_);
