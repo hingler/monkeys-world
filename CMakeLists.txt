@@ -73,7 +73,10 @@ find_package(glfw3 CONFIG REQUIRED)
 target_link_libraries(monkeys-world-components glfw)
 
 ### GLAD ###
-find_package(glad CONFIG REQUIRED)
+set(GLAD_DIR deps/glad)
+add_library(glad ${GLAD_DIR}/src/glad.c)
+target_include_directories(glad PUBLIC ${GLAD_DIR}/include)
+add_library(glad::glad ALIAS glad)
 
 target_link_libraries(monkeys-world-components glad::glad)
 
