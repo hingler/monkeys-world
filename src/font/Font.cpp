@@ -1,3 +1,5 @@
+#include <glad/glad.h>
+
 #include <font/Font.hpp>
 #include <font/exception/BadFontPathException.hpp>
 
@@ -82,8 +84,7 @@ Font::Font(const std::string& font_path) {
   glActiveTexture(GL_TEXTURE0);
   // generate the texture
   glGenTextures(1, &glyph_texture_);
-  glBindTexture(GL_TEXTURE_2D, glyph_texture_);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width_px, height_px, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
+  glTextureImage2DEXT(glyph_texture_, GL_TEXTURE_2D, 0, GL_RED, width_px, height_px, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
   // go through the font list again, this time drawing on to the screen
 
   width_px = 0;
@@ -107,16 +108,16 @@ Font::Font(const std::string& font_path) {
 
     temp_info.valid = true;
     temp_glyph = face->glyph;
-    glTexSubImage2D(GL_TEXTURE_2D, 
-                    0,
-                    width_px,
-                    0,
-                    temp_glyph->bitmap.width,
-                    temp_glyph->bitmap.rows,
-                    GL_RED,
-                    GL_UNSIGNED_BYTE,
-                    temp_glyph->bitmap.buffer);
-
+    glTextureSubImage2DEXT(glyph_texture_,
+                        GL_TEXTURE_2D,
+                        0,
+                        width_px,
+                        0,
+                        temp_glyph->bitmap.width,
+                        temp_glyph->bitmap.rows,
+                        GL_RED,
+                        GL_UNSIGNED_BYTE,
+                        temp_glyph->bitmap.buffer);
     // add glyph data to the glyph info
     temp_info.advance = temp_glyph->advance.x;
 
@@ -144,11 +145,15 @@ Font::Font(const std::string& font_path) {
     FT_Done_Face(face);
   }
   
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
+  // TODO: add ifdef for extension funcs
+  // or if i'm feeling devilish
+  // kick everyone out who doesn't support them
+  glTextureParameteriEXT(glyph_texture_, GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTextureParameteriEXT(glyph_texture_, GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTextureParameteriEXT(glyph_texture_, GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTextureParameteriEXT(glyph_texture_, GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  // NOTE: dsa extension provides state during modification. nothing is bound to texture_2D afaik,
+  // but we ARE telling the functions that this non-specific texture identifier is a texture 2d.
 }
 
 // advance is stored in 1/64 pixels

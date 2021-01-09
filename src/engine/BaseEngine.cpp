@@ -46,8 +46,16 @@ static void RenderObjects(std::shared_ptr<critter::Object>, RenderContext&);
 // pass supertype to scene
 void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<engine::Context> ctx, GLFWwindow* window) {
   #ifdef DEBUG
-  ::monkeysworld::shader::gldebug::SetupGLDebug();
+  if (GLAD_GL_ARB_debug_output) {
+    BOOST_LOG_TRIVIAL(debug) << "GL debug output supported!";
+    // TODO: switch debug setup over to extension jargon
+    ::monkeysworld::shader::gldebug::SetupGLDebug();
+  }
   #endif
+
+  if (GLAD_GL_EXT_direct_state_access) {
+    BOOST_LOG_TRIVIAL(debug) << "Direct state access supported!";
+  }
   // initialize the scene
   scene->Initialize();
   // setup timing
@@ -185,8 +193,8 @@ GLFWwindow* InitializeGLFW(int win_width, int win_height, const std::string& win
     exit(EXIT_FAILURE);
   }
 
-  glfwWindowHint(GL_MAJOR_VERSION, 4);
-  glfwWindowHint(GL_MINOR_VERSION, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwMakeContextCurrent(window);
 

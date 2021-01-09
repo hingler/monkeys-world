@@ -86,6 +86,7 @@ void SpotLight::ChangeMapSize(int px) {
   glBindTexture(GL_TEXTURE_2D, map_);
 
   // apparently hw is only 24
+  // TODO: swap this over to DSA extension jargon
   glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, map_size_, map_size_, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
