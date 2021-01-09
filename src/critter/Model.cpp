@@ -84,15 +84,17 @@ std::shared_ptr<Mesh<>> Model::GetMesh() {
 }
 
 std::shared_ptr<Mesh<VertexPacket3D>> Model::FromObjFile(Context* ctx, const std::string& path) {
-  std::shared_ptr<CachedFileLoader> loader = ctx->GetCachedFileLoader();
-  auto obj_reader = loader->LoadFile(path);
-  if (obj_reader.get() == nullptr) {
+  return FromObjFile(path);
+}
+
+std::shared_ptr<Mesh<VertexPacket3D>> Model::FromObjFile(const std::string& path) {
+  auto obj_stream = std::ifstream(path);
+  if (obj_stream.bad()) {
     // invalid model location
     BOOST_LOG_TRIVIAL(error) << "File does not exist!";
     return std::shared_ptr<Mesh<>>();
   }
-
-  std::istream obj_stream(obj_reader.get());  
+ 
   std::string line_data;
   const int MAX_LINE_SIZE = 512;
   line_data.resize(MAX_LINE_SIZE);
@@ -164,7 +166,7 @@ std::shared_ptr<Mesh<VertexPacket3D>> Model::FromObjFile(Context* ctx, const std
     }
   }
   
-  std::shared_ptr<model::Mesh<>> mesh = std::make_shared<model::Mesh<>>();
+  std::shared_ptr<model::Mesh<>> mesh;
 
   VertexPacket3D temp_data;
   BOOST_LOG_TRIVIAL(trace) << "logged " << position_data.size() << "pos, " << texcoord_data.size() << "tex, " << normal_data.size() << "norm.";
