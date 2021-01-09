@@ -29,6 +29,7 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/file/CachedFileLoader.cpp
                                     ${SRC_DIR}/file/LoaderThreadPool.cpp
                                     ${SRC_DIR}/file/ModelLoader.cpp
+                                    ${SRC_DIR}/file/FontLoader.cpp
 
                                     ${SRC_DIR}/utils/FileUtils.cpp
                                     ${SRC_DIR}/utils/IDGenerator.cpp
@@ -204,6 +205,12 @@ if(compile_tests)
   target_link_libraries(model-loader-test GTest::gtest_main monkeys-world-components)
   add_test(NAME model-loader-test COMMAND model-loader-test
             WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
+  
+  add_executable(font-loader-test test/FontLoaderTest.cpp)
+  target_link_libraries(font-loader-test GTest::gtest_main monkeys-world-components)
+  add_test(NAME font-loader-test COMMAND font-loader-test
+            WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
+
 endif()
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

@@ -30,7 +30,7 @@ std::future<std::shared_ptr<font::Font>> FontLoader::LoadFontAsync(const std::st
 }
 
 std::vector<cache_record> FontLoader::GetCache() {
-  std::shared_lock<std::shared_timed_mutex> lock();
+  std::shared_lock<std::shared_timed_mutex> lock(cache_mutex_);
   std::vector<cache_record> result;
   cache_record temp;
   for (auto record : font_cache_) {
@@ -40,6 +40,11 @@ std::vector<cache_record> FontLoader::GetCache() {
   }
 
   return result;
+}
+
+loader_progress FontLoader::GetLoaderProgress() {
+  std::unique_lock<std::mutex> lock(loader_mutex_);
+  return loader_;
 }
 
 std::shared_ptr<font::Font> FontLoader::LoadFontFromFile(const std::string& path) {
