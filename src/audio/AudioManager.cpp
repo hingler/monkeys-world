@@ -59,8 +59,12 @@ int AudioManager::AddFileToBuffer(const std::string& filename, AudioFiletype fil
     return -1;
     // could not allocate space
   }
-  std::unique_lock<std::mutex> queue_lock(buffer_queue_lock_);
-  buffer_creation_queue_.push({filename, file_type, index});
+
+  {
+    std::unique_lock<std::mutex> queue_lock(buffer_queue_lock_);
+    buffer_creation_queue_.push({filename, file_type, index});
+  }
+
   buffer_thread_cv_.notify_all();
   return index;
 }
