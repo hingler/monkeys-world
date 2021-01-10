@@ -49,7 +49,7 @@ using ::monkeysworld::font::TextObject;
 class RatModel2 : public Model {
  public:
   RatModel2(Context* ctx) : Model(ctx), m(ctx) {
-    SetMesh(Model::FromObjFile(ctx, "resources/test/untitled4.obj"));
+    SetMesh(ctx->GetCachedFileLoader()->LoadModel("resources/test/untitled4.obj"));
   }
 
   void RenderMaterial(const RenderContext& rc) override {
@@ -72,7 +72,7 @@ class RatModel2 : public Model {
 class RatModel : public Model {
  public:
   RatModel(Context* ctx) : Model(ctx), rot_(0), m(ctx) {
-    SetMesh(Model::FromObjFile(ctx, "resources/test/rat/Rat.obj"));
+    SetMesh(ctx->GetCachedFileLoader()->LoadModel("resources/test/rat/Rat.obj"));
     ctx->GetAudioManager()->AddFileToBuffer("resources/chamberofreflection.ogg", AudioFiletype::OGG);
     // create a key listener which accomplishes rat motion
     // or just rotate consistently with time
