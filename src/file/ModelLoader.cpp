@@ -6,6 +6,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include <cinttypes>
+#include <fstream>
 
 namespace monkeysworld {
 namespace file {
@@ -28,7 +29,9 @@ ModelLoader::ModelLoader(std::shared_ptr<LoaderThreadPool> thread_pool,
   loader_.bytes_sum = 0;
   for (auto record : cache) {
     // figure out how many bytes we need to read
-    loader_.bytes_sum += record.file_size;
+    if (record.type == MODEL) {
+      loader_.bytes_sum += record.file_size;
+    }
   }
 
   // load the files in
@@ -137,6 +140,7 @@ void ModelLoader::LoadOBJToCache(cache_record& record) {
 
   };
 
+  
   thread_pool_->AddTaskToQueue(load_model);
 }
 
@@ -202,7 +206,7 @@ static data_type GetDataType(const std::string& line);
 
 static std::shared_ptr<Mesh<VertexPacket3D>> FromObjFile(const std::string& path, uint64_t* file_size) {
   auto obj_stream = std::ifstream(path);
-  if (obj_stream.bad()) {
+  if (!obj_stream.good()) {
     // invalid model location
     BOOST_LOG_TRIVIAL(error) << "File does not exist!";
     return std::shared_ptr<Mesh<>>();

@@ -7,7 +7,12 @@ FontLoader::FontLoader(std::shared_ptr<LoaderThreadPool> thread_pool,
                        std::vector<cache_record> cache) {
   thread_pool_ = thread_pool;
   loader_.bytes_read = 0;
-  loader_.bytes_sum = cache.size();
+  loader_.bytes_sum = 0;
+  for (auto record : cache) {
+    if (record.type == FONT) {
+      loader_.bytes_sum++;
+    }
+  }
   for (auto record : cache) {
     LoadFontToCache(record);
   }
