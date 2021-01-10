@@ -103,6 +103,9 @@ class Object {
   Object& operator=(const Object& other);
   Object& operator=(Object&& other);
 
+  // nop -- just there so that we get dtor behavior in all subclasses
+  virtual ~Object() {};
+
   // tba: noop v. dtor to ensure proper behavior
 
 
