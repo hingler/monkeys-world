@@ -9,15 +9,15 @@
 using ::monkeysworld::file::CachedFileLoader;
 
 TEST(CacheTests, CreateEmptyCache) {
-  remove("resources/cache/testcache.filecache");
+  remove("resources/cache/testcache.cache");
   CachedFileLoader loader("testcache");
-  std::unique_ptr<std::streambuf> test = loader.LoadFile("resources/themoney.txt");
-  std::unique_ptr<std::streambuf> testtwo = loader.LoadFile("resources/glsl/matte-material/matte-material.frag");
-  std::istream worldwide(test.get());
+  auto test = loader.LoadFile("resources/themoney.txt");
+  auto testtwo = loader.LoadFile("resources/glsl/matte-material/matte-material.frag");
+  std::istream worldwide(&test);
 }
 
 TEST(CacheTests, ReadExistingCache) {
-  remove("resources/cache/existingcache.filecache");
+  remove("resources/cache/existingcache.cache");
 
   {
     CachedFileLoader loader("existingcache");
@@ -32,12 +32,12 @@ TEST(CacheTests, ReadExistingCache) {
 
 // verify contents (should be fine lol)
 TEST(CacheTests, ReadCacheContents) {
-  remove("resources/cache/coolcache.filecache");
+  remove("resources/cache/coolcache.cache");
   CachedFileLoader loader("coolcache");
-  std::unique_ptr<std::streambuf> test = loader.LoadFile("resources/themoney.txt");
-  std::unique_ptr<std::streambuf> testtwo = loader.LoadFile("resources/glsl/matte-material/matte-material.frag");
-  std::istream test_cache(test.get());
-  std::istream testtwo_cache(testtwo.get());
+  auto test = loader.LoadFile("resources/themoney.txt");
+  auto testtwo = loader.LoadFile("resources/glsl/matte-material/matte-material.frag");
+  std::istream test_cache(&test);
+  std::istream testtwo_cache(&testtwo);
   std::ifstream test_verify("resources/themoney.txt", std::ifstream::in | std::ifstream::binary);
   std::ifstream testtwo_verify("resources/glsl/matte-material/matte-material.frag", std::ifstream::in | std::ifstream::binary);
   while (!test_cache.eof()) {
