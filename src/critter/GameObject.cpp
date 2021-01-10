@@ -114,7 +114,7 @@ glm::mat4 GameObject::GetTransformationMatrix() const {
     matrix_cache = glm::mat4(1.0);
     // scales, then rotates, then translates
     matrix_cache = glm::translate(tf_matrix_cache_, position);
-    matrix_cache *= glm::eulerAngleXYZ(rotation.x, rotation.y, rotation.z);
+    matrix_cache *= glm::eulerAngleYXZ(rotation.y, rotation.x, rotation.z);
     matrix_cache = glm::scale(tf_matrix_cache_, scale);
   }
 
