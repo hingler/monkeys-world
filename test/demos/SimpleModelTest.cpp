@@ -41,7 +41,7 @@ class DummyModel : public Model {
   DummyModel(Context* ctx) : Model(ctx) {}
 
   void RenderMaterial(const RenderContext& rc) override {
-    std::shared_ptr<Mesh<>> mesh;
+    std::shared_ptr<const Mesh<>> mesh;
     if (mesh = GetMesh()) {
       mesh->PointToVertexAttribs();
       // TODO: factor out? if so: i'll add it to Mesh later

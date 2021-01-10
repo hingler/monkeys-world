@@ -56,9 +56,17 @@ class CachedFileLoader {
    */ 
   CacheStreambuf LoadFile(const std::string& path);
 
+  /**
+   *  Loads a model from cache.
+   *  @param path - path to desired model.
+   *  @returns - const ptr to the resulting model.
+   *             If model is invalid, returns a nullptr.
+   */ 
+  std::shared_ptr<const model::Mesh<storage::VertexPacket3D>> LoadModel(const std::string& path);
+
   ~CachedFileLoader();
   CachedFileLoader(const CachedFileLoader& other) = delete;
-  CachedFileLoader(CachedFileLoader&& other);
+  CachedFileLoader(CachedFileLoader&& other) = delete;
   CachedFileLoader& operator=(const CachedFileLoader& rhs) = delete;
   CachedFileLoader& operator=(CachedFileLoader&& rhs) = delete;
  private:
@@ -68,6 +76,7 @@ class CachedFileLoader {
    */ 
   std::vector<cache_record> ReadCacheFileToVector(const std::string& cache_path);
   std::unique_ptr<FileLoader> file_loader_;
+  std::unique_ptr<ModelLoader> model_loader_;
   std::shared_ptr<LoaderThreadPool> thread_pool_;
   std::string cache_path_;
 

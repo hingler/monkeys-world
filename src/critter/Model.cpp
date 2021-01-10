@@ -88,11 +88,11 @@ static data_type GetDataType(const std::string& line);
 
 Model::Model(Context* ctx) : GameObject(ctx) {}
 
-void Model::SetMesh(const std::shared_ptr<model::Mesh<>>& mesh) {
+void Model::SetMesh(const std::shared_ptr<const model::Mesh<>>& mesh) {
   mesh_ = mesh;
 }
 
-std::shared_ptr<Mesh<>> Model::GetMesh() {
+std::shared_ptr<const Mesh<>> Model::GetMesh() {
   return mesh_;
 }
 
