@@ -56,6 +56,7 @@ class WindowEventManager {
   
   /**
    *  Handles incoming GLFW events.
+   *  TODO: Commands should receive a reference to context. Only makes sense! :)
    */ 
   void GenerateKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods);
 
