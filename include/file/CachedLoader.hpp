@@ -37,6 +37,8 @@ class CachedLoader {
   virtual std::vector<cache_record> GetCache() = 0;
 
   /**
+   *  On creation, before cache is loaded,
+   *  loaders should ensure that they return *something* resembling 0%.
    *  @returns how much of the cache has been loaded in thus far
    */ 
   virtual loader_progress GetLoaderProgress() = 0;

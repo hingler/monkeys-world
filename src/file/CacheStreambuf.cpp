@@ -9,6 +9,10 @@ namespace file {
 
 using std::ios_base;
 
+CacheStreambuf::CacheStreambuf() : data_(nullptr) {
+  setg(nullptr, nullptr, nullptr);
+}
+
 CacheStreambuf::CacheStreambuf(const std::shared_ptr<std::vector<char>>& data) : data_(data) {
   char* data_ptr = data_->data();
   setg(data_ptr, data_ptr, data_ptr + data_->size());
@@ -54,6 +58,10 @@ std::streamsize CacheStreambuf::xsputn(const char* s, std::streamsize n) {
 
 CacheStreambuf::int_type CacheStreambuf::overflow(CacheStreambuf::int_type c) {
   return traits_type::eof();
+}
+
+bool CacheStreambuf::valid() {
+  return !!data_;
 }
 
 CacheStreambuf::CacheStreambuf(const CacheStreambuf& other) : std::streambuf(other),
