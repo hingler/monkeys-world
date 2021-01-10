@@ -29,10 +29,6 @@ CacheStreambuf CachedFileLoader::LoadFile(const std::string& path) {
 }
 
 std::vector<cache_record> CachedFileLoader::ReadCacheFileToVector(const std::string& cache_path) {
-  // open the file and ensure it's valid
-  // if not: return empty vector
-  // verify the bobs and bits
-  // start adding entries to vector
   std::vector<cache_record> record;
   std::ifstream cache(cache_path);
   if (!cache.good()) {
@@ -44,7 +40,7 @@ std::vector<cache_record> CachedFileLoader::ReadCacheFileToVector(const std::str
 
   uint32_t magic = ReadAsBytes<uint32_t>(cache);
   if (magic != CACHE_MAGIC) {
-    BOOST_LOG_TRIVIAL(warning) << "file validation failed: bad magic";
+    BOOST_LOG_TRIVIAL(warning) << "cache validation failed: bad magic";
     cache.close();
     return record;
   }
