@@ -19,10 +19,29 @@ CachedFileLoader::CachedFileLoader(const std::string& cache_name) {
   thread_pool_ = std::make_shared<LoaderThreadPool>(8);
   file_loader_ = std::make_unique<FileLoader>(thread_pool_, cache);
   model_loader_ = std::make_unique<ModelLoader>(thread_pool_, cache);
+  font_loader_ = std::make_unique<FontLoader>(thread_pool_, cache);
 }
 
 loader_progress CachedFileLoader::GetLoaderProgress() {
-  return file_loader_->GetLoaderProgress();
+  loader_progress res;
+  loader_progress temp;
+
+  res.bytes_read = 0;
+  res.bytes_sum = 0;
+
+  temp = file_loader_->GetLoaderProgress();
+  res.bytes_read += temp.bytes_read;
+  res.bytes_sum += temp.bytes_sum;
+
+  temp = model_loader_->GetLoaderProgress();
+  res.bytes_read += temp.bytes_read;
+  res.bytes_sum += temp.bytes_sum;
+
+  temp = font_loader_->GetLoaderProgress();
+  res.bytes_read += temp.bytes_read;
+  res.bytes_sum += temp.bytes_sum;
+
+  return res;
 }
 
 CacheStreambuf CachedFileLoader::LoadFile(const std::string& path) {
@@ -31,6 +50,10 @@ CacheStreambuf CachedFileLoader::LoadFile(const std::string& path) {
 
 std::shared_ptr<const model::Mesh<storage::VertexPacket3D>> CachedFileLoader::LoadModel(const std::string& path) {
   return model_loader_->LoadOBJ(path);
+}
+
+std::shared_ptr<const font::Font> CachedFileLoader::LoadFont(const std::string& path) {
+  return font_loader_->LoadFont(path);
 }
 
 std::vector<cache_record> CachedFileLoader::ReadCacheFileToVector(const std::string& cache_path) {
@@ -85,9 +108,11 @@ CachedFileLoader::~CachedFileLoader() {
   // ensure that cache is complete
   std::vector<cache_record> files = file_loader_->GetCache();
   std::vector<cache_record> meshes = model_loader_->GetCache();
-  cache.reserve(files.size() + meshes.size());
+  std::vector<cache_record> fonts = font_loader_->GetCache();
+  cache.reserve(files.size() + meshes.size() + fonts.size());
   cache.insert(cache.end(), files.begin(), files.end());
   cache.insert(cache.end(), meshes.begin(), meshes.end());
+  cache.insert(cache.end(), fonts.begin(), fonts.end());
   BOOST_LOG_TRIVIAL(debug) << "cacheing " << cache.size() << " files";
 
   cache_output.seekp(0);
