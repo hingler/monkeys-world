@@ -9,7 +9,7 @@ using critter::Visitor;
 using critter::GameObject;
 
 TextObject::TextObject(engine::Context* ctx, const std::string& font_path)
-  : GameObject(ctx), Text(font_path), mat(ctx) { }
+  : GameObject(ctx), Text(ctx, font_path), mat(ctx) { }
 
 void TextObject::Accept(critter::Visitor& v) {
   v.Visit(std::dynamic_pointer_cast<TextObject>(shared_from_this()));

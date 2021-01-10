@@ -1,4 +1,5 @@
 #include <file/FontLoader.hpp>
+#include <font/exception/BadFontPathException.hpp>
 
 namespace monkeysworld {
 namespace file {
@@ -11,10 +12,8 @@ FontLoader::FontLoader(std::shared_ptr<LoaderThreadPool> thread_pool,
   for (auto record : cache) {
     if (record.type == FONT) {
       loader_.bytes_sum++;
+      LoadFontToCache(record);
     }
-  }
-  for (auto record : cache) {
-    LoadFontToCache(record);
   }
 }
 
@@ -42,6 +41,7 @@ std::vector<cache_record> FontLoader::GetCache() {
     temp.path = record.first;
     temp.file_size = 1;       // placeholder, doesn't really matter
     temp.type = CacheType::FONT;
+    result.push_back(temp);
   }
 
   return result;
@@ -62,7 +62,11 @@ std::shared_ptr<font::Font> FontLoader::LoadFontFromFile(const std::string& path
     }
   }
 
-  res = std::make_shared<font::Font>(path);
+  try {
+    res = std::make_shared<font::Font>(path);
+  } catch (font::exception::BadFontPathException e) {
+    return std::shared_ptr<font::Font>(nullptr);
+  }
 
   {
     std::unique_lock<std::shared_timed_mutex> lock(cache_mutex_);
@@ -74,7 +78,15 @@ std::shared_ptr<font::Font> FontLoader::LoadFontFromFile(const std::string& path
 
 void FontLoader::LoadFontToCache(cache_record& record) {
   auto load_font = [=] {
-    auto res = std::make_shared<font::Font>(record.path);
+    std::shared_ptr<font::Font> res;
+
+    try {
+      res = std::make_shared<font::Font>(record.path);
+    } catch (font::exception::BadFontPathException e) {
+      BOOST_LOG_TRIVIAL(trace) << "Could not load font " << record.path;
+      return;
+    }
+
     {
       std::unique_lock<std::shared_timed_mutex> lock(cache_mutex_);
       font_cache_.insert(std::make_pair(record.path, res));

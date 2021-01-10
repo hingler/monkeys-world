@@ -5,8 +5,9 @@
 namespace monkeysworld {
 namespace font {
 
-Text::Text(const std::string& font_path) {
-  font_ = std::make_shared<Font>(font_path);
+Text::Text(engine::Context* ctx, const std::string& font_path) {
+  ctx_ = ctx;
+  font_ = ctx_->GetCachedFileLoader()->LoadFont(font_path);
   color_ = glm::vec4(glm::vec3(0.0), 1.0);
   size_ = 24.0f;
   text_ = "";
@@ -14,11 +15,11 @@ Text::Text(const std::string& font_path) {
 }
 
 void Text::SetFont(const std::string& font_path) {
-  font_ = std::make_shared<Font>(font_path);
+  font_ = ctx_->GetCachedFileLoader()->LoadFont(font_path);
   mesh_valid_ = false;
 }
 
-std::shared_ptr<Font> Text::GetFont() {
+std::shared_ptr<const Font> Text::GetFont() {
   return font_;
 }
 
