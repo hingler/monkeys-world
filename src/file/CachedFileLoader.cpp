@@ -18,6 +18,7 @@ CachedFileLoader::CachedFileLoader(const std::string& cache_name) {
   auto cache = ReadCacheFileToVector(cache_path_);
   thread_pool_ = std::make_shared<LoaderThreadPool>(8);
   file_loader_ = std::make_unique<FileLoader>(thread_pool_, cache);
+  model_loader_ = std::make_unique<ModelLoader>(thread_pool_, cache);
 }
 
 loader_progress CachedFileLoader::GetLoaderProgress() {
@@ -28,9 +29,13 @@ CacheStreambuf CachedFileLoader::LoadFile(const std::string& path) {
   return file_loader_->LoadFile(path);
 }
 
+std::shared_ptr<const model::Mesh<storage::VertexPacket3D>> CachedFileLoader::LoadModel(const std::string& path) {
+  return model_loader_->LoadOBJ(path);
+}
+
 std::vector<cache_record> CachedFileLoader::ReadCacheFileToVector(const std::string& cache_path) {
   std::vector<cache_record> record;
-  std::ifstream cache(cache_path);
+  std::ifstream cache(cache_path, std::ios_base::in | std::ios_base::binary);
   if (!cache.good()) {
     BOOST_LOG_TRIVIAL(warning) << "cache is invalid!";
     // return an empty vector for now
@@ -46,13 +51,15 @@ std::vector<cache_record> CachedFileLoader::ReadCacheFileToVector(const std::str
   }
 
   uint32_t crc_expected = ReadAsBytes<uint32_t>(cache);
+  cache.seekg(CACHE_DATA_START, std::ios_base::beg);
   uint32_t crc_actual = utils::fileutils::CalculateCRCHash(cache, std::streampos(CACHE_DATA_START));
   if (crc_expected != crc_actual) {
-    BOOST_LOG_TRIVIAL(warning) << "crc did not match preexisting cache file";
+    BOOST_LOG_TRIVIAL(warning) << "crc did not match preexisting cache file -- expected " << crc_expected << ", actual " << crc_actual;
     cache.close();
     return record;
   }
 
+  cache.seekg(CACHE_DATA_START - 4, std::ios_base::beg);
   uint32_t num_entries = ReadAsBytes<uint32_t>(cache);
   BOOST_LOG_TRIVIAL(debug) << "Cache file with " << num_entries << " entries found";
   cache_record temp;
@@ -77,12 +84,15 @@ CachedFileLoader::~CachedFileLoader() {
   std::vector<cache_record> cache;
   // ensure that cache is complete
   std::vector<cache_record> files = file_loader_->GetCache();
-  cache.reserve(files.size());
+  std::vector<cache_record> meshes = model_loader_->GetCache();
+  cache.reserve(files.size() + meshes.size());
   cache.insert(cache.end(), files.begin(), files.end());
+  cache.insert(cache.end(), meshes.begin(), meshes.end());
+  BOOST_LOG_TRIVIAL(debug) << "cacheing " << cache.size() << " files";
 
+  cache_output.seekp(0);
   WriteAsBytes(cache_output, CACHE_MAGIC);
-  cache_output.seekp(CACHE_DATA_START - 4, std::ios_base::beg);
-  WriteAsBytes(cache_output, static_cast<uint32_t>(cache.size()));
+  cache_output.seekp(CACHE_DATA_START);
   for (auto entry : cache) {
     WriteAsBytes(cache_output, static_cast<uint16_t>(entry.type));
     WriteAsBytes(cache_output, static_cast<uint16_t>(entry.path.size()));
@@ -90,9 +100,11 @@ CachedFileLoader::~CachedFileLoader() {
     WriteAsBytes(cache_output, static_cast<uint64_t>(entry.file_size));
   }
 
-  uint32_t crc = utils::fileutils::CalculateCRCHash(cache_output, CACHE_DATA_START);
-  cache_output.seekp(CACHE_DATA_START - 8, std::ios_base::beg);
+  uint32_t crc = utils::fileutils::CalculateCRCHash(cache_output, std::streampos(CACHE_DATA_START));
+  cache_output.seekp(CACHE_DATA_START - 8);
   WriteAsBytes(cache_output, static_cast<uint32_t>(crc));
+  BOOST_LOG_TRIVIAL(trace) << "CRC: " << crc;
+  WriteAsBytes(cache_output, static_cast<uint32_t>(cache.size()));
   cache_output.close();
 }
 

@@ -31,12 +31,8 @@ ModelLoader::ModelLoader(std::shared_ptr<LoaderThreadPool> thread_pool,
     // figure out how many bytes we need to read
     if (record.type == MODEL) {
       loader_.bytes_sum += record.file_size;
+      LoadOBJToCache(record);
     }
-  }
-
-  // load the files in
-  for (auto record : cache) {
-    LoadOBJToCache(record);
   }
 }
 
@@ -212,9 +208,9 @@ static std::shared_ptr<Mesh<VertexPacket3D>> FromObjFile(const std::string& path
     return std::shared_ptr<Mesh<>>();
   }
 
-  obj_stream.seekg(std::ios_base::end, 0);
+  obj_stream.seekg(0, std::ios_base::end);
   *file_size = obj_stream.tellg();
-  obj_stream.seekg(std::ios_base::beg, 0);
+  obj_stream.seekg(0, std::ios_base::beg);
  
   std::string line_data;
   const int MAX_LINE_SIZE = 512;
