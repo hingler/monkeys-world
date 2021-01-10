@@ -21,6 +21,8 @@
 
 #include <shader/materials/MatteMaterial.hpp>
 
+#include <glm/gtx/euler_angles.hpp>
+
 // create everything inline -- its pretty lazy
 
 using ::monkeysworld::engine::Scene;
@@ -82,7 +84,6 @@ class RatModel : public Model {
     rot_ += rot_inc_ * (GetContext()->GetDeltaTime());
     SetRotation(glm::vec3(0.0, rot_, 0.0));
     auto gc = std::dynamic_pointer_cast<GameCamera>(GetActiveCamera());
-    gc->SetRotation(glm::vec3(0, 3.14, 0));
   }
 
   void RenderMaterial(const RenderContext& rc) override {
@@ -104,6 +105,130 @@ class RatModel : public Model {
   const float rot_inc_ = 1.0f;
   float rot_;
   MatteMaterial m;
+};
+
+class MovingCamera : public GameCamera {
+ public:
+  MovingCamera(Context* ctx) : GameCamera(ctx) {
+    // create event which moves the camera
+
+    motion_x = 0;
+    motion_z = 0;
+
+    rot_x = 0;
+    rot_y = 0;
+
+    // ideally: we always pass the context in instead of relying on *this*
+    // note also: the creator is responsible for destroying this event handler or else shit will break
+    auto event_lambda = [&, this](int key, int action, int mods) {
+      int mod = 0;
+      if (action == GLFW_PRESS) {
+        mod = 5;
+      } else if (action == GLFW_RELEASE) {
+        mod = -5;
+      }
+
+      switch (key) {
+        case GLFW_KEY_S:
+          motion_z -= mod;
+          break;
+        case GLFW_KEY_W:
+          motion_z += mod;
+          break;
+        case GLFW_KEY_A:
+          motion_x += mod;
+          break;
+        case GLFW_KEY_D:
+          motion_x -= mod;
+      }
+
+      BOOST_LOG_TRIVIAL(trace) << "button press!!!";
+      BOOST_LOG_TRIVIAL(trace) << motion_x << ", " << motion_z;
+    };
+
+    auto rotation_lambda = [&, this](int key, int action, int mods) {
+      int mod = 0;
+      if (action == GLFW_PRESS) {
+        mod = 2;
+      } else if (action == GLFW_RELEASE) {
+        mod = -2;
+      }
+
+      switch (key) {
+        case GLFW_KEY_DOWN:
+          rot_x -= mod;
+          break;
+        case GLFW_KEY_UP:
+          rot_x += mod;
+          break;
+        case GLFW_KEY_LEFT:
+          rot_y += mod;
+          break;
+        case GLFW_KEY_RIGHT:
+          rot_y -= mod;
+      }
+
+      BOOST_LOG_TRIVIAL(trace) << "button press!!!";
+      BOOST_LOG_TRIVIAL(trace) << rot_x << ", " << rot_y;
+    };
+
+    // need a way to register multiple events to a single id.
+    w_event = GetContext()->GetEventManager()->RegisterKeyListener(GLFW_KEY_W, event_lambda);
+    s_event = GetContext()->GetEventManager()->RegisterKeyListener(GLFW_KEY_S, event_lambda);
+    a_event = GetContext()->GetEventManager()->RegisterKeyListener(GLFW_KEY_A, event_lambda);
+    d_event = GetContext()->GetEventManager()->RegisterKeyListener(GLFW_KEY_D, event_lambda);
+
+    u_event = GetContext()->GetEventManager()->RegisterKeyListener(GLFW_KEY_UP, rotation_lambda);
+    do_event = GetContext()->GetEventManager()->RegisterKeyListener(GLFW_KEY_DOWN, rotation_lambda);
+    l_event = GetContext()->GetEventManager()->RegisterKeyListener(GLFW_KEY_LEFT, rotation_lambda);
+    r_event = GetContext()->GetEventManager()->RegisterKeyListener(GLFW_KEY_RIGHT, rotation_lambda);
+  }
+
+  void Update() override {
+    auto w = GetPosition();
+    float delta = GetContext()->GetDeltaTime();
+    auto r = GetRotation();
+    glm::mat4 rotation = glm::eulerAngleYXZ(r.y, r.x, r.z);
+    glm::vec4 initial(0, 0, -1, 0);
+    glm::vec4 initial_x(-1, 0, 0, 0);
+    initial = rotation * initial;
+    initial_x = rotation * initial_x;
+
+    BOOST_LOG_TRIVIAL(trace) << "new rot: " << r.x << ", " << r.y << ", " << r.z;
+    SetPosition(w + glm::vec3(initial * (motion_z * delta)) + glm::vec3(initial_x * (motion_x * delta)));
+    SetRotation(glm::vec3(r.x + rot_x * delta, r.y + rot_y * delta, r.z));
+  }
+
+  ~MovingCamera() {
+    // call from destroy so we can ensure the context is live
+    // though it still should be here
+    auto manager = GetContext()->GetEventManager();
+    manager->RemoveKeyListener(a_event);
+    manager->RemoveKeyListener(s_event);
+    manager->RemoveKeyListener(w_event);
+    manager->RemoveKeyListener(d_event);
+
+    manager->RemoveKeyListener(u_event);
+    manager->RemoveKeyListener(do_event);
+    manager->RemoveKeyListener(l_event);
+    manager->RemoveKeyListener(r_event);
+  }
+ private:
+  int a_event;
+  int d_event;
+  int s_event;
+  int w_event;
+
+  int u_event;
+  int do_event;
+  int l_event;
+  int r_event;
+
+  float motion_x;
+  float motion_z;
+
+  float rot_x;
+  float rot_y;
 };
 
 class FrameText : public TextObject {
@@ -131,7 +256,7 @@ class TestScene : public Scene {
     // just the rat model for now
     // subclass so that we can add some custom behavior
     game_object_root_ = std::make_shared<Empty>(ctx);
-    auto cam = std::make_shared<GameCamera>(ctx);
+    auto cam = std::make_shared<MovingCamera>(ctx);
     game_object_root_->AddChild(cam);
     cam->SetPosition(glm::vec3(0, 0, -5));
     cam->SetRotation(glm::vec3(0, 1.6, 0));
