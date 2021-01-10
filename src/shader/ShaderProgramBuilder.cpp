@@ -111,8 +111,8 @@ void ShaderProgramBuilder::DeleteIfNonZero(GLuint shader) {
 // todo: separate file reading into a separate class? it's a bit trivial though :/
 GLuint ShaderProgramBuilder::CreateShaderFromFile(const std::string& shader_path, GLenum shader_type) {
   GLuint shader = glCreateShader(shader_type);
-  std::shared_ptr<std::streambuf> buffer = loader_->LoadFile(shader_path);
-  std::istream shader_file(buffer.get());
+  auto buffer = loader_->LoadFile(shader_path);
+  std::istream shader_file(&buffer);
   
   if (shader_file.fail()) {
     // could not read file path

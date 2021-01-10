@@ -8,6 +8,7 @@
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
 
+#include <fstream>
 #include <unordered_map>
 
 namespace monkeysworld {
@@ -107,7 +108,7 @@ std::shared_ptr<Mesh<VertexPacket3D>> Model::FromObjFile(Context* ctx, const std
 
 std::shared_ptr<Mesh<VertexPacket3D>> Model::FromObjFile(const std::string& path) {
   auto obj_stream = std::ifstream(path);
-  if (obj_stream.bad()) {
+  if (!obj_stream.good()) {
     // invalid model location
     BOOST_LOG_TRIVIAL(error) << "File does not exist!";
     return std::shared_ptr<Mesh<>>();
