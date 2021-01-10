@@ -11,6 +11,7 @@ namespace file {
 class CacheStreambuf : public std::streambuf {
 
  public:
+  CacheStreambuf();
   CacheStreambuf(const std::shared_ptr<std::vector<char>>& data);
 
   // -1 on failure, abs pos on success
@@ -22,6 +23,12 @@ class CacheStreambuf : public std::streambuf {
   // zeroes out inherited output methods to ensure that writing does not occur
   std::streamsize xsputn(const char* s, std::streamsize n) override;
   int_type overflow(int_type c) override;
+
+  /**
+   *  @returns true if the streambuf points to a valid buffer, i.e. the associated file could be loaded.
+   *           false otherwise.
+   */ 
+  bool valid();
 
   CacheStreambuf(const CacheStreambuf& other);
   CacheStreambuf& operator=(const CacheStreambuf& other);
