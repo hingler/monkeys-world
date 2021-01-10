@@ -170,6 +170,15 @@ class TestScene : public Scene {
 int main(int argc, char** argv) {
   GLFWwindow* main_win = InitializeGLFW(1280, 720, "and he never stoped playing, he always was keep beliving");
   auto ctx = std::make_shared<Context>(main_win);
+  while (true) {
+    auto prog = ctx->GetCachedFileLoader()->GetLoaderProgress();
+    BOOST_LOG_TRIVIAL(trace) << "loading progress: " << (((float)prog.bytes_read * 100.0f) / prog.bytes_sum);
+    if (prog.bytes_read == prog.bytes_sum) {
+      break;
+    }
+    
+    // std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
   auto scene = std::make_shared<TestScene>(ctx.get());
   GameLoop(scene, ctx, main_win);
 
