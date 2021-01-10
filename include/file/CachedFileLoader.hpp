@@ -6,6 +6,7 @@
 #include <file/CachedLoader.hpp>
 #include <file/ModelLoader.hpp>
 #include <file/FileLoader.hpp>
+#include <file/FontLoader.hpp>
 
 #include <model/Mesh.hpp>
 #include <storage/VertexPacketTypes.hpp>
@@ -64,6 +65,8 @@ class CachedFileLoader {
    */ 
   std::shared_ptr<const model::Mesh<storage::VertexPacket3D>> LoadModel(const std::string& path);
 
+  std::shared_ptr<const font::Font> LoadFont(const std::string& path);
+
   ~CachedFileLoader();
   CachedFileLoader(const CachedFileLoader& other) = delete;
   CachedFileLoader(CachedFileLoader&& other) = delete;
@@ -75,10 +78,12 @@ class CachedFileLoader {
    *  Generates a vector of cache records.
    */ 
   std::vector<cache_record> ReadCacheFileToVector(const std::string& cache_path);
-  std::unique_ptr<FileLoader> file_loader_;
-  std::unique_ptr<ModelLoader> model_loader_;
+  
   std::shared_ptr<LoaderThreadPool> thread_pool_;
   std::string cache_path_;
+  std::unique_ptr<FileLoader> file_loader_;
+  std::unique_ptr<ModelLoader> model_loader_;
+  std::unique_ptr<FontLoader> font_loader_;
 
 };
 
