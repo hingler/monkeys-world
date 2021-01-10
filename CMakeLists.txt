@@ -30,6 +30,7 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/file/LoaderThreadPool.cpp
                                     ${SRC_DIR}/file/ModelLoader.cpp
                                     ${SRC_DIR}/file/FontLoader.cpp
+                                    ${SRC_DIR}/file/FileLoader.cpp
 
                                     ${SRC_DIR}/utils/FileUtils.cpp
                                     ${SRC_DIR}/utils/IDGenerator.cpp
