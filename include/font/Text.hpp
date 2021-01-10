@@ -18,7 +18,7 @@ class Text {
    *  Create a new text instance.
    *  @param font_path - the font associated with this block of text.
    */ 
-  Text(const std::string& font_path);
+  Text(engine::Context* ctx, const std::string& font_path);
 
   /**
    *  Changes the font associated with text.
@@ -29,7 +29,7 @@ class Text {
   /**
    *  Returns the font object associated with this text.
    */ 
-  std::shared_ptr<Font> GetFont();
+  std::shared_ptr<const Font> GetFont();
 
   /**
    *  Set the text associated with this text object.
@@ -79,9 +79,10 @@ class Text {
   std::shared_ptr<model::Mesh<storage::VertexPacket2D>> GetGeometry();
 
  private:
+  engine::Context* ctx_;
   std::string text_;
   glm::vec4 color_;
-  std::shared_ptr<Font> font_;
+  std::shared_ptr<const Font> font_;
   float size_;
   bool mesh_valid_;
   std::shared_ptr<model::Mesh<storage::VertexPacket2D>> mesh_;
