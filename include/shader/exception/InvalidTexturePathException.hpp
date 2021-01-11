@@ -17,3 +17,5 @@ class InvalidTexturePathException : public std::runtime_error {
 }
 }
 }
+
+#endif
