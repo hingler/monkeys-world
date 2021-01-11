@@ -5,6 +5,8 @@
 
 #include <boost/log/trivial.hpp>
 
+#include <GLFW/glfw3.h>
+
 namespace monkeysworld {
 namespace shader {
 
@@ -49,8 +51,19 @@ GLuint Texture::GetTextureDescriptor() const {
   return tex_;
 }
 
+uint64_t Texture::GetTextureSize() const {
+  return width_ * height_ * channels_;
+}
+
+// risky if this isn't done on the main thread -- i dont think this'll be a problem but
 Texture::~Texture() {
-  
+  if (tex_ != 0 && glfwGetCurrentContext()) {
+    glDeleteTextures(1, &tex_);
+  }
+
+  if (tex_cache_ != nullptr) {
+    stbi_image_free(tex_cache_);
+  }
 }
 
 }

@@ -4,6 +4,9 @@
 #include <string>
 #include <vector>
 
+// TODO: before writing any more fucking loaders
+// Convert CachedLoader into a class template because there's a lot of redundant code
+// which can be removed with some TLC :-)
 namespace monkeysworld {
 namespace file {
 
@@ -30,6 +33,7 @@ struct cache_record {
  *  Interface for a loader which maintains a cache, and enables files to be loaded into said cache.
  */ 
 class CachedLoader {
+ public:
 
   /**
    *  @returns a list of all files stored by this cache loader.
@@ -42,6 +46,9 @@ class CachedLoader {
    *  @returns how much of the cache has been loaded in thus far
    */ 
   virtual loader_progress GetLoaderProgress() = 0;
+
+  virtual void WaitUntilLoaded() = 0;
+  
   
 };
 

@@ -5,6 +5,7 @@
 #include <file/LoaderThreadPool.hpp>
 #include <file/CacheStreambuf.hpp>
 
+#include <condition_variable>
 #include <future>
 #include <mutex>
 #include <unordered_map>
@@ -40,6 +41,7 @@ class FileLoader : public CachedLoader {
 
   std::vector<cache_record> GetCache() override;
   loader_progress GetLoaderProgress() override;
+  void WaitUntilLoaded() override;
  private:
   // loads a file into an std::vector and returns the result
   std::shared_ptr<std::vector<char>> LoadFileAsVector(const std::string& path);
@@ -52,6 +54,7 @@ class FileLoader : public CachedLoader {
   std::shared_timed_mutex cache_mutex_;
   std::unordered_map<std::string, std::shared_ptr<std::vector<char>>> file_cache_;
   std::shared_ptr<LoaderThreadPool> thread_pool_;
+  std::condition_variable load_cond_var_;
 };
 
 }

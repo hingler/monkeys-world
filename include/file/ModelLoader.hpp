@@ -6,6 +6,7 @@
 #include <file/LoaderThreadPool.hpp>
 #include <file/CachedLoader.hpp>
 
+#include <condition_variable>
 #include <future>
 #include <memory>
 #include <mutex>
@@ -54,6 +55,7 @@ class ModelLoader : public CachedLoader {
    *  @returns how much of our loader cache has been populated thus far.
    */ 
   loader_progress GetLoaderProgress() override;
+  void WaitUntilLoaded() override;
 
  private:
   struct model_record {
@@ -77,6 +79,7 @@ class ModelLoader : public CachedLoader {
   std::shared_timed_mutex cache_mutex_;
   std::unordered_map<std::string, model_record> model_cache_;
   std::shared_ptr<LoaderThreadPool> thread_pool_;
+  std::condition_variable load_cond_var_;
 
 
 

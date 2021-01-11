@@ -5,6 +5,7 @@
 #include <file/LoaderThreadPool.hpp>
 #include <file/CachedLoader.hpp>
 
+#include <condition_variable>
 #include <future>
 #include <memory>
 #include <mutex>
@@ -35,6 +36,7 @@ class FontLoader : public CachedLoader {
 
   std::vector<cache_record> GetCache() override;
   loader_progress GetLoaderProgress() override;
+  void WaitUntilLoaded() override;
  private:
 
   std::shared_ptr<font::Font> LoadFontFromFile(const std::string& path);
@@ -45,6 +47,7 @@ class FontLoader : public CachedLoader {
   std::shared_timed_mutex cache_mutex_;
   std::unordered_map<std::string, std::shared_ptr<font::Font>> font_cache_;
   std::shared_ptr<LoaderThreadPool> thread_pool_;
+  std::condition_variable load_cond_var_;
 };
 
 }

@@ -52,6 +52,18 @@ loader_progress FontLoader::GetLoaderProgress() {
   return loader_;
 }
 
+void FontLoader::WaitUntilLoaded() {
+  std::unique_lock<std::mutex> lock(loader_mutex_);
+  if (loader_.bytes_read != loader_.bytes_sum) {
+    auto lambda = [&]() -> bool {
+      auto prog = GetLoaderProgress();
+      return (prog.bytes_read == prog.bytes_sum);
+    };
+
+    load_cond_var_.wait(lock, lambda);
+  }
+}
+
 std::shared_ptr<font::Font> FontLoader::LoadFontFromFile(const std::string& path) {
   std::shared_ptr<font::Font> res;
   {
@@ -95,6 +107,9 @@ void FontLoader::LoadFontToCache(cache_record& record) {
     {
       std::unique_lock<std::mutex> lock(loader_mutex_);
       loader_.bytes_read++;
+      if (loader_.bytes_read >= loader_.bytes_sum) {
+        load_cond_var_.notify_all();
+      }
     }
   };
 

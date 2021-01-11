@@ -59,6 +59,16 @@ loader_progress FileLoader::GetLoaderProgress() {
   return loader_;
 }
 
+void FileLoader::WaitUntilLoaded() {
+  std::unique_lock<std::mutex> lock(loader_mutex_);
+  auto lambda = [&] {
+    auto prog = GetLoaderProgress();
+    return (prog.bytes_read == prog.bytes_sum);
+  };
+
+  load_cond_var_.wait(lock, lambda);
+}
+
 
 
 std::shared_ptr<std::vector<char>> FileLoader::LoadFileAsVector(const std::string& path) {
@@ -124,6 +134,9 @@ void FileLoader::LoadFileToCache(cache_record& record) {
       std::unique_lock<std::mutex> lock(loader_mutex_);
       // use the file size stored in record, not the new one, if it differs.
       loader_.bytes_read += record.file_size;
+      if (loader_.bytes_read >= loader_.bytes_sum) {
+        load_cond_var_.notify_all();
+      }
     }
   };
 

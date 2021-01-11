@@ -102,6 +102,9 @@ std::vector<cache_record> CachedFileLoader::ReadCacheFileToVector(const std::str
 
 CachedFileLoader::~CachedFileLoader() {
   // write to the cache :)
+  file_loader_->WaitUntilLoaded();
+  model_loader_->WaitUntilLoaded();
+  font_loader_->WaitUntilLoaded();
   std::fstream cache_output;
   cache_output.open(cache_path_, std::fstream::in | std::fstream::out | std::fstream::trunc | std::fstream::binary);
   std::vector<cache_record> cache;

@@ -117,6 +117,18 @@ loader_progress ModelLoader::GetLoaderProgress() {
   return loader_;
 }
 
+void ModelLoader::WaitUntilLoaded() {
+  std::unique_lock<std::mutex> lock(loader_mutex_);
+  if (loader_.bytes_read != loader_.bytes_sum) {
+    auto lambda = [&]() -> bool {
+      auto prog = GetLoaderProgress();
+      return (prog.bytes_read == prog.bytes_sum);
+    };
+
+    load_cond_var_.wait(lock, lambda);
+  }
+}
+
 void ModelLoader::LoadOBJToCache(cache_record& record) {
   auto load_model = [=] {
     uint64_t file_size;
@@ -132,6 +144,10 @@ void ModelLoader::LoadOBJToCache(cache_record& record) {
     {
       std::unique_lock<std::mutex>(this->loader_mutex_);
       loader_.bytes_read += record.file_size;
+
+      if (loader_.bytes_read >= loader_.bytes_sum) {
+        load_cond_var_.notify_all();
+      }
     }
 
   };

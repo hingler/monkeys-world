@@ -37,6 +37,11 @@ class Texture {
    */ 
   GLuint GetTextureDescriptor() const;
 
+  /**
+   *  Returns the size of this texture, in bytes.
+   */ 
+  uint64_t GetTextureSize() const;
+
   ~Texture();
   Texture(const Texture& other) = delete;
   Texture& operator=(const Texture& other) = delete;
