@@ -27,6 +27,8 @@ TEST(CacheTests, ReadExistingCache) {
   }
 
   std::cout << "Re-reading cache..." << std::endl;
+  // BUG: cache loader destructs before cache is loaded.
+  // at the moment, we have no facility for guaranteeing that our caches are loaded.
   CachedFileLoader loader("existingcache");
 }
 

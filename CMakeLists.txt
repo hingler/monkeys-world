@@ -31,6 +31,7 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/file/ModelLoader.cpp
                                     ${SRC_DIR}/file/FontLoader.cpp
                                     ${SRC_DIR}/file/FileLoader.cpp
+                                    ${SRC_DIR}/file/TextureLoader.cpp
 
                                     ${SRC_DIR}/utils/FileUtils.cpp
                                     ${SRC_DIR}/utils/IDGenerator.cpp
@@ -51,6 +52,7 @@ add_library(monkeys-world-components
 
                                     ${SRC_DIR}/shader/light/SpotLight.cpp
                                     ${SRC_DIR}/shader/light/Light.cpp
+                                    ${SRC_DIR}/shader/Texture.cpp
 
                                     ${SRC_DIR}/audio/AudioBuffer.cpp
                                     ${SRC_DIR}/audio/AudioBufferOgg.cpp
@@ -210,6 +212,11 @@ if(compile_tests)
   add_executable(font-loader-test test/FontLoaderTest.cpp)
   target_link_libraries(font-loader-test GTest::gtest_main monkeys-world-components)
   add_test(NAME font-loader-test COMMAND font-loader-test
+            WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
+
+  add_executable(texture-loader-test test/TextureLoaderTest.cpp)
+  target_link_libraries(texture-loader-test GTest::gtest_main monkeys-world-components)
+  add_test(NAME texture-loader-test COMMAND texture-loader-test
             WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
 
 endif()
