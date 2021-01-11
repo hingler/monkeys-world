@@ -111,7 +111,6 @@ class MovingCamera : public GameCamera {
  public:
   MovingCamera(Context* ctx) : GameCamera(ctx) {
     // create event which moves the camera
-
     motion_x = 0;
     motion_z = 0;
 
@@ -141,9 +140,6 @@ class MovingCamera : public GameCamera {
         case GLFW_KEY_D:
           motion_x -= mod;
       }
-
-      BOOST_LOG_TRIVIAL(trace) << "button press!!!";
-      BOOST_LOG_TRIVIAL(trace) << motion_x << ", " << motion_z;
     };
 
     auto rotation_lambda = [&, this](int key, int action, int mods) {
@@ -167,9 +163,6 @@ class MovingCamera : public GameCamera {
         case GLFW_KEY_RIGHT:
           rot_y -= mod;
       }
-
-      BOOST_LOG_TRIVIAL(trace) << "button press!!!";
-      BOOST_LOG_TRIVIAL(trace) << rot_x << ", " << rot_y;
     };
 
     // need a way to register multiple events to a single id.
@@ -194,7 +187,6 @@ class MovingCamera : public GameCamera {
     initial = rotation * initial;
     initial_x = rotation * initial_x;
 
-    BOOST_LOG_TRIVIAL(trace) << "new rot: " << r.x << ", " << r.y << ", " << r.z;
     SetPosition(w + glm::vec3(initial * (motion_z * delta)) + glm::vec3(initial_x * (motion_x * delta)));
     SetRotation(glm::vec3(r.x + rot_x * delta, r.y + rot_y * delta, r.z));
   }
@@ -259,7 +251,7 @@ class TestScene : public Scene {
     auto cam = std::make_shared<MovingCamera>(ctx);
     game_object_root_->AddChild(cam);
     cam->SetPosition(glm::vec3(0, 0, -5));
-    cam->SetRotation(glm::vec3(0, 1.6, 0));
+    cam->SetRotation(glm::vec3(0, 3.14, 0));
     cam->SetFov(45.0f);
     cam->SetActive(true);
     auto rat = std::make_shared<RatModel>(ctx);
