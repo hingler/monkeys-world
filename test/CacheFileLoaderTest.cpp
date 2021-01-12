@@ -49,4 +49,16 @@ TEST(CacheTests, ReadCacheContents) {
   while (!testtwo_cache.eof()) {
     ASSERT_EQ(testtwo_verify.get(), testtwo_cache.get());
   }
+
+  remove("resources/cache/coolcache.cache");
+}
+
+TEST(CacheTests, QuickCubeMapTest) {
+  // TODO: move this somewhere else
+  remove("resources/cache/coolcache.cache");
+  CachedFileLoader loader("coolcache");
+  std::string s = "resources/test/texturetest.png";
+  auto res = loader.LoadCubeMap(s, s, s, s, s, s);
+  ASSERT_LT((100 * 100 * 24), res->GetCubemapSize());
+  remove("resources/cache/coolcache.cache");
 }
