@@ -7,6 +7,7 @@ namespace font {
 
 Text::Text(engine::Context* ctx, const std::string& font_path) {
   ctx_ = ctx;
+  mesh_ = std::make_shared<model::Mesh<storage::VertexPacket2D>>(); 
   font_ = ctx_->GetCachedFileLoader()->LoadFont(font_path);
   color_ = glm::vec4(glm::vec3(0.0), 1.0);
   size_ = 24.0f;
@@ -51,7 +52,7 @@ float Text::GetTextSize() {
 
 std::shared_ptr<model::Mesh<storage::VertexPacket2D>> Text::GetGeometry() {
   if (!mesh_valid_) {
-    mesh_ = font_->GetTextGeometry(text_, size_);
+    mesh_->operator=(std::move(font_->GetTextGeometry(text_, size_)));
     mesh_valid_ = true;
   }
 

@@ -173,11 +173,11 @@ Font::Font(const std::string& font_path) {
 // advance is stored in 1/64 pixels
 #define ADVANCE_SCALE 64.0f
 
-std::shared_ptr<model::Mesh<storage::VertexPacket2D>> Font::GetTextGeometry(const std::string& text, float size_pt) const {
+model::Mesh<storage::VertexPacket2D> Font::GetTextGeometry(const std::string& text, float size_pt) const {
   // scales our fonts down to screenspace scale (roughly:)
   const float SCREENSPACE_FAC = (960.0f * bitmap_desired_scale) / size_pt;
   
-  std::shared_ptr<Mesh<VertexPacket2D>> result = std::make_shared<Mesh<VertexPacket2D>>();
+  Mesh<VertexPacket2D> result;
   float origin_x = 0.0f;
   // bitmap, bearing are in pixels
   // advance is in 1/64 pixels.
@@ -214,12 +214,12 @@ std::shared_ptr<model::Mesh<storage::VertexPacket2D>> Font::GetTextGeometry(cons
     geom_width = info->width / SCREENSPACE_FAC;
     geom_height = info->height / SCREENSPACE_FAC;
 
-    result->AddVertex({glm::vec2(glyph_origin_x, glyph_origin_y),                            glm::vec2(info->origin_x, 0.0f)});
-    result->AddVertex({glm::vec2(glyph_origin_x, glyph_origin_y - geom_height),              glm::vec2(info->origin_x, tex_height)});
-    result->AddVertex({glm::vec2(glyph_origin_x + geom_width, glyph_origin_y - geom_height), glm::vec2(info->origin_x + tex_width, tex_height)});
-    result->AddVertex({glm::vec2(glyph_origin_x + geom_width, glyph_origin_y),               glm::vec2(info->origin_x + tex_width, 0.0f)});
-    result->AddPolygon(cur * 4, cur * 4 + 1, cur * 4 + 2);
-    result->AddPolygon(cur * 4 + 2, cur * 4 + 3, cur * 4);
+    result.AddVertex({glm::vec2(glyph_origin_x, glyph_origin_y),                            glm::vec2(info->origin_x, 0.0f)});
+    result.AddVertex({glm::vec2(glyph_origin_x, glyph_origin_y - geom_height),              glm::vec2(info->origin_x, tex_height)});
+    result.AddVertex({glm::vec2(glyph_origin_x + geom_width, glyph_origin_y - geom_height), glm::vec2(info->origin_x + tex_width, tex_height)});
+    result.AddVertex({glm::vec2(glyph_origin_x + geom_width, glyph_origin_y),               glm::vec2(info->origin_x + tex_width, 0.0f)});
+    result.AddPolygon(cur * 4, cur * 4 + 1, cur * 4 + 2);
+    result.AddPolygon(cur * 4 + 2, cur * 4 + 3, cur * 4);
 
     cur++;
 

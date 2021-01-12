@@ -14,7 +14,7 @@ TEST(FontLoaderTests, LoadFontSimple) {
   auto font = loader.LoadFile("resources/Montserrat-Light.ttf");
   ASSERT_NE(nullptr, font.get());
   auto mesh = font->GetTextGeometry("mario", 32.0f);
-  ASSERT_EQ(20, mesh->GetVertexCount());
-  ASSERT_EQ(30, mesh->GetIndexCount());
+  ASSERT_EQ(20, mesh.GetVertexCount());
+  ASSERT_EQ(30, mesh.GetIndexCount());
   std::cout << "does this run?" << std::endl;
 }
