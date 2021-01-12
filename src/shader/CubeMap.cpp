@@ -14,16 +14,13 @@ CubeMap::CubeMap(std::string x_pos,
                  std::string y_neg,
                  std::string z_pos,
                  std::string z_neg) {
-  face_info* data = &x_pos_data_;
+  face_info* data = face_data_;
   std::string* paths[6] = {&x_pos, &x_neg, &y_pos, &y_neg, &z_pos, &z_neg};
   cubemap_ = 0;
 
-  int width;
-  int height;
-  int channels;
   for (int i = 0; i < 6; i++) {
-    data[i].data = stbi_load(paths[i]->c_str(), &width, &height, &channels, 0);
-    if (data[i].data == nullptr) {
+    data[i].data = stbi_load(paths[i]->c_str(), &data[i].width, &data[i].height, &data[i].channels, 0);
+    if (!data[i].data) {
       BOOST_LOG_TRIVIAL(error) << "invalid skybox texture: " << i;
       throw exception::InvalidTexturePathException("invalid skybox texture path");
     }
@@ -31,10 +28,11 @@ CubeMap::CubeMap(std::string x_pos,
 }
 
 uint64_t CubeMap::GetCubemapSize() const {
-  const face_info* data = &x_pos_data_;
+  const face_info* data = face_data_;
   uint64_t res = 0;
   for (int i = 0; i < 6; i++, data++) {
     res += (data->channels * data->height * data->width);
+    BOOST_LOG_TRIVIAL(trace) << res;
   }
 
   return res;
@@ -51,7 +49,7 @@ GLuint CubeMap::GetCubeMapDescriptor() const {
                                       GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
                                       GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
                                       GL_TEXTURE_CUBE_MAP_NEGATIVE_Z};
-    face_info* data = const_cast<face_info*>(&x_pos_data_);
+    face_info* data = const_cast<face_info*>(face_data_);
     GLenum format;
     for (int i = 0; i < 6; i++, data++) {
       switch (data->channels) {
@@ -81,15 +79,17 @@ GLuint CubeMap::GetCubeMapDescriptor() const {
 }
 
 CubeMap::~CubeMap() {
-  if (cubemap_ != 0 && glfwGetCurrentContext()) {
-    glDeleteTextures(1, &cubemap_);
-  } else if (!glfwGetCurrentContext()) {
-    BOOST_LOG_TRIVIAL(warning) << "CubeMap descriptor could not be destroyed!";
+  if (cubemap_ != 0) {
+    if (glfwGetCurrentContext()) {
+      glDeleteTextures(1, &cubemap_);
+    } else {
+      BOOST_LOG_TRIVIAL(warning) << "cubemap descriptor could not be destroyed!";
+    }
   }
 
-  for (auto i = &x_pos_data_; i <= &z_neg_data_; i++) {
-    if (i->data != nullptr) {
-      stbi_image_free(i->data);
+  for (int i = 0; i < 6; i++) {
+    if (face_data_[i].data != nullptr) {
+      stbi_image_free(face_data_[i].data);
     }
   }
 }

@@ -63,15 +63,7 @@ class CubeMap {
 
   GLuint cubemap_;
   // memory cache for input data
-  face_info x_pos_data_;
-  face_info x_neg_data_;
-  face_info y_pos_data_;
-  face_info y_neg_data_;
-  face_info z_pos_data_;
-  face_info z_neg_data_;
-
-  // a list of ordered targets for the cubemap to make uploading textures a bit neater
-  const static GLenum targets_[6];
+  face_info face_data_[6];
 
 };
 
