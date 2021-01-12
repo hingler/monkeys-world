@@ -4,7 +4,9 @@
 
 #include <boost/log/trivial.hpp>
 
+
 #include <fstream> 
+#include <sstream>
 #include <string>
 
 namespace monkeysworld {
@@ -20,6 +22,8 @@ CachedFileLoader::CachedFileLoader(const std::string& cache_name) {
   file_loader_ = std::make_unique<FileLoader>(thread_pool_, cache);
   model_loader_ = std::make_unique<ModelLoader>(thread_pool_, cache);
   font_loader_ = std::make_unique<FontLoader>(thread_pool_, cache);
+  texture_loader_ = std::make_unique<TextureLoader>(thread_pool_, cache);
+  cubemap_loader_ = std::make_unique<CubeMapLoader>(thread_pool_, cache);
 }
 
 loader_progress CachedFileLoader::GetLoaderProgress() {
@@ -54,6 +58,20 @@ std::shared_ptr<const model::Mesh<storage::VertexPacket3D>> CachedFileLoader::Lo
 
 std::shared_ptr<const font::Font> CachedFileLoader::LoadFont(const std::string& path) {
   return font_loader_->LoadFile(path);
+}
+
+std::shared_ptr<const shader::CubeMap> CachedFileLoader::LoadCubeMap(const std::string& x_pos,
+                                                                     const std::string& x_neg,
+                                                                     const std::string& y_pos,
+                                                                     const std::string& y_neg,
+                                                                     const std::string& z_pos,
+                                                                     const std::string& z_neg) {
+  // unfortunately, this doesn't fill very neatly
+  std::stringstream path;
+  // leading colon
+  path << ":";
+  path << x_pos << ":" << x_neg << ":" << y_pos << ":" << y_neg << ":" << z_pos << ":" << z_neg;
+  return cubemap_loader_->LoadFile(path.str());
 }
 
 std::vector<cache_record> CachedFileLoader::ReadCacheFileToVector(const std::string& cache_path) {
@@ -112,10 +130,14 @@ CachedFileLoader::~CachedFileLoader() {
   std::vector<cache_record> files = file_loader_->GetCache();
   std::vector<cache_record> meshes = model_loader_->GetCache();
   std::vector<cache_record> fonts = font_loader_->GetCache();
-  cache.reserve(files.size() + meshes.size() + fonts.size());
+  std::vector<cache_record> textures = texture_loader_->GetCache();
+  std::vector<cache_record> cubemaps = cubemap_loader_->GetCache();
+  cache.reserve(files.size() + meshes.size() + fonts.size() + textures.size() + cubemaps.size());
   cache.insert(cache.end(), files.begin(), files.end());
   cache.insert(cache.end(), meshes.begin(), meshes.end());
   cache.insert(cache.end(), fonts.begin(), fonts.end());
+  cache.insert(cache.end(), textures.begin(), textures.end());
+  cache.insert(cache.end(), cubemaps.begin(), cubemaps.end());
   BOOST_LOG_TRIVIAL(debug) << "cacheing " << cache.size() << " files";
 
   cache_output.seekp(0);
