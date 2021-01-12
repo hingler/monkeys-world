@@ -59,6 +59,8 @@ uint64_t Texture::GetTextureSize() const {
 Texture::~Texture() {
   if (tex_ != 0 && glfwGetCurrentContext()) {
     glDeleteTextures(1, &tex_);
+  } else if (!glfwGetCurrentContext()) {
+    BOOST_LOG_TRIVIAL(warning) << "Texture descriptor could not be destroyed!";
   }
 
   if (tex_cache_ != nullptr) {
