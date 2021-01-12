@@ -22,7 +22,8 @@ namespace file {
  *  TBA: rigged models will be more complex -- all I can do right now is OBJs.
  *  At some point soon, figure out how to use more complex formats instead :)
  */ 
-class ModelLoader : public CachedLoader {
+class ModelLoader : public CachedLoader<std::shared_ptr<model::Mesh<storage::VertexPacket3D>>, ModelLoader> {
+  friend class CachedLoader<std::shared_ptr<model::Mesh<storage::VertexPacket3D>>, ModelLoader>;
  public:
   /**
    *  Creates a new model loader
@@ -31,20 +32,6 @@ class ModelLoader : public CachedLoader {
    */ 
   ModelLoader(std::shared_ptr<LoaderThreadPool> thread_pool,
               std::vector<cache_record> cache);
-
-  /**
-   *  Synchronously loads an OBJ file.
-   *  @param path - path to the new obj file.
-   *  @returns resulting 3D model.
-   */ 
-  std::shared_ptr<model::Mesh<storage::VertexPacket3D>> LoadOBJ(const std::string& path);
-
-  /**
-   *  Asynchronously loads an OBJ file via a returned promise.
-   *  @param path - path to the new obj file.
-   *  @returns promise which will eventually resolve to the desired 3D model.
-   */ 
-  std::future<std::shared_ptr<model::Mesh<storage::VertexPacket3D>>> LoadOBJAsync(const std::string& path);
 
   /**
    *  @returns a list of cache_records associated with this loader.
@@ -57,17 +44,19 @@ class ModelLoader : public CachedLoader {
   loader_progress GetLoaderProgress() override;
   void WaitUntilLoaded() override;
 
+ protected:
+  /**
+   *  Underlying function which loads obj either synchronously or asynchronously.
+   *  Also handles placing the OBJ file in the cache.
+   */ 
+  std::shared_ptr<model::Mesh<storage::VertexPacket3D>> LoadFromFile(const std::string& path);
+ 
  private:
   struct model_record {
     std::shared_ptr<model::Mesh<>> ptr;
     uint64_t size;
   };
 
-  /**
-   *  Underlying function which loads obj either synchronously or asynchronously.
-   *  Also handles placing the OBJ file in the cache.
-   */ 
-  std::shared_ptr<model::Mesh<storage::VertexPacket3D>> LoadOBJFromFile(const std::string& path);
 
   /**
    *  Similar to above, but populates the cache directly instead of returning a promise.
@@ -78,7 +67,6 @@ class ModelLoader : public CachedLoader {
   std::mutex loader_mutex_;
   std::shared_timed_mutex cache_mutex_;
   std::unordered_map<std::string, model_record> model_cache_;
-  std::shared_ptr<LoaderThreadPool> thread_pool_;
   std::condition_variable load_cond_var_;
 
 

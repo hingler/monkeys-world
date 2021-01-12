@@ -5,8 +5,7 @@ namespace monkeysworld {
 namespace file {
 
 FontLoader::FontLoader(std::shared_ptr<LoaderThreadPool> thread_pool,
-                       std::vector<cache_record> cache) {
-  thread_pool_ = thread_pool;
+                       std::vector<cache_record> cache) : CachedLoader(thread_pool) {
   loader_.bytes_read = 0;
   loader_.bytes_sum = 0;
   for (auto record : cache) {
@@ -17,19 +16,19 @@ FontLoader::FontLoader(std::shared_ptr<LoaderThreadPool> thread_pool,
   }
 }
 
-std::shared_ptr<font::Font> FontLoader::LoadFont(const std::string& path) {
-  return LoadFontFromFile(path);
+std::shared_ptr<font::Font> FontLoader::LoadFile(const std::string& path) {
+  return LoadFromFile(path);
 }
 
-std::future<std::shared_ptr<font::Font>> FontLoader::LoadFontAsync(const std::string& path) {
+std::future<std::shared_ptr<font::Font>> FontLoader::LoadFileAsync(const std::string& path) {
   std::shared_ptr<std::promise<std::shared_ptr<font::Font>>> result
     = std::make_shared<std::promise<std::shared_ptr<font::Font>>>();
   auto load_async_lambda = [=] {
-    auto ptr = LoadFontFromFile(path);
+    auto ptr = LoadFromFile(path);
     result->set_value(ptr);
   };
 
-  thread_pool_->AddTaskToQueue(load_async_lambda);
+  GetThreadPool()->AddTaskToQueue(load_async_lambda);
   return result->get_future();
 }
 
@@ -64,7 +63,7 @@ void FontLoader::WaitUntilLoaded() {
   }
 }
 
-std::shared_ptr<font::Font> FontLoader::LoadFontFromFile(const std::string& path) {
+std::shared_ptr<font::Font> FontLoader::LoadFromFile(const std::string& path) {
   std::shared_ptr<font::Font> res;
   {
     std::shared_lock<std::shared_timed_mutex> lock(cache_mutex_);
@@ -113,7 +112,7 @@ void FontLoader::LoadFontToCache(cache_record& record) {
     }
   };
 
-  thread_pool_->AddTaskToQueue(std::move(load_font));
+  GetThreadPool()->AddTaskToQueue(std::move(load_font));
 }
 
 }

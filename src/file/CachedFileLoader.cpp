@@ -49,11 +49,11 @@ CacheStreambuf CachedFileLoader::LoadFile(const std::string& path) {
 }
 
 std::shared_ptr<const model::Mesh<storage::VertexPacket3D>> CachedFileLoader::LoadModel(const std::string& path) {
-  return model_loader_->LoadOBJ(path);
+  return model_loader_->LoadFile(path);
 }
 
 std::shared_ptr<const font::Font> CachedFileLoader::LoadFont(const std::string& path) {
-  return font_loader_->LoadFont(path);
+  return font_loader_->LoadFile(path);
 }
 
 std::vector<cache_record> CachedFileLoader::ReadCacheFileToVector(const std::string& cache_path) {

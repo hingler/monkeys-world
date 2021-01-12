@@ -17,14 +17,11 @@ namespace file {
 
 // TODO: its not necessary at this point, but turning cachedloader into a template interface
 //       might be nice:)
-class TextureLoader : public CachedLoader {
+class TextureLoader : public CachedLoader<std::shared_ptr<shader::Texture>, TextureLoader> {
+  friend class CachedLoader<std::shared_ptr<shader::Texture>, TextureLoader>;
  public:
   TextureLoader(std::shared_ptr<LoaderThreadPool> thread_pool,
                 std::vector<cache_record> cache);
-
-  std::shared_ptr<shader::Texture> LoadTexture(const std::string& path);
-
-  std::future<std::shared_ptr<shader::Texture>> LoadTextureAsync(const std::string& path);
 
   std::vector<cache_record> GetCache() override;
 
@@ -32,8 +29,10 @@ class TextureLoader : public CachedLoader {
   
   void WaitUntilLoaded() override;
  
+ protected:
+  std::shared_ptr<shader::Texture> LoadFromFile(const std::string& path);
+ 
  private:
-  std::shared_ptr<shader::Texture> LoadTextureFromFile(const std::string& path);
 
   void LoadTextureToCache(const cache_record& record);
 
@@ -41,7 +40,6 @@ class TextureLoader : public CachedLoader {
   std::mutex loader_mutex_;
   std::shared_timed_mutex cache_mutex_;
   std::unordered_map<std::string, std::shared_ptr<shader::Texture>> texture_cache_;
-  std::shared_ptr<LoaderThreadPool> thread_pool_;
   std::condition_variable load_cond_var_;
   
 };

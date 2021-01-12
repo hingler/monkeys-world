@@ -23,8 +23,7 @@ using boost::lexical_cast;
 static std::shared_ptr<Mesh<VertexPacket3D>> FromObjFile(const std::string& path, uint64_t* file_size);
 
 ModelLoader::ModelLoader(std::shared_ptr<LoaderThreadPool> thread_pool,
-                         std::vector<cache_record> cache) {
-  thread_pool_ = thread_pool;
+                         std::vector<cache_record> cache) : CachedLoader(thread_pool) {
   loader_.bytes_read = 0;
   loader_.bytes_sum = 0;
   for (auto record : cache) {
@@ -36,30 +35,7 @@ ModelLoader::ModelLoader(std::shared_ptr<LoaderThreadPool> thread_pool,
   }
 }
 
-std::shared_ptr<model::Mesh<storage::VertexPacket3D>> ModelLoader::LoadOBJ(const std::string& path) {
-  return LoadOBJFromFile(path);
-}
-
-std::future<std::shared_ptr<model::Mesh<>>> ModelLoader::LoadOBJAsync(const std::string& path) {
-  
-  // neat SO post about packaging up a mutable lambda: https://stackoverflow.com/questions/33436336/capture-stdpromise-in-a-lambda-c14
-  // shared ptr to promise gives lambda access
-  std::shared_ptr<std::promise<std::shared_ptr<model::Mesh<>>>> result
-    = std::make_shared<std::promise<std::shared_ptr<model::Mesh<>>>>();
-
-  // TBA: we could write a wrapper which allows us to store a mutable lambda
-  auto lambda = [=] {
-    // load sync to ptr
-    // update promise when received
-    auto value = LoadOBJFromFile(path);
-    result->set_value(value);
-  };
-
-  thread_pool_->AddTaskToQueue(lambda);
-  return std::move(result->get_future());
-}
-
-std::shared_ptr<model::Mesh<>> ModelLoader::LoadOBJFromFile(const std::string& path) {
+std::shared_ptr<model::Mesh<>> ModelLoader::LoadFromFile(const std::string& path) {
   {
     std::unique_lock<std::mutex>(loader_mutex_);
     if (loader_.bytes_read != loader_.bytes_sum) {
@@ -153,7 +129,7 @@ void ModelLoader::LoadOBJToCache(cache_record& record) {
   };
 
   
-  thread_pool_->AddTaskToQueue(load_model);
+  GetThreadPool()->AddTaskToQueue(load_model);
 }
 
 

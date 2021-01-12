@@ -6,8 +6,8 @@
 namespace monkeysworld {
 namespace file {
 
-TextureLoader::TextureLoader(std::shared_ptr<LoaderThreadPool> thread_pool, std::vector<cache_record> cache) {
-  thread_pool_ = thread_pool;
+TextureLoader::TextureLoader(std::shared_ptr<LoaderThreadPool> thread_pool, std::vector<cache_record> cache)
+  : CachedLoader(thread_pool) {
   loader_.bytes_read = 0;
   loader_.bytes_sum = 0;
   for (auto record : cache) {
@@ -16,22 +16,6 @@ TextureLoader::TextureLoader(std::shared_ptr<LoaderThreadPool> thread_pool, std:
       LoadTextureToCache(record);
     }
   }
-}
-
-std::shared_ptr<shader::Texture> TextureLoader::LoadTexture(const std::string& path) {
-  return LoadTextureFromFile(path);
-}
-
-std::future<std::shared_ptr<shader::Texture>> TextureLoader::LoadTextureAsync(const std::string& path) {
-  std::shared_ptr<std::promise<std::shared_ptr<shader::Texture>>> p
-    = std::make_shared<std::promise<std::shared_ptr<shader::Texture>>>();
-  auto lambda = [=] {
-    auto t = LoadTextureFromFile(path);
-    p->set_value(t);
-  };
-
-  thread_pool_->AddTaskToQueue(lambda);
-  return std::move(p->get_future());
 }
 
 std::vector<cache_record> TextureLoader::GetCache() {
@@ -67,7 +51,7 @@ void TextureLoader::WaitUntilLoaded() {
   }
 }
 
-std::shared_ptr<shader::Texture> TextureLoader::LoadTextureFromFile(const std::string& path) {
+std::shared_ptr<shader::Texture> TextureLoader::LoadFromFile(const std::string& path) {
 
   {
     std::shared_lock<std::shared_timed_mutex>(cache_mutex_);
@@ -119,7 +103,7 @@ void TextureLoader::LoadTextureToCache(const cache_record& record) {
     }
   };
 
-  thread_pool_->AddTaskToQueue(lambda);
+  GetThreadPool()->AddTaskToQueue(lambda);
 }
 
 }

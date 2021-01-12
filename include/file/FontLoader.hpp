@@ -19,7 +19,8 @@ namespace file {
  *  Utility for loading fonts from file.
  *  Since opengl context is limited to a single thread, no async options are avail.
  */ 
-class FontLoader : public CachedLoader {
+class FontLoader : public CachedLoader<std::shared_ptr<font::Font>, FontLoader> {
+  friend class CachedLoader<std::shared_ptr<font::Font>, FontLoader>;
  public:
   FontLoader(std::shared_ptr<LoaderThreadPool> thread_pool,
              std::vector<cache_record> cache);
@@ -27,26 +28,25 @@ class FontLoader : public CachedLoader {
   /**
    *  Synchronously loads a font.
    */ 
-  std::shared_ptr<font::Font> LoadFont(const std::string& path);
+  std::shared_ptr<font::Font> LoadFile(const std::string& path);
 
   /**
    *  ASYNCHRONOUSLY loads the font >:)
    */ 
-  std::future<std::shared_ptr<font::Font>> LoadFontAsync(const std::string& path);
+  std::future<std::shared_ptr<font::Font>> LoadFileAsync(const std::string& path);
 
   std::vector<cache_record> GetCache() override;
   loader_progress GetLoaderProgress() override;
   void WaitUntilLoaded() override;
  private:
 
-  std::shared_ptr<font::Font> LoadFontFromFile(const std::string& path);
+  std::shared_ptr<font::Font> LoadFromFile(const std::string& path);
   void LoadFontToCache(cache_record& record);
 
   loader_progress loader_;
   std::mutex loader_mutex_;
   std::shared_timed_mutex cache_mutex_;
   std::unordered_map<std::string, std::shared_ptr<font::Font>> font_cache_;
-  std::shared_ptr<LoaderThreadPool> thread_pool_;
   std::condition_variable load_cond_var_;
 };
 

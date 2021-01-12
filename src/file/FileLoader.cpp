@@ -7,8 +7,7 @@ namespace monkeysworld {
 namespace file {
 
 FileLoader::FileLoader(std::shared_ptr<LoaderThreadPool> thread_pool,
-                       std::vector<cache_record> cache) {
-  thread_pool_ = thread_pool;
+                       std::vector<cache_record> cache) : CachedLoader(thread_pool) {
   loader_.bytes_read = 0;
   loader_.bytes_sum = 0;
 
@@ -18,24 +17,6 @@ FileLoader::FileLoader(std::shared_ptr<LoaderThreadPool> thread_pool,
       LoadFileToCache(record);
     }
   }
-}
-
-CacheStreambuf FileLoader::LoadFile(const std::string& path) {
-  auto res = LoadFileAsVector(path);
-  return CacheStreambuf(res);
-}
-
-std::future<CacheStreambuf> FileLoader::LoadFileAsync(const std::string& path) {
-  std::shared_ptr<std::promise<CacheStreambuf>> result = std::make_shared<std::promise<CacheStreambuf>>();
-  auto load_async_lambda = [=] {
-    auto res = LoadFileAsVector(path);
-    CacheStreambuf result_streambuf(res);
-    result->set_value(std::move(result_streambuf));
-  };
-
-  thread_pool_->AddTaskToQueue(load_async_lambda);
-
-  return std::move(result->get_future());
 }
 
 std::vector<cache_record> FileLoader::GetCache() {
@@ -71,7 +52,7 @@ void FileLoader::WaitUntilLoaded() {
 
 
 
-std::shared_ptr<std::vector<char>> FileLoader::LoadFileAsVector(const std::string& path) {
+CacheStreambuf FileLoader::LoadFromFile(const std::string& path) {
   {
     std::shared_lock<std::shared_timed_mutex> lock(cache_mutex_);
     auto i = file_cache_.find(path);
@@ -99,7 +80,7 @@ std::shared_ptr<std::vector<char>> FileLoader::LoadFileAsVector(const std::strin
     file_cache_.insert(std::make_pair(path, res));
   }
 
-  return res;
+  return CacheStreambuf(res);
 }
 
 void FileLoader::LoadFileToCache(cache_record& record) {
@@ -140,7 +121,7 @@ void FileLoader::LoadFileToCache(cache_record& record) {
     }
   };
 
-  thread_pool_->AddTaskToQueue(load_file);
+  GetThreadPool()->AddTaskToQueue(load_file);
 }
 
 }
