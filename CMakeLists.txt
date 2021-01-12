@@ -32,6 +32,7 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/file/FontLoader.cpp
                                     ${SRC_DIR}/file/FileLoader.cpp
                                     ${SRC_DIR}/file/TextureLoader.cpp
+                                    ${SRC_DIR}/file/CubeMapLoader.cpp
 
                                     ${SRC_DIR}/utils/FileUtils.cpp
                                     ${SRC_DIR}/utils/IDGenerator.cpp
@@ -53,6 +54,7 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/shader/light/SpotLight.cpp
                                     ${SRC_DIR}/shader/light/Light.cpp
                                     ${SRC_DIR}/shader/Texture.cpp
+                                    ${SRC_DIR}/shader/CubeMap.cpp
 
                                     ${SRC_DIR}/audio/AudioBuffer.cpp
                                     ${SRC_DIR}/audio/AudioBufferOgg.cpp
