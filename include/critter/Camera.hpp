@@ -11,7 +11,9 @@ namespace critter {
  */ 
 struct camera_info {
   glm::vec3 position;       // position of the camera
-  glm::mat4 view_matrix;    // view matrix
+  glm::mat4 vp_matrix;      // view matrix and perspective matrix combined
+  glm::mat4 view_matrix;    // view matrix only
+  glm::mat4 persp_matrix;   // perspective matrix only
 };
 
 /**

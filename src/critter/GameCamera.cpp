@@ -19,6 +19,9 @@ void GameCamera::Accept(Visitor& v) {
   v.Visit(std::dynamic_pointer_cast<GameCamera>(this->shared_from_this()));
 }
 
+// Problem: skybox requires view separate from perspective, so that we can separate one from the other
+// soln: add a method which returns the view and perspective matrices separately
+
 glm::mat4 GameCamera::GetViewMatrix() const {
   // this should work :)
   int width, height;
@@ -46,7 +49,12 @@ void GameCamera::SetFov(float deg) {
 camera_info GameCamera::GetCameraInfo() const {
   camera_info res;
   res.position = GetPosition();
-  res.view_matrix = GetViewMatrix();
+  res.vp_matrix = GetViewMatrix();
+  res.view_matrix = glm::inverse(GetTransformationMatrix());
+  int width, height;
+  GetContext()->GetFramebufferSize(&width, &height);
+  res.persp_matrix = glm::perspective(glm::radians(fov_deg_), (float)width / height, 0.01f, 100.0f);
+
   return res;
 }
 
