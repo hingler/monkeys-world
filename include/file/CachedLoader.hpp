@@ -23,7 +23,8 @@ enum CacheType {
   MODEL = 0,
   FONT,
   TEXTURE,
-  FILE
+  FILE,
+  CUBEMAP
 };
 
 // struct representing a file which may be cached by the loader

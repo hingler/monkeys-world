@@ -8,6 +8,7 @@
 #include <file/FileLoader.hpp>
 #include <file/FontLoader.hpp>
 #include <file/TextureLoader.hpp>
+#include <file/CubeMapLoader.hpp>
 
 #include <model/Mesh.hpp>
 #include <storage/VertexPacketTypes.hpp>
@@ -70,6 +71,16 @@ class CachedFileLoader {
 
   std::shared_ptr<const shader::Texture> LoadTexture(const std::string& path);
 
+  /**
+   *  Parameters are individual texture paths, corresponding with the respective faces of the cubemap
+   */ 
+  std::shared_ptr<const shader::CubeMap> LoadCubeMap(const std::string& x_pos,
+                                                     const std::string& x_neg,
+                                                     const std::string& y_pos,
+                                                     const std::string& y_neg,
+                                                     const std::string& z_pos,
+                                                     const std::string& z_neg);
+
   ~CachedFileLoader();
   CachedFileLoader(const CachedFileLoader& other) = delete;
   CachedFileLoader(CachedFileLoader&& other) = delete;
@@ -88,7 +99,7 @@ class CachedFileLoader {
   std::unique_ptr<ModelLoader> model_loader_;
   std::unique_ptr<FontLoader> font_loader_;
   std::unique_ptr<TextureLoader> texture_loader_;
-
+  std::unique_ptr<CubeMapLoader> cubemap_loader_;
 };
 
 } // namespace file
