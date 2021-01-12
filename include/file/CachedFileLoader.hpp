@@ -7,6 +7,7 @@
 #include <file/ModelLoader.hpp>
 #include <file/FileLoader.hpp>
 #include <file/FontLoader.hpp>
+#include <file/TextureLoader.hpp>
 
 #include <model/Mesh.hpp>
 #include <storage/VertexPacketTypes.hpp>
@@ -67,6 +68,8 @@ class CachedFileLoader {
 
   std::shared_ptr<const font::Font> LoadFont(const std::string& path);
 
+  std::shared_ptr<const shader::Texture> LoadTexture(const std::string& path);
+
   ~CachedFileLoader();
   CachedFileLoader(const CachedFileLoader& other) = delete;
   CachedFileLoader(CachedFileLoader&& other) = delete;
@@ -84,6 +87,7 @@ class CachedFileLoader {
   std::unique_ptr<FileLoader> file_loader_;
   std::unique_ptr<ModelLoader> model_loader_;
   std::unique_ptr<FontLoader> font_loader_;
+  std::unique_ptr<TextureLoader> texture_loader_;
 
 };
 
