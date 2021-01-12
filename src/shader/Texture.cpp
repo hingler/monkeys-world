@@ -29,13 +29,13 @@ GLuint Texture::GetTextureDescriptor() const {
     glBindTexture(GL_TEXTURE_2D, tex_);
     switch (channels_) {
       case 1:
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width_, height_, 0, GL_RED, GL_UNSIGNED_INT, tex_cache_);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width_, height_, 0, GL_RED, GL_UNSIGNED_BYTE, tex_cache_);
         break;
       case 3:
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width_, height_, 0, GL_RGB, GL_UNSIGNED_INT, tex_cache_);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width_, height_, 0, GL_RGB, GL_UNSIGNED_BYTE, tex_cache_);
         break;
       case 4:
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width_, height_, 0, GL_RGBA, GL_UNSIGNED_INT, tex_cache_);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width_, height_, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_cache_);
         break;
       default:
         BOOST_LOG_TRIVIAL(error) << "not sure how to load this one tbh";
