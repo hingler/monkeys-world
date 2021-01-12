@@ -53,10 +53,9 @@ loader_progress FontLoader::GetLoaderProgress() {
 
 void FontLoader::WaitUntilLoaded() {
   std::unique_lock<std::mutex> lock(loader_mutex_);
-  if (loader_.bytes_read != loader_.bytes_sum) {
+  if (loader_.bytes_read < loader_.bytes_sum) {
     auto lambda = [&]() -> bool {
-      auto prog = GetLoaderProgress();
-      return (prog.bytes_read == prog.bytes_sum);
+      return (loader_.bytes_read == loader_.bytes_sum);
     };
 
     load_cond_var_.wait(lock, lambda);
