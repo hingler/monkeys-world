@@ -22,7 +22,7 @@ void TextObject::PrepareAttributes() {
 void TextObject::RenderMaterial(const engine::RenderContext& rc) {
   // TODO: manage blend modes efficiently
   mat.SetModelTransforms(GetTransformationMatrix());
-  mat.SetCameraTransforms(rc.GetActiveCamera().view_matrix);
+  mat.SetCameraTransforms(rc.GetActiveCamera().vp_matrix);
   mat.SetGlyphTexture(GetTexture());
   mat.SetTextColor(GetTextColor());
   mat.UseMaterial();

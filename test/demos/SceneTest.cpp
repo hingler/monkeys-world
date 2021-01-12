@@ -62,7 +62,7 @@ class RatModel2 : public Model {
     m.SetSpotlights(rc.GetSpotlights());
     spotlight_info i = rc.GetSpotlights()[0];
     m.SetModelTransforms(tf_matrix);
-    m.SetCameraTransforms(cam.view_matrix);
+    m.SetCameraTransforms(cam.vp_matrix);
     m.SetSurfaceColor(glm::vec4(0.0, 1.0, 0.0, 1.0));
     m.UseMaterial();
     Draw();
@@ -94,7 +94,7 @@ class RatModel : public Model {
     m.SetSpotlights(rc.GetSpotlights());
     spotlight_info i = rc.GetSpotlights()[0];
     m.SetModelTransforms(tf_matrix);
-    m.SetCameraTransforms(cam.view_matrix);
+    m.SetCameraTransforms(cam.vp_matrix);
     m.SetSurfaceColor(glm::vec4(1.0, 0.6, 0.0, 1.0));
     m.UseMaterial();
     Draw();
