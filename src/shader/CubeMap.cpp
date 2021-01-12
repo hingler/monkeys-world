@@ -32,7 +32,6 @@ uint64_t CubeMap::GetCubemapSize() const {
   uint64_t res = 0;
   for (int i = 0; i < 6; i++, data++) {
     res += (data->channels * data->height * data->width);
-    BOOST_LOG_TRIVIAL(trace) << res;
   }
 
   return res;
