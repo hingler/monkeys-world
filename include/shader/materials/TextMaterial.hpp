@@ -22,8 +22,8 @@ class TextMaterial : public ::monkeysworld::shader::Material {
 
   void UseMaterial() override;
 
-  void SetCameraTransforms(const glm::mat4& vp_matrix) override;
-  void SetModelTransforms(const glm::mat4& model_matrix) override;
+  void SetCameraTransforms(const glm::mat4& vp_matrix);
+  void SetModelTransforms(const glm::mat4& model_matrix);
 
   void SetLights(const std::vector<light::LightData>& lights) {}
   void SetSpotlights(const std::vector<light::spotlight_info>& lights) {}

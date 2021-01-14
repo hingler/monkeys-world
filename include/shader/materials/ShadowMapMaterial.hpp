@@ -6,7 +6,6 @@
 #include <shader/Material.hpp>
 #include <shader/ShaderProgram.hpp>
 
-
 #include <engine/Context.hpp>
 
 #include <glm/glm.hpp>
@@ -27,8 +26,8 @@ class ShadowMapMaterial : public ::monkeysworld::shader::Material {
 
   void UseMaterial() override;
 
-  void SetCameraTransforms(const glm::mat4& vp_matrix) override;
-  void SetModelTransforms(const glm::mat4& model_matrix) override;
+  void SetCameraTransforms(const glm::mat4& vp_matrix);
+  void SetModelTransforms(const glm::mat4& model_matrix);
   GLuint GetProgramDescriptor() override;
 
   // nop

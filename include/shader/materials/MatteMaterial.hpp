@@ -34,12 +34,12 @@ class MatteMaterial : public ::monkeysworld::shader::Material {
    *  Passes transform data to the respective uniforms.
    *  @param vp_matrix - The view + projection matrices drawn for this
    */ 
-  void SetCameraTransforms(const glm::mat4& vp_matrix) override;
+  void SetCameraTransforms(const glm::mat4& vp_matrix);
 
   /**
    *  For passing model matrix.
    */ 
-  void SetModelTransforms(const glm::mat4& model_matrix) override;
+  void SetModelTransforms(const glm::mat4& model_matrix);
 
   /**
    *  Passes light data to its respective uniforms. (depreciated)
