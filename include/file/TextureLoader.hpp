@@ -15,8 +15,6 @@
 namespace monkeysworld {
 namespace file {
 
-// TODO: its not necessary at this point, but turning cachedloader into a template interface
-//       might be nice:)
 class TextureLoader : public CachedLoader<std::shared_ptr<shader::Texture>, TextureLoader> {
   friend class CachedLoader<std::shared_ptr<shader::Texture>, TextureLoader>;
  public:

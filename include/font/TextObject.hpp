@@ -17,7 +17,6 @@
 namespace monkeysworld {
 namespace font {
 
-// TODO: choose a better name maybe :(
 class TextObject : public critter::GameObject, public Text {
 
  public:

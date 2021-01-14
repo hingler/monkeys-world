@@ -52,9 +52,6 @@ spotlight_info SpotLight::GetSpotLightInfo() {
 
   res.spotlight_view_matrix = GetLightMatrix();
 
-  // TODO: add tweaks for this light shit
-  // actually ... might be good to use a light class for this stuff!
-  // have the "light" parts be separate and just call at them
   res.color = GetColor();
   res.intensity_spec = GetSpecularIntensity();
   res.intensity_diff = GetDiffuseIntensity();
@@ -85,8 +82,6 @@ void SpotLight::ChangeMapSize(int px) {
   map_size_ = px;
   glBindTexture(GL_TEXTURE_2D, map_);
 
-  // apparently hw is only 24
-  // TODO: swap this over to DSA extension jargon
   glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, map_size_, map_size_, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

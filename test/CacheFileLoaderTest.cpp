@@ -27,8 +27,6 @@ TEST(CacheTests, ReadExistingCache) {
   }
 
   std::cout << "Re-reading cache..." << std::endl;
-  // BUG: cache loader destructs before cache is loaded.
-  // at the moment, we have no facility for guaranteeing that our caches are loaded.
   CachedFileLoader loader("existingcache");
 }
 
@@ -54,7 +52,6 @@ TEST(CacheTests, ReadCacheContents) {
 }
 
 TEST(CacheTests, QuickCubeMapTest) {
-  // TODO: move this somewhere else
   remove("resources/cache/coolcache.cache");
   CachedFileLoader loader("coolcache");
   std::string s = "resources/test/texturetest.png";

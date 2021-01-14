@@ -18,8 +18,6 @@
 #include <map>
 
 // from https://stackoverflow.com/questions/87372/check-if-a-class-has-a-member-function-of-a-given-signature/10707822#10707822
-
-// TODO: Meshes cannot be reused. There should be some system by which the context is only engaged when it's needed.
 namespace monkeysworld {
 namespace model {
 

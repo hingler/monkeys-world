@@ -92,8 +92,6 @@ class SpotLight : public critter::GameObject, public Light {
   GLuint map_;                        // descriptor for map
   GLuint shadow_fb_;                  // framebuffer for shadow map
   materials::ShadowMapMaterial mat_;  // material assc'd with shadow map generation
-  // TODO: I think this is the best way to handle this for now
-  //       It might be better to move GetShadowProgDesc to the light prototype
 
   float angle_;
 };

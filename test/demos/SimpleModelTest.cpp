@@ -44,7 +44,6 @@ class DummyModel : public Model {
     std::shared_ptr<const Mesh<>> mesh;
     if (mesh = GetMesh()) {
       mesh->PointToVertexAttribs();
-      // TODO: factor out? if so: i'll add it to Mesh later
       glDrawElements(GL_TRIANGLES, mesh->GetIndexCount(), GL_UNSIGNED_INT, reinterpret_cast<void*>(0));
     }
   }

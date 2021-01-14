@@ -57,8 +57,6 @@ class RatModel2 : public Model {
   void RenderMaterial(const RenderContext& rc) override {
     glm::mat4 tf_matrix = GetTransformationMatrix();
     camera_info cam = rc.GetActiveCamera();
-    // matte material doesn't accept spotlights!
-    // TODO: modify material to accept different types of lights
     m.SetSpotlights(rc.GetSpotlights());
     spotlight_info i = rc.GetSpotlights()[0];
     m.SetModelTransforms(tf_matrix);
@@ -244,9 +242,7 @@ class TestScene : public Scene {
     this->ctx = ctx;
   }
   void Initialize() override {
-    // TODO: USE THE RAT! https://sketchfab.com/3d-models/rat-847629266c0f442da74fb132f46f3baf
-    // just the rat model for now
-    // subclass so that we can add some custom behavior
+    // USE THE RAT! https://sketchfab.com/3d-models/rat-847629266c0f442da74fb132f46f3baf
     game_object_root_ = std::make_shared<Empty>(ctx);
     auto cam = std::make_shared<MovingCamera>(ctx);
     game_object_root_->AddChild(cam);

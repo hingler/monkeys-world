@@ -9,7 +9,6 @@ namespace monkeysworld {
 namespace shader {
 
 // TODO: How would we load an image, and then write onto that image?
-// 
 
 /**
  *  Represents a texture.

@@ -13,9 +13,6 @@
 namespace monkeysworld {
 namespace file {
 
-// TODO: let the cachedfileloader take care of the name clobbering.
-// For six-file cubemaps: we'll use a name clobbering system.
-// we don't need the file names to be understandable by everyone, just CubeMapLoader.
 class CubeMapLoader : public CachedLoader<std::shared_ptr<shader::CubeMap>, CubeMapLoader> {
   friend class CachedLoader<std::shared_ptr<shader::CubeMap>, CubeMapLoader>;
  public:
