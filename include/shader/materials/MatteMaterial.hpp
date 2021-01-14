@@ -44,12 +44,12 @@ class MatteMaterial : public ::monkeysworld::shader::Material {
   /**
    *  Passes light data to its respective uniforms. (depreciated)
    */ 
-  void SetLights(const std::vector<light::LightData>& lights) override;
+  void SetLights(const std::vector<light::LightData>& lights);
 
   /**
    *  Passes spotlights to uniforms.
    */ 
-  void SetSpotlights(const std::vector<light::spotlight_info>& lights) override;
+  void SetSpotlights(const std::vector<light::spotlight_info>& lights);
 
   GLuint GetProgramDescriptor() override;
 
