@@ -30,7 +30,8 @@ void SkyboxMaterial::UseMaterial() {
 }
 
 void SkyboxMaterial::SetCameraView(const glm::mat4& view_mat) {
-  view_mat_ = view_mat;
+  // strips translation component
+  view_mat_ = glm::mat4(glm::mat3(view_mat));
 }
 
 void SkyboxMaterial::SetCameraPersp(const glm::mat4& model_mat) {
