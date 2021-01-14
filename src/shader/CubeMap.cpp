@@ -27,7 +27,7 @@ CubeMap::CubeMap(std::string x_pos,
   }
 }
 
-uint64_t CubeMap::GetCubemapSize() const {
+uint64_t CubeMap::GetCubeMapSize() const {
   const face_info* data = face_data_;
   uint64_t res = 0;
   for (int i = 0; i < 6; i++, data++) {

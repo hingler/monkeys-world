@@ -105,6 +105,7 @@ void main(int argc, char** argv) {
 
   // as it stands the only good argument for 2d meshes is text so i could probably just implement it as 3d
   // idk i'll just leave it in model for now
+  // lole
   std::shared_ptr<::monkeysworld::model::Mesh<>> test_mesh = Model::FromObjFile(ctx.get(), "resources/test/untitled4.obj");
 
   std::shared_ptr<DummyModel> test_model = std::make_shared<DummyModel>(ctx.get());

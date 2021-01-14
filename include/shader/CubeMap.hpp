@@ -46,7 +46,7 @@ class CubeMap {
   /**
    *  @returns the size, in bytes, of the cubemap
    */ 
-  uint64_t GetCubemapSize() const;
+  uint64_t GetCubeMapSize() const;
 
   /**
    *  CubeMap dtor

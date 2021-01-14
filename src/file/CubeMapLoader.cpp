@@ -24,7 +24,7 @@ std::vector<cache_record> CubeMapLoader::GetCache() {
   cache_record temp;
   std::vector<cache_record> res;
   for (auto i : file_cache_) {
-    temp.file_size = i.second->GetCubemapSize();
+    temp.file_size = i.second->GetCubeMapSize();
     temp.path = i.first;
     temp.type = CUBEMAP;
     res.push_back(temp);

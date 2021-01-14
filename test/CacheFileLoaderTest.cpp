@@ -59,6 +59,6 @@ TEST(CacheTests, QuickCubeMapTest) {
   CachedFileLoader loader("coolcache");
   std::string s = "resources/test/texturetest.png";
   auto res = loader.LoadCubeMap(s, s, s, s, s, s);
-  ASSERT_LT((100 * 100 * 24), res->GetCubemapSize());
+  ASSERT_LT((100 * 100 * 24), res->GetCubeMapSize());
   remove("resources/cache/coolcache.cache");
 }
