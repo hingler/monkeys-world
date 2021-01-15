@@ -6,7 +6,7 @@ namespace critter {
 using engine::Context;
 using shader::CubeMap;
 
-Skybox::PositionPacket::Bind() {
+void Skybox::PositionPacket::Bind() {
   glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(Skybox::PositionPacket), (void*)0);
   glEnableVertexAttribArray(0);
 }
@@ -39,7 +39,7 @@ Skybox::Skybox(Context* ctx) : GameObject(ctx), mat_(ctx) {
   cube_map_ = std::shared_ptr<CubeMap>(nullptr);
 }
 
-Skybox::Skybox(Context* ctx, std::shared_ptr<CubeMap> c) : Skybox(ctx), mat_(ctx) {
+Skybox::Skybox(Context* ctx, std::shared_ptr<CubeMap> c) : Skybox(ctx) {
   SetCubeMap(c);
 }
 
