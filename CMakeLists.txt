@@ -24,6 +24,7 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/shader/materials/MatteMaterial.cpp
                                     ${SRC_DIR}/shader/materials/ShadowMapMaterial.cpp
                                     ${SRC_DIR}/shader/materials/TextMaterial.cpp
+                                    ${SRC_DIR}/shader/materials/SkyboxMaterial.cpp
 
                                     ${SRC_DIR}/file/CacheStreambuf.cpp
                                     ${SRC_DIR}/file/CachedFileLoader.cpp
@@ -43,6 +44,7 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/critter/Object.cpp
                                     ${SRC_DIR}/critter/Model.cpp
                                     ${SRC_DIR}/critter/GameCamera.cpp
+                                    ${SRC_DIR}/critter/Skybox.cpp
 
                                     ${SRC_DIR}/critter/visitor/LightVisitor.cpp
                                     ${SRC_DIR}/critter/visitor/ActiveCameraFindVisitor.cpp
