@@ -39,11 +39,11 @@ Skybox::Skybox(Context* ctx) : GameObject(ctx), mat_(ctx) {
   cube_map_ = std::shared_ptr<CubeMap>(nullptr);
 }
 
-Skybox::Skybox(Context* ctx, std::shared_ptr<CubeMap> c) : Skybox(ctx) {
+Skybox::Skybox(Context* ctx, std::shared_ptr<const CubeMap> c) : Skybox(ctx) {
   SetCubeMap(c);
 }
 
-void Skybox::SetCubeMap(std::shared_ptr<CubeMap> c) {
+void Skybox::SetCubeMap(std::shared_ptr<const CubeMap> c) {
   cube_map_ = c;
 }
 
@@ -64,6 +64,7 @@ void Skybox::RenderMaterial(const engine::RenderContext& rc) {
 }
 
 void Skybox::Draw() {
+  glPointSize(64.0f);
   glDrawElements(GL_TRIANGLES, mesh_.GetIndexCount(), GL_UNSIGNED_INT, (void*)0);
 }
 

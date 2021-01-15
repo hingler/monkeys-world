@@ -29,7 +29,7 @@ class Skybox : public GameObject {
    *  Equivalent to constructing a new skybox and calling SetCubeMap on it.
    *  @param c - the new cubemap.
    */ 
-  Skybox(engine::Context* ctx, std::shared_ptr<shader::CubeMap> c);
+  Skybox(engine::Context* ctx, std::shared_ptr<const shader::CubeMap> c);
 
   /**
    *  Override for visitor functions.
@@ -40,7 +40,7 @@ class Skybox : public GameObject {
    *  Sets the cubemap associated with this Skybox.
    *  @param c - the new cubemap.
    */ 
-  void SetCubeMap(std::shared_ptr<shader::CubeMap> c);
+  void SetCubeMap(std::shared_ptr<const shader::CubeMap> c);
 
   // TODO: if we add a tag indicating which render pass we're running,
   //       then we don't need to separate out all of these steps, except for convenience.
@@ -63,7 +63,7 @@ class Skybox : public GameObject {
   model::Mesh<PositionPacket> mesh_;
 
   shader::materials::SkyboxMaterial mat_;
-  std::shared_ptr<shader::CubeMap> cube_map_;
+  std::shared_ptr<const shader::CubeMap> cube_map_;
 };
 
 }
