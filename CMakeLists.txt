@@ -4,8 +4,6 @@ project(monkeys-world VERSION 0.0.1)
 include(CTest)
 enable_testing()
 
-set(VCPKG_TARGET_TRIPLET "x64-windows")
-
 # TODO: Need to reorganize so that this whole thing can be imported as
 #       a library into the actual project
 
