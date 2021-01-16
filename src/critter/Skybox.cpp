@@ -23,18 +23,18 @@ Skybox::Skybox(Context* ctx) : GameObject(ctx), mat_(ctx) {
   mesh_.AddVertex({ glm::vec3( 1,  1,  1 ) });
 
   // POLYGONS
-  mesh_.AddPolygon(1, 2, 3);
-  mesh_.AddPolygon(2, 4, 3);
-  mesh_.AddPolygon(1, 5, 3);
+  mesh_.AddPolygon(0, 1, 2);
+  mesh_.AddPolygon(2, 3, 1);
+  mesh_.AddPolygon(0, 2, 4);
+  mesh_.AddPolygon(4, 6, 2);
+  mesh_.AddPolygon(6, 4, 7);
+  mesh_.AddPolygon(4, 5, 7);
+  mesh_.AddPolygon(0, 1, 4);
+  mesh_.AddPolygon(4, 1, 5);
+  mesh_.AddPolygon(1, 3, 5);
   mesh_.AddPolygon(5, 7, 3);
-  mesh_.AddPolygon(7, 5, 8);
-  mesh_.AddPolygon(5, 6, 8);
-  mesh_.AddPolygon(1, 2, 5);
-  mesh_.AddPolygon(5, 2, 6);
-  mesh_.AddPolygon(8, 6, 2);
-  mesh_.AddPolygon(6, 4, 8);
-  mesh_.AddPolygon(7, 3, 4);
-  mesh_.AddPolygon(3, 4, 8);
+  mesh_.AddPolygon(2, 3, 6);
+  mesh_.AddPolygon(6, 7, 3);
 
   cube_map_ = std::shared_ptr<CubeMap>(nullptr);
 }
@@ -64,7 +64,6 @@ void Skybox::RenderMaterial(const engine::RenderContext& rc) {
 }
 
 void Skybox::Draw() {
-  glPointSize(64.0f);
   glDrawElements(GL_TRIANGLES, mesh_.GetIndexCount(), GL_UNSIGNED_INT, (void*)0);
 }
 

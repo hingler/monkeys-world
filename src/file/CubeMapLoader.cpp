@@ -92,13 +92,14 @@ void CubeMapLoader::LoadFileToCache(cache_record& record) {
   if (record.path[0] == ':') {
     std::vector<std::string> paths;
     boost::split(paths, record.path, [](char c){ return (c == ':'); }, boost::token_compress_on);
-    // ensure path length is equal to 6
-    if (paths.size() != 6) {
-      BOOST_LOG_TRIVIAL(error) << "string does not contain correct number of paths -- expected 6, actual " << paths.size();
+    // ensure path length is equal to 7
+    if (paths.size() != 7) {
+      BOOST_LOG_TRIVIAL(error) << "string does not contain correct number of paths -- expected 7, actual " << paths.size();
       BOOST_LOG_TRIVIAL(error) << record.path;
+      return;
     }
 
-    auto cubemap = std::make_shared<shader::CubeMap>(paths[0], paths[1], paths[2], paths[3], paths[4], paths[5]);
+    auto cubemap = std::make_shared<shader::CubeMap>(paths[1], paths[2], paths[3], paths[4], paths[5], paths[6]);
 
     {
       std::unique_lock<std::shared_timed_mutex> lock(cache_mutex_);

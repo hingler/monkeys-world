@@ -22,6 +22,7 @@ CubeMap::CubeMap(std::string x_pos,
     data[i].data = stbi_load(paths[i]->c_str(), &data[i].width, &data[i].height, &data[i].channels, 0);
     if (!data[i].data) {
       BOOST_LOG_TRIVIAL(error) << "invalid skybox texture: " << i;
+      BOOST_LOG_TRIVIAL(error) << *paths[i];
       throw exception::InvalidTexturePathException("invalid skybox texture path");
     }
   }
@@ -73,6 +74,11 @@ GLuint CubeMap::GetCubeMapDescriptor() const {
     }
   }
 
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
   return cubemap_;
 }
@@ -82,6 +88,7 @@ CubeMap::~CubeMap() {
     if (glfwGetCurrentContext()) {
       glDeleteTextures(1, &cubemap_);
     } else {
+      // i bet this whole thing is going out of scope only after we terminate glfw
       BOOST_LOG_TRIVIAL(warning) << "cubemap descriptor could not be destroyed!";
     }
   }
