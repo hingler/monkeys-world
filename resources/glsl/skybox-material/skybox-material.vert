@@ -9,6 +9,6 @@ layout(location = 1) uniform mat4 u_Persmat;
 
 void main() {
   vec4 pos = u_Persmat * u_Viewmat * a_Position;
-  v_Texcoord = pos.xyz;
+  v_Texcoord = a_Position.xyz;
   gl_Position = pos.xyww;
 }
