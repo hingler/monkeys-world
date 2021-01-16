@@ -64,7 +64,7 @@ CacheStreambuf FileLoader::LoadFromFile(const std::string& path) {
   if (!source_stream.good()) {
     // bad ptr
     BOOST_LOG_TRIVIAL(error) << "bad path for new file";
-    return std::shared_ptr<std::vector<char>>(nullptr);
+    return CacheStreambuf();
   }
 
   auto res = std::make_shared<std::vector<char>>();
