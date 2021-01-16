@@ -106,13 +106,11 @@ find_package(portaudio CONFIG REQUIRED)
 ### BOOST ###
 # side note: this doesn't work because vcpkg.cmake overrides USE_STATIC_LIBS.
 # i'd have to load the static ver, which i might do later, but i cant right now
-set(Boost_USE_STATIC_LIBS        ON)  # only find static libs
-set(Boost_USE_DEBUG_LIBS         OFF) # ignore debug libs and
-set(Boost_USE_RELEASE_LIBS       ON)  # only find release libs
-set(Boost_USE_MULTITHREADED      ON)
-set(Boost_USE_STATIC_RUNTIME     OFF)
-set(Boost_DEBUG                  ON)
-
+set(BOOST_USE_MULTITHREADED ON)
+# side note: this doesn't work because vcpkg.cmake overrides USE_STATIC_LIBS.
+set(BOOST_USE_STATIC_LIBS   ON)
+# i'd have to load the static ver, which i might do later, but i cant right now
+set(Boost_DEBUG             ON)
 find_package(Boost 1.72.0 COMPONENTS log regex REQUIRED)
 
 # this should be all i need for now
