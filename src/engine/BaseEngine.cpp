@@ -113,6 +113,10 @@ void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<engine::Context> ctx
     //   - note: there should be a method which contains all GL calls required to draw the object
     //   - that way, we can separate material configuration from drawing
     //   - add a method to Object which accomplishes this
+
+    // MEMORY ISSUE: spotlights were never cleared, so the list just builds and builds -- slowdown increases over time because we spend so much time
+    // passing around a massive array of spotlights
+    spotlights.clear();
     for (auto light : light_visitor.GetSpotLights()) {
       // no render context needed -- we're just preparing attributes and calling a default shadow func
       // we want to have the shadow map shader prepared beforehand
