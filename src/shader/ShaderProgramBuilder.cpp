@@ -114,7 +114,7 @@ GLuint ShaderProgramBuilder::CreateShaderFromFile(const std::string& shader_path
   auto buffer = loader_->LoadFile(shader_path);
   std::istream shader_file(&buffer);
   
-  if (shader_file.fail()) {
+  if (!shader_file.good()) {
     // could not read file path
     glDeleteShader(shader);
     BOOST_LOG_TRIVIAL(error) << "Invalid shader path " << shader_path;
