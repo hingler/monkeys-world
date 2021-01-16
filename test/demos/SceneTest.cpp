@@ -15,6 +15,8 @@
 #include <critter/GameObject.hpp>
 #include <critter/Model.hpp>
 
+#include <critter/Skybox.hpp>
+
 #include <font/TextObject.hpp>
 
 #include <shader/light/SpotLight.hpp>
@@ -22,6 +24,9 @@
 #include <shader/materials/MatteMaterial.hpp>
 
 #include <glm/gtx/euler_angles.hpp>
+
+#include <sstream>
+#include <iomanip>
 
 // create everything inline -- its pretty lazy
 
@@ -35,6 +40,7 @@ using ::monkeysworld::critter::GameCamera;
 using ::monkeysworld::critter::GameObject;
 using ::monkeysworld::critter::Object;
 using ::monkeysworld::critter::Model;
+using ::monkeysworld::critter::Skybox;
 
 using ::monkeysworld::critter::camera_info;
 
@@ -221,16 +227,34 @@ class MovingCamera : public GameCamera {
   float rot_y;
 };
 
+#define FRAME_WINDOW 240
+
 class FrameText : public TextObject {
  public:
-  FrameText(Context* ctx) : TextObject(ctx, "resources/montserrat-light.ttf") { a = 0; }
+  FrameText(Context* ctx) : TextObject(ctx, "resources/montserrat-light.ttf") { a = 0; counter = 0; 
+    for (int i = 0; i < FRAME_WINDOW; i++) {
+      frames[i] = 1.0f;
+    }
+  }
   void Update() override {
-    a += GetContext()->GetDeltaTime();
-    SetText(std::to_string(a));
     SetRotation(glm::vec3(0, a / 2.5, 0));
+    frames[counter++ % FRAME_WINDOW] = GetContext()->GetDeltaTime();
+    a += GetContext()->GetDeltaTime();
+    float avg = 0.0f;
+    for (int i = 0; i < FRAME_WINDOW; i++) {
+      avg += frames[i];
+    }
+
+    avg /= FRAME_WINDOW;
+    avg = (1.0 / avg);
+    std::stringstream stream;
+    stream << std::fixed << std::setprecision(2) << avg;
+    SetText(stream.str() + " fps -- " + std::to_string(a) + " sec");
   }
  private:
   float a;
+  int counter;
+  float frames[FRAME_WINDOW];
 };
 
 /**
@@ -248,7 +272,7 @@ class TestScene : public Scene {
     game_object_root_->AddChild(cam);
     cam->SetPosition(glm::vec3(0, 0, -5));
     cam->SetRotation(glm::vec3(0, 3.14, 0));
-    cam->SetFov(45.0f);
+    cam->SetFov(60.0f);
     cam->SetActive(true);
     auto rat = std::make_shared<RatModel>(ctx);
     rat->SetPosition(glm::vec3(0, 0, 3));
@@ -269,6 +293,11 @@ class TestScene : public Scene {
     t->SetPosition(glm::vec3(2, 0, 0));
     rat->AddChild(t);
     
+    auto w = std::make_shared<Skybox>(ctx);
+    std::string s = "resources/test/texturetest.png";
+    auto res = ctx->GetCachedFileLoader()->LoadCubeMap(s, s, s, s, s, s);
+    w->SetCubeMap(res);
+    game_object_root_->AddChild(w);
     t->AddChild(rat_two);
   }
 
