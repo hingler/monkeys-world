@@ -51,6 +51,8 @@ Font::Font(const std::string& font_path) {
   // what should char size be?
   // let's go with 256px for now
   e = FT_Set_Char_Size(face, 0, bitmap_desired_scale * 64, 72, 72);
+  
+  line_height_ = face->size->metrics.height;
 
   // create an array of glyphs we can use from here on out
 
@@ -179,6 +181,7 @@ model::Mesh<storage::VertexPacket2D> Font::GetTextGeometry(const std::string& te
   
   Mesh<VertexPacket2D> result;
   float origin_x = 0.0f;
+  float origin_y = 0.0f;
   // bitmap, bearing are in pixels
   // advance is in 1/64 pixels.
 
@@ -198,7 +201,11 @@ model::Mesh<storage::VertexPacket2D> Font::GetTextGeometry(const std::string& te
 
   int cur = 0;
   for (auto c : text) {
-    if (c < glyph_lower_ || c > glyph_upper_) {
+    if (c == '\n') {
+      origin_x = 0;
+      origin_y -= (line_height_ / (SCREENSPACE_FAC * ADVANCE_SCALE)); 
+      continue;
+    } else if (c < glyph_lower_ || c > glyph_upper_) {
       // skip, make space
       origin_x += glyph_cache_[0].advance / (SCREENSPACE_FAC * ADVANCE_SCALE);
       continue;
@@ -206,7 +213,7 @@ model::Mesh<storage::VertexPacket2D> Font::GetTextGeometry(const std::string& te
 
     info = &glyph_cache_[c - glyph_lower_];
     glyph_origin_x = origin_x + (info->bearing_x / SCREENSPACE_FAC);
-    glyph_origin_y = 0.0f + (info->bearing_y / SCREENSPACE_FAC);
+    glyph_origin_y = origin_y + (info->bearing_y / SCREENSPACE_FAC);
 
     tex_width = ((float)info->width) / atlas_width;
     tex_height = ((float)info->height) / atlas_height;

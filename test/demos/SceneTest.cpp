@@ -248,8 +248,8 @@ class FrameText : public TextObject {
     avg /= FRAME_WINDOW;
     avg = (1.0 / avg);
     std::stringstream stream;
-    stream << std::fixed << std::setprecision(2) << avg;
-    SetText(stream.str() + " fps -- " + std::to_string(a) + " sec");
+    stream << std::fixed << std::setprecision(2) << avg << " fps\n" << a << " sec\nmonkeysworld v0.0.1";
+    SetText(stream.str());
   }
  private:
   float a;

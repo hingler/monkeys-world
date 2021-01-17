@@ -106,6 +106,9 @@ class Font {
 
   int atlas_width;
   int atlas_height;
+
+  // height of a line (1/64th px)
+  float line_height_;
 };
 
 }
