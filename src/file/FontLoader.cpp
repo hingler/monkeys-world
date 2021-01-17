@@ -72,11 +72,9 @@ std::shared_ptr<font::Font> FontLoader::LoadFromFile(const std::string& path) {
     }
   }
 
-  try {
-    res = std::make_shared<font::Font>(path);
-  } catch (font::exception::BadFontPathException e) {
-    return std::shared_ptr<font::Font>(nullptr);
-  }
+  // not catching this exception -- im gonna let it bump up and be public
+  // TBA: in the event of an exception from this call, return a shitty default font
+  res = std::make_shared<font::Font>(path);
 
   {
     std::unique_lock<std::shared_timed_mutex> lock(cache_mutex_);

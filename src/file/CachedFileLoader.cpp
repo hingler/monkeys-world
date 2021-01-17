@@ -123,6 +123,8 @@ CachedFileLoader::~CachedFileLoader() {
   file_loader_->WaitUntilLoaded();
   model_loader_->WaitUntilLoaded();
   font_loader_->WaitUntilLoaded();
+  texture_loader_->WaitUntilLoaded();
+  cubemap_loader_->WaitUntilLoaded();
   std::fstream cache_output;
   cache_output.open(cache_path_, std::fstream::in | std::fstream::out | std::fstream::trunc | std::fstream::binary);
   std::vector<cache_record> cache;
@@ -150,6 +152,7 @@ CachedFileLoader::~CachedFileLoader() {
     WriteAsBytes(cache_output, static_cast<uint64_t>(entry.file_size));
   }
 
+  // btw: i get the feeling this method is bogus
   uint32_t crc = utils::fileutils::CalculateCRCHash(cache_output, std::streampos(CACHE_DATA_START));
   cache_output.seekp(CACHE_DATA_START - 8);
   WriteAsBytes(cache_output, static_cast<uint32_t>(crc));

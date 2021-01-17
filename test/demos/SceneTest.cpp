@@ -231,7 +231,11 @@ class MovingCamera : public GameCamera {
 
 class FrameText : public TextObject {
  public:
-  FrameText(Context* ctx) : TextObject(ctx, "resources/montserrat-light.ttf") { a = 0; counter = 0; 
+  FrameText(Context* ctx) : TextObject(ctx, "resources/8bitoperator_jve.ttf") {
+    a = 0;
+    counter = 0;
+    hue = 0;
+    // assume l = 0.5, s = 1 
     for (int i = 0; i < FRAME_WINDOW; i++) {
       frames[i] = 1.0f;
     }
@@ -245,6 +249,36 @@ class FrameText : public TextObject {
       avg += frames[i];
     }
 
+    hue += GetContext()->GetDeltaTime() * 60;
+    if (hue >= 360.0f) {
+      hue -= 360.0f;
+    }
+    float x = 1 - glm::abs((glm::fract(hue / 120.0) * 2) - 1);
+    glm::vec3 res;
+    switch(static_cast<int>(glm::floor(hue / 60.0))) {
+      case 0:
+        res = glm::vec3(1.0, x, 0);
+        break;
+      case 1:
+        res = glm::vec3(x, 1.0, 0);
+        break;
+      case 2:
+        res = glm::vec3(0, 1.0, x);
+        break;
+      case 3:
+        res = glm::vec3(0, x, 1.0);
+        break;
+      case 4:
+        res = glm::vec3(x, 0, 1.0);
+        break;
+      case 5:
+        res = glm::vec3(1.0, 0, x);
+        break;
+      default:
+        res = glm::vec3(0);
+    }
+
+    SetTextColor(glm::vec4(res, 1.0));
     avg /= FRAME_WINDOW;
     avg = (1.0 / avg);
     std::stringstream stream;
@@ -255,6 +289,7 @@ class FrameText : public TextObject {
   float a;
   int counter;
   float frames[FRAME_WINDOW];
+  float hue;
 };
 
 /**
