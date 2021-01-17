@@ -56,11 +56,6 @@ class GameObject : public Object, public std::enable_shared_from_this<GameObject
   std::shared_ptr<Object> GetParent() override;
 
   /**
-   *  Returns ptr to context.
-   */ 
-  engine::Context* GetContext() const;
-
-  /**
    *  Returns the transformation matrix associated with this object.
    */ 
   glm::mat4 GetTransformationMatrix() const;

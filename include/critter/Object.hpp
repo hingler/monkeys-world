@@ -5,7 +5,11 @@
 
 #include <engine/RenderContext.hpp>
 
+#include <engine/Context.hpp>
+
 #include <vector>
+
+// TBA: create forward decl headers in respective namespaces?
 
 namespace monkeysworld {
 namespace critter {
@@ -26,8 +30,9 @@ class Object {
  public:
   /**
    *  Super ctor for objects
+   *  @param ctx - pointer to context.
    */ 
-  Object();
+  Object(engine::Context* ctx);
 
   /**
    *  Visitor for identifying components :)
@@ -70,6 +75,8 @@ class Object {
    */ 
   virtual std::shared_ptr<Object> GetParent() = 0;
 
+  engine::Context* GetContext() const;
+
   /**
    *  Get the ID currently associated with an object.
    * 
@@ -111,6 +118,7 @@ class Object {
 
 
  private:
+  engine::Context* ctx_;
   uint64_t id_;
   static utils::IDGenerator id_generator_;
 };

@@ -18,21 +18,16 @@ using engine::Context;
 
 GameObject::GameObject() : GameObject(nullptr) { }
 
-GameObject::GameObject(Context* ctx) : Object() {
+GameObject::GameObject(Context* ctx) : Object(ctx) {
   this->parent_ = std::weak_ptr<GameObject>();
   this->dirty_ = true;
   this->position = glm::vec3(0);
   this->rotation = glm::vec3(0);
   this->scale = glm::vec3(1);
-  this->ctx_ = ctx;
 }
 
 void GameObject::Accept(Visitor& v) {
   v.Visit(std::dynamic_pointer_cast<GameObject>(this->shared_from_this()));
-}
-
-Context* GameObject::GetContext() const {
-  return ctx_;
 }
 
 void GameObject::AddChild(std::shared_ptr<GameObject> child) {
@@ -159,8 +154,6 @@ GameObject::GameObject(const GameObject& other) : Object(other) {
   parent_ = std::weak_ptr<GameObject>();
   dirty_ = true;
 
-  this->ctx_ = other.ctx_;
-
   // deep copy the children
   for (auto child : other.children_) {
     // this is ok
@@ -172,8 +165,6 @@ GameObject::GameObject(GameObject&& other) : Object(other) {
   position = std::move(other.position);
   rotation = std::move(other.rotation);
   scale = std::move(other.scale);
-
-  this->ctx_ = other.ctx_;
 
   if (auto other_parent = other.parent_.lock()) {
     other_parent->RemoveChild(other.GetId());
@@ -194,8 +185,6 @@ GameObject& GameObject::operator=(const GameObject& other) {
   rotation = other.rotation;
   scale = other.scale;
 
-  this->ctx_ = other.ctx_;
-
   parent_ = std::weak_ptr<GameObject>();
   dirty_ = true;
 
@@ -211,8 +200,6 @@ GameObject& GameObject::operator=(GameObject&& other) {
   position = std::move(other.position);
   rotation = std::move(other.rotation);
   scale = std::move(other.scale);
-
-  this->ctx_ = other.ctx_;
 
   if (auto other_parent = other.parent_.lock()) {
     other_parent->RemoveChild(other.GetId());

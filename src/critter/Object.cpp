@@ -5,7 +5,8 @@ namespace monkeysworld {
 namespace critter {
 
 utils::IDGenerator Object::id_generator_;
-Object::Object() {
+Object::Object(engine::Context* ctx) {
+  ctx_ = ctx;
   id_ = id_generator_.GetUniqueId();
 }
 
@@ -17,6 +18,11 @@ void Object::SetId(uint64_t new_id) {
   id_generator_.RegisterUniqueId(new_id);
   id_ = new_id;
 }
+
+engine::Context* Object::GetContext() const {
+  return ctx_;
+}
+
 // non problem, but:
 // if multiple methods perform some setup per-frame,
 // how will we fare?
@@ -33,21 +39,25 @@ void Object::Destroy() {
 
 Object::Object(const Object& other) {
   id_ = id_generator_.GetUniqueId();
+  ctx_ = other.ctx_;
 }
 
 Object& Object::operator=(const Object& other) {
   id_ = id_generator_.GetUniqueId();
+  ctx_ = other.ctx_;
   return *this;
 }
 
 Object::Object(Object&& other) {
   id_ = other.id_;
   other.id_ = 0;
+  ctx_ = other.ctx_;
 }
 
 Object& Object::operator=(Object&& other) {
   id_ = other.id_;
   other.id_ = 0;
+  ctx_ = other.ctx_;
 
   return *this;
 }

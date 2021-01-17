@@ -2,7 +2,6 @@
 #define CONTEXT_H_
 
 #include <file/CachedFileLoader.hpp>
-#include <engine/Scene.hpp>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -26,6 +25,7 @@
 namespace monkeysworld {
 namespace engine {
 
+class Scene;
 class Context;
 
 }
