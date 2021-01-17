@@ -99,6 +99,7 @@ class Mesh {
    */
   bool AddPolygon(const std::vector<unsigned int>& indices) {
     // i could try to implement sweep algo
+    // http://allenchou.net/2013/12/game-physics-contact-generation-epa/
     for (int i = 0; i < indices.size() - 2; i++) {
       if (!AddPolygon(indices[i], indices[i + 1], indices[i + 2])) {
         return false;
@@ -236,6 +237,8 @@ class Mesh {
 template <>
 bool Mesh<storage::VertexPacket3D>::AddPolygon(const std::vector<unsigned int>& indices) {
   // smart idea: since it's convex, read top to bottom
+  // TODO: http://allenchou.net/2013/12/game-physics-contact-generation-epa/
+  // someone says this doesn't work (consi)
   if (indices.size() == 3) {
     return AddPolygon(indices[0], indices[1], indices[2]);
   }
