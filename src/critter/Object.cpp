@@ -23,12 +23,6 @@ engine::Context* Object::GetContext() const {
   return ctx_;
 }
 
-// non problem, but:
-// if multiple methods perform some setup per-frame,
-// how will we fare?
-
-// a: use other methods to do that, and provide proper inheritance for those.
-// ideally: we'll only override this once with actual ops.
 void Object::Update() {
   // noop
 }
