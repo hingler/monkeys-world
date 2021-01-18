@@ -15,6 +15,10 @@ const std::vector<spotlight_info>& RenderContext::GetSpotlights() const {
   return spotlights_;
 }
 
+RenderPass RenderContext::GetRenderPass() const {
+  return rp_;
+}
+
 void RenderContext::SetActiveCamera(std::shared_ptr<Camera> cam) {
   cam_info_ = cam->GetCameraInfo();
 }
@@ -23,6 +27,10 @@ void RenderContext::SetActiveCamera(std::shared_ptr<Camera> cam) {
 void RenderContext::SetSpotlights(const std::vector<spotlight_info>& spotlights) {
   // this copy could incur a cost? idk
   spotlights_ = spotlights;
+}
+
+void RenderContext::SetRenderPass(RenderPass rp) {
+  rp_ = rp;
 }
 
 }

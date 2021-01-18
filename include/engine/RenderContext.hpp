@@ -12,6 +12,15 @@ namespace monkeysworld {
 namespace engine {
 
 /**
+ *  Identifies the render pass which is currently drawn
+ */ 
+enum RenderPass {
+  // bound while running shadow passes. lights are not available
+  SHADOW,
+  RENDER
+};
+
+/**
  *  A context which contains information regarding the scene which is used
  *  by components while being rendered.
  * 
@@ -39,12 +48,19 @@ class RenderContext {
    */ 
   const std::vector<shader::light::spotlight_info>& GetSpotlights() const;
 
+  /**
+   *  Returns the type of render pass associated with the context.
+   */ 
+  RenderPass GetRenderPass() const;
+
   // setters
   void SetActiveCamera(std::shared_ptr<critter::Camera> cam);
   void SetSpotlights(const std::vector<shader::light::spotlight_info>& spotlights);
+  void SetRenderPass(RenderPass rp);
  private:
   std::vector<shader::light::spotlight_info> spotlights_;
   critter::camera_info cam_info_;
+  RenderPass rp_;
 
 };
 
