@@ -135,6 +135,9 @@ void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<engine::Context> ctx
     //    if needed, we can start to collect additional information and add it to the context
     //    however -- for now, just this.
     glBindFramebuffer(GL_FRAMEBUFFER, NULL);
+    int w, h;
+    ctx->GetFramebufferSize(&w, &h);
+    glViewport(0, 0, w, h);
     RenderObjects(scene->GetGameObjectRoot(), rc);
 
     // create render context
