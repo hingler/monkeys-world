@@ -41,6 +41,7 @@ class Object {
 
   /**
    *  Sets up all attributes required to draw this object.
+   *  DEPRECEATED -- moving all of this into RenderMaterial from now on >:)
    */ 
   virtual void PrepareAttributes() = 0;
 

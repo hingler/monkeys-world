@@ -42,7 +42,7 @@ class MatteMaterial : public ::monkeysworld::shader::Material {
   void SetModelTransforms(const glm::mat4& model_matrix);
 
   /**
-   *  Passes light data to its respective uniforms. (depreciated)
+   *  Passes light data to its respective uniforms. (deprecated)
    */ 
   void SetLights(const std::vector<light::LightData>& lights);
 
