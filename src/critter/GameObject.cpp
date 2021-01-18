@@ -70,9 +70,6 @@ std::shared_ptr<Object> GameObject::GetChild(uint64_t id) {
 }
 
 std::vector<std::weak_ptr<Object>> GameObject::GetChildren() {
-  // for all children:
-  // we have a shared ptr so they definitely exist
-  // the trouble would be that a sibling decides to remove another sibling
   std::vector<std::weak_ptr<Object>> res;
   for (auto child : children_) {
     res.push_back(std::weak_ptr<Object>(std::static_pointer_cast<Object>(child)));

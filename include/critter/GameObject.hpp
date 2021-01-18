@@ -124,8 +124,6 @@ class GameObject : public Object, public std::enable_shared_from_this<GameObject
   // whether or not the transformation matrix on store is safe.
   std::atomic_bool dirty_;
 
-  engine::Context* ctx_;
-
   // TODO: is a lock on transformation calls necessary, or will access be limited to a single thread?
 };
 
