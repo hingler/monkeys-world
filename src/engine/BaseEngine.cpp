@@ -207,6 +207,7 @@ GLFWwindow* InitializeGLFW(int win_width, int win_height, const std::string& win
 }
 
 void UpdateCtx(double delta, engine::Context* ctx) {
+  // don't like this at all
   ctx->frame_delta_ = delta;
   ctx->FrameUpdate();
 }

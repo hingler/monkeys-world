@@ -22,7 +22,8 @@ class UIGroup;
  *  
  */ 
 class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
- friend class UIGroup;
+  // quick hack lol
+  friend class UIGroup;
  public:
   
   UIObject(engine::Context* ctx);
@@ -125,6 +126,11 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
    */ 
   void Invalidate();
 
+  /**
+   *  @returns the descriptor for the color attachment to our UI framebuffer.
+   */ 
+  GLuint GetFramebufferColor();
+
   UIObject(const UIObject& other);
   UIObject& operator=(const UIObject& other);
   UIObject(UIObject&& other);
@@ -132,10 +138,6 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
   ~UIObject();
 
  protected:
-  /**
-   *  @returns the descriptor for the color attachment to our UI framebuffer.
-   */ 
-  GLuint GetFramebufferColor();
 
   /**
    *  @returns true if the UIObject is still valid, false otherwise.
