@@ -39,11 +39,7 @@ void LightVisitor::Visit(std::shared_ptr<SpotLight> o) {
 
 void LightVisitor::VisitChildren(std::shared_ptr<Object> o) {
   for (auto child : o->GetChildren()) {
-    auto shared_child = child.lock();
-    if (shared_child != nullptr) {
-      // TODO: Accept should probably accept ptr vs reference
-      shared_child->Accept(*this);
-    }
+    child->Accept(*this);
   }
 }
 

@@ -157,10 +157,7 @@ void UpdateObjects(std::shared_ptr<critter::Object> obj) {
   for (auto child : obj->GetChildren()) {
     // if child exists, visit it and queue up its children
     // TODO: write a visitor, only to factor out optimizations, like making this multithread
-    auto child_shared = child.lock();
-    if (child_shared) {
-      UpdateObjects(child_shared);
-    }
+    UpdateObjects(child);
   }
 }
 
@@ -173,10 +170,7 @@ void RenderObjects(std::shared_ptr<critter::Object> obj, RenderContext& rc) {
   obj->PrepareAttributes();
   obj->RenderMaterial(rc);
   for (auto child : obj->GetChildren()) {
-    auto child_shared = child.lock();
-    if (child_shared) {
-      RenderObjects(child_shared, rc);
-    }
+    RenderObjects(child, rc);
   }
 }
 

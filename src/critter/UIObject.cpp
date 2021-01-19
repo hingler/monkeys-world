@@ -24,8 +24,8 @@ std::shared_ptr<Object> UIObject::GetChild(uint64_t id) {
   return std::shared_ptr<Object>(nullptr);
 }
 
-std::vector<std::weak_ptr<Object>> UIObject::GetChildren() {
-  return std::vector<std::weak_ptr<Object>>();
+std::vector<std::shared_ptr<Object>> UIObject::GetChildren() {
+  return std::vector<std::shared_ptr<Object>>();
 }
 
 std::shared_ptr<Object> UIObject::GetParent() {
@@ -39,7 +39,7 @@ bool UIObject::HandleClickEvent() {
   }
 
   for (auto child : GetChildren()) {
-    if (auto i = std::static_pointer_cast<UIObject>(child.lock())) {
+    if (auto i = std::static_pointer_cast<UIObject>(child)) {
       if (i->HandleClickEvent()) {
         return true;
       }
@@ -109,10 +109,8 @@ void UIObject::RenderMaterial(const engine::RenderContext& rc) {
     
     // render all children first (bottom up rendering)
     for (auto child : GetChildren()) {
-      if (auto c = child.lock()) {
-        auto ui = std::static_pointer_cast<UIObject>(c);
-        ui->RenderMaterial(rc);
-      }
+      auto ui = std::static_pointer_cast<UIObject>(child);
+      ui->RenderMaterial(rc);
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
@@ -129,11 +127,9 @@ GLuint UIObject::GetFramebufferColor() {
 bool UIObject::IsValid() {
   if (valid_) {
     for (auto child : GetChildren()) {
-      if (auto c = child.lock()) {
-        auto ui = std::static_pointer_cast<UIObject>(c);
-        if (!ui->IsValid()) {
-          return false;
-        }
+      auto ui = std::static_pointer_cast<UIObject>(child);
+      if (!ui->IsValid()) {
+        return false;
       }
     }
 
@@ -156,20 +152,18 @@ void UIObject::GetInvalidatedBoundingBox(glm::vec2* xyMin, glm::vec2* xyMax) {
     glm::vec2 max;
     bool set = false;
     for (auto child : GetChildren()) {
-      if (auto c = child.lock()) {
-        auto ui = std::static_pointer_cast<UIObject>(c);
-        if (!ui->IsValid()) {
-          // the first child defines the region
-          if (!set) {
-            set = true;
-            min = ui->GetPosition();
-            max = min + ui->GetDimensions();
-          } else {
-            min = glm::min(min, ui->GetPosition());
-            max = glm::max(max, ui->GetDimensions() + ui->GetPosition());
+      auto ui = std::static_pointer_cast<UIObject>(child);
+      if (!ui->IsValid()) {
+        // the first child defines the region
+        if (!set) {
+          set = true;
+          min = ui->GetPosition();
+          max = min + ui->GetDimensions();
+        } else {
+          min = glm::min(min, ui->GetPosition());
+          max = glm::max(max, ui->GetDimensions() + ui->GetPosition());
           }
         }
-      }
     }
 
     if (!set) {

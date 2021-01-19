@@ -48,7 +48,7 @@ class GameObject : public Object, public std::enable_shared_from_this<GameObject
    */ 
   std::shared_ptr<Object> GetChild(uint64_t id) override;
 
-  std::vector<std::weak_ptr<Object>> GetChildren() override;
+  std::vector<std::shared_ptr<Object>> GetChildren() override;
 
   /**
    *  Returns ptr to the object associated with this object.

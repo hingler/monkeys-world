@@ -69,7 +69,7 @@ class Object {
   /**
    *  Returns a list of all children.
    */ 
-  virtual std::vector<std::weak_ptr<Object>> GetChildren() = 0;
+  virtual std::vector<std::shared_ptr<Object>> GetChildren() = 0;
 
   /**
    *  Returns ptr to the parent object.

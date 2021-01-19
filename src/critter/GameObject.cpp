@@ -69,10 +69,10 @@ std::shared_ptr<Object> GameObject::GetChild(uint64_t id) {
   return nullptr;
 }
 
-std::vector<std::weak_ptr<Object>> GameObject::GetChildren() {
-  std::vector<std::weak_ptr<Object>> res;
+std::vector<std::shared_ptr<Object>> GameObject::GetChildren() {
+  std::vector<std::shared_ptr<Object>> res;
   for (auto child : children_) {
-    res.push_back(std::weak_ptr<Object>(std::static_pointer_cast<Object>(child)));
+    res.push_back(std::static_pointer_cast<Object>(child));
   }
 
   return res;

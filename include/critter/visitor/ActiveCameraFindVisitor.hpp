@@ -41,7 +41,7 @@ class ActiveCameraFindVisitor : public critter::Visitor {
    */ 
   void Clear();
  private:
-  void ActiveCameraVisitChildren(std::vector<std::weak_ptr<Object>>&);
+  void ActiveCameraVisitChildren(std::vector<std::shared_ptr<Object>>&);
 
   std::shared_ptr<GameCamera> active_camera_;
   std::atomic_bool cam_found_;

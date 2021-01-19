@@ -32,7 +32,7 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
   /**
    *  Returns an empty vector in all cases.
    */ 
-  std::vector<std::weak_ptr<Object>> GetChildren() override;
+  std::vector<std::shared_ptr<Object>> GetChildren() override;
 
   /**
    *  Returns parent of this component.
@@ -98,6 +98,8 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
    *  The implementor then defines DrawUI to fill this framebuffer, before its parent
    *  group will then use the framebuffer's color attachment to draw the component to the screen.
    * 
+   *  This function will only be called if a UIObject has been invalidated.
+   * 
    *  The framebuffer's dimensions can be accessed with "GetDimensions."
    *    Note that draw calls to the framebuffer will use clip space coordinates,
    *    so it is the implementor's responsibility to use commands which take this into account,
@@ -135,14 +137,12 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
    *  @returns true if the UIObject is still valid, false otherwise.
    */ 
   bool IsValid();
-
-
+  std::weak_ptr<UIObject> parent_;                      // parent object if valid
  private:
   glm::vec2 pos_;                                       // offset of this component relative to parent
   glm::vec2 size_;                                      // size of ui object, pixels wide/tall
   std::atomic_bool valid_;                              // whether or not the view has been invalidated.
 
-  std::weak_ptr<UIObject> parent_;                      // parent object if valid
 
   GLuint framebuffer_;
   GLuint color_attach_;

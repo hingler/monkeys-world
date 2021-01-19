@@ -61,15 +61,12 @@ void ActiveCameraFindVisitor::Clear() {
   cam_found_.store(false);
 }
 
-void ActiveCameraFindVisitor::ActiveCameraVisitChildren(std::vector<std::weak_ptr<Object>>& ol) {
+void ActiveCameraFindVisitor::ActiveCameraVisitChildren(std::vector<std::shared_ptr<Object>>& ol) {
   // visit all children
   // check if flag is raised
   // if so: break
   for (auto child : ol) {
-    auto shared_child = child.lock();
-    if (shared_child) {
-      shared_child->Accept(*this);
-    }
+    child->Accept(*this);
 
     if (cam_found_.load()) {
       break;
