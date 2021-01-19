@@ -103,8 +103,15 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
    *    so it is the implementor's responsibility to use commands which take this into account,
    *    or to define functionality which converts it to a more convenient clip space,
    *    for instance by using the resolution to transform components in-shader.
+   *  
+   *  The parameters to this method represent the minimally invalidated bounding box
+   *  for this component -- implementors can use these args to save performance
+   *  by only updating a part of the screen, instead of the whole thing.
+   * 
+   *  @param minXY, the minXY of the invalid bounding box, origin top left.
+   *  @param maxXY, the maxXY of the invalid bounding box, origin top left.
    */ 
-  virtual void DrawUI() = 0;
+  virtual void DrawUI(glm::vec2 minXY, glm::vec2 maxXY) = 0;
 
   /**
    *  Invalidates the framebuffer, notifying the UIObject
@@ -129,6 +136,7 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
    */ 
   bool IsValid();
 
+
  private:
   glm::vec2 pos_;                                       // offset of this component relative to parent
   glm::vec2 size_;                                      // size of ui object, pixels wide/tall
@@ -141,6 +149,13 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
   GLuint depth_stencil_;
 
   glm::vec2 fb_size_;                                   // last framebuffer size
+
+  /**
+   *  Calculates the minimal bounding box which needs to be updated.
+   *  @param xyMin - output parameter for min XY
+   *  @param xyMax - output parameter for max XY
+   */ 
+  void GetInvalidatedBoundingBox(glm::vec2* xyMin, glm::vec2* xyMax);
 };
 
 }
