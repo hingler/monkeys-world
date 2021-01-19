@@ -19,17 +19,14 @@ namespace file {
  *  Caches the original content of the file for clients to modify as needed.
  */ 
 class FileLoader : public CachedLoader<CacheStreambuf, FileLoader> {
-  friend class CachedLoader<CacheStreambuf, FileLoader>;
  public:
   FileLoader(std::shared_ptr<LoaderThreadPool> thread_pool,
              std::vector<cache_record> cache);
 
+  CacheStreambuf LoadFile(const std::string& path);
   std::vector<cache_record> GetCache() override;
   loader_progress GetLoaderProgress() override;
   void WaitUntilLoaded() override;
-
- protected:
-  CacheStreambuf LoadFromFile(const std::string& path);
  
  private:
   // loads a file into an std::vector, puts that vector in the cache,

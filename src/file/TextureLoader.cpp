@@ -50,7 +50,7 @@ void TextureLoader::WaitUntilLoaded() {
   }
 }
 
-std::shared_ptr<shader::Texture> TextureLoader::LoadFromFile(const std::string& path) {
+std::shared_ptr<shader::Texture> TextureLoader::LoadFile(const std::string& path) {
 
   {
     std::shared_lock<std::shared_timed_mutex>(cache_mutex_);

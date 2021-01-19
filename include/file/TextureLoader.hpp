@@ -16,7 +16,6 @@ namespace monkeysworld {
 namespace file {
 
 class TextureLoader : public CachedLoader<std::shared_ptr<shader::Texture>, TextureLoader> {
-  friend class CachedLoader<std::shared_ptr<shader::Texture>, TextureLoader>;
  public:
   TextureLoader(std::shared_ptr<LoaderThreadPool> thread_pool,
                 std::vector<cache_record> cache);
@@ -26,9 +25,10 @@ class TextureLoader : public CachedLoader<std::shared_ptr<shader::Texture>, Text
   loader_progress GetLoaderProgress() override;
   
   void WaitUntilLoaded() override;
+  
+  std::shared_ptr<shader::Texture> LoadFile(const std::string& path);
  
  protected:
-  std::shared_ptr<shader::Texture> LoadFromFile(const std::string& path);
  
  private:
 

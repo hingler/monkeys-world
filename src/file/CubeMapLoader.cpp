@@ -48,7 +48,7 @@ void CubeMapLoader::WaitUntilLoaded() {
   }
 }
 
-std::shared_ptr<shader::CubeMap> CubeMapLoader::LoadFromFile(const std::string& path) {
+std::shared_ptr<shader::CubeMap> CubeMapLoader::LoadFile(const std::string& path) {
   // split file apart on colons (check for first char is colon)
   // pass each one to the thing
   {

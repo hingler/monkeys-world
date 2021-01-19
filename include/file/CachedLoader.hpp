@@ -93,9 +93,10 @@ class CachedLoader {
    */ 
   virtual void WaitUntilLoaded() = 0;
  protected:
+  // implement synchronous loading in LoadFile
   T LoadFromFile(const std::string& path) {
     U* derived_ptr = static_cast<U*>(this);
-    return derived_ptr->LoadFromFile(path);
+    return derived_ptr->LoadFile(path);
   }
 
   std::shared_ptr<LoaderThreadPool>& GetThreadPool() {

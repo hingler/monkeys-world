@@ -51,7 +51,7 @@ void FileLoader::WaitUntilLoaded() {
 
 
 
-CacheStreambuf FileLoader::LoadFromFile(const std::string& path) {
+CacheStreambuf FileLoader::LoadFile(const std::string& path) {
   {
     std::shared_lock<std::shared_timed_mutex> lock(cache_mutex_);
     auto i = file_cache_.find(path);

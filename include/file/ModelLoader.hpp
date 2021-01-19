@@ -23,7 +23,6 @@ namespace file {
  *  At some point soon, figure out how to use more complex formats instead :)
  */ 
 class ModelLoader : public CachedLoader<std::shared_ptr<model::Mesh<storage::VertexPacket3D>>, ModelLoader> {
-  friend class CachedLoader<std::shared_ptr<model::Mesh<storage::VertexPacket3D>>, ModelLoader>;
  public:
   /**
    *  Creates a new model loader
@@ -44,12 +43,12 @@ class ModelLoader : public CachedLoader<std::shared_ptr<model::Mesh<storage::Ver
   loader_progress GetLoaderProgress() override;
   void WaitUntilLoaded() override;
 
- protected:
   /**
    *  Underlying function which loads obj either synchronously or asynchronously.
    *  Also handles placing the OBJ file in the cache.
    */ 
-  std::shared_ptr<model::Mesh<storage::VertexPacket3D>> LoadFromFile(const std::string& path);
+  std::shared_ptr<model::Mesh<storage::VertexPacket3D>> LoadFile(const std::string& path);
+ protected:
  
  private:
   struct model_record {

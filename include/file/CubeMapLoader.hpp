@@ -14,19 +14,19 @@ namespace monkeysworld {
 namespace file {
 
 class CubeMapLoader : public CachedLoader<std::shared_ptr<shader::CubeMap>, CubeMapLoader> {
-  friend class CachedLoader<std::shared_ptr<shader::CubeMap>, CubeMapLoader>;
  public:
   CubeMapLoader(std::shared_ptr<LoaderThreadPool> thread_pool, std::vector<cache_record> cache);
 
   std::vector<cache_record> GetCache() override;
   loader_progress GetLoaderProgress() override;
   void WaitUntilLoaded() override;
-
- protected:
+  
   /**
    *  @param path - a comma-separated, concatenated list of six files (TODO: for now...)
    */ 
-  std::shared_ptr<shader::CubeMap> LoadFromFile(const std::string& path);
+  std::shared_ptr<shader::CubeMap> LoadFile(const std::string& path);
+
+ protected:
  private:
   void LoadFileToCache(cache_record& record);
 

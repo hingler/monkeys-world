@@ -35,7 +35,7 @@ ModelLoader::ModelLoader(std::shared_ptr<LoaderThreadPool> thread_pool,
   }
 }
 
-std::shared_ptr<model::Mesh<>> ModelLoader::LoadFromFile(const std::string& path) {
+std::shared_ptr<model::Mesh<>> ModelLoader::LoadFile(const std::string& path) {
   {
     std::unique_lock<std::mutex>(loader_mutex_);
     if (loader_.bytes_read != loader_.bytes_sum) {

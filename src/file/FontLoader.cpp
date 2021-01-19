@@ -16,22 +16,6 @@ FontLoader::FontLoader(std::shared_ptr<LoaderThreadPool> thread_pool,
   }
 }
 
-std::shared_ptr<font::Font> FontLoader::LoadFile(const std::string& path) {
-  return LoadFromFile(path);
-}
-
-std::future<std::shared_ptr<font::Font>> FontLoader::LoadFileAsync(const std::string& path) {
-  std::shared_ptr<std::promise<std::shared_ptr<font::Font>>> result
-    = std::make_shared<std::promise<std::shared_ptr<font::Font>>>();
-  auto load_async_lambda = [=] {
-    auto ptr = LoadFromFile(path);
-    result->set_value(ptr);
-  };
-
-  GetThreadPool()->AddTaskToQueue(load_async_lambda);
-  return result->get_future();
-}
-
 std::vector<cache_record> FontLoader::GetCache() {
   std::shared_lock<std::shared_timed_mutex> lock(cache_mutex_);
   std::vector<cache_record> result;
@@ -62,7 +46,7 @@ void FontLoader::WaitUntilLoaded() {
   }
 }
 
-std::shared_ptr<font::Font> FontLoader::LoadFromFile(const std::string& path) {
+std::shared_ptr<font::Font> FontLoader::LoadFile(const std::string& path) {
   std::shared_ptr<font::Font> res;
   {
     std::shared_lock<std::shared_timed_mutex> lock(cache_mutex_);

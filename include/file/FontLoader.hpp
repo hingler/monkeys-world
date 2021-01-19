@@ -20,27 +20,15 @@ namespace file {
  *  Since opengl context is limited to a single thread, no async options are avail.
  */ 
 class FontLoader : public CachedLoader<std::shared_ptr<font::Font>, FontLoader> {
-  friend class CachedLoader<std::shared_ptr<font::Font>, FontLoader>;
  public:
   FontLoader(std::shared_ptr<LoaderThreadPool> thread_pool,
              std::vector<cache_record> cache);
 
-  /**
-   *  Synchronously loads a font.
-   */ 
   std::shared_ptr<font::Font> LoadFile(const std::string& path);
-
-  /**
-   *  ASYNCHRONOUSLY loads the font >:)
-   */ 
-  std::future<std::shared_ptr<font::Font>> LoadFileAsync(const std::string& path);
-
   std::vector<cache_record> GetCache() override;
   loader_progress GetLoaderProgress() override;
   void WaitUntilLoaded() override;
  private:
-
-  std::shared_ptr<font::Font> LoadFromFile(const std::string& path);
   void LoadFontToCache(cache_record& record);
 
   loader_progress loader_;
