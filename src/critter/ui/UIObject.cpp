@@ -1,7 +1,8 @@
-#include <critter/UIObject.hpp>
+#include <critter/ui/UIObject.hpp>
 
 namespace monkeysworld {
 namespace critter {
+namespace ui {
 
 UIObject::UIObject(engine::Context* ctx) : Object(ctx) {
   pos_ = glm::vec2(0, 0);
@@ -183,5 +184,6 @@ void UIObject::GetInvalidatedBoundingBox(glm::vec2* xyMin, glm::vec2* xyMax) {
   }
 }
 
+}
 }
 }

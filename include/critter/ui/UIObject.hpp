@@ -11,6 +11,9 @@
 
 namespace monkeysworld {
 namespace critter {
+namespace ui {
+
+class UIGroup;
 
 /**
  *  UI Objects are objects which display on top of the rendered window, typically as 2D components.
@@ -19,6 +22,7 @@ namespace critter {
  *  
  */ 
 class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
+ friend class UIGroup;
  public:
   
   UIObject(engine::Context* ctx);
@@ -137,6 +141,7 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
    *  @returns true if the UIObject is still valid, false otherwise.
    */ 
   bool IsValid();
+
   std::weak_ptr<UIObject> parent_;                      // parent object if valid
  private:
   glm::vec2 pos_;                                       // offset of this component relative to parent
@@ -158,6 +163,7 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
   void GetInvalidatedBoundingBox(glm::vec2* xyMin, glm::vec2* xyMax);
 };
 
+}
 }
 }
 
