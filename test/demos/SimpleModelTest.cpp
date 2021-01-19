@@ -3,7 +3,10 @@
 
 #include <critter/Model.hpp>
 #include <engine/Context.hpp>
+#include <engine/Scene.hpp>
 #include <critter/GameCamera.hpp>
+
+#include <critter/Object.hpp>
 
 #include <model/Mesh.hpp>
 
@@ -33,6 +36,7 @@ using ::monkeysworld::audio::AudioManager;
 using ::monkeysworld::audio::AudioFiletype;
 using ::monkeysworld::model::Mesh;
 using ::monkeysworld::engine::RenderContext;
+using ::monkeysworld::critter::Object;
 
 using milli = std::chrono::milliseconds;
 
@@ -51,7 +55,7 @@ class DummyModel : public Model {
 
 class TestingEventManager : public WindowEventManager {
  public:
-  TestingEventManager(GLFWwindow* window) : WindowEventManager(window) {};
+  TestingEventManager(GLFWwindow* window, Context* ctx) : WindowEventManager(window, ctx) {};
   void ProcessEvents() {ProcessWaitingEvents();}
 };
 
@@ -93,10 +97,19 @@ void main(int argc, char** argv) {
 
   RenderContext rc;
 
-  std::shared_ptr<Context> ctx = std::make_shared<Context>(window);
+  class DummyScene : public ::monkeysworld::engine::Scene {
+   public:
+    DummyScene() {}
+    void Initialize(Context* ctx) {}
+    std::shared_ptr<Object> GetGameObjectRoot() {
+      return std::shared_ptr<Object>(nullptr);
+    }
+  };
+
+  std::shared_ptr<Context> ctx = std::make_shared<Context>(window, std::make_shared<DummyScene>());
     
   AudioManager audio_mgr;
-  TestingEventManager event_mgr(window);
+  TestingEventManager event_mgr(window, ctx.get());
   // a "true" implementation should organize data into 3d/4d vecs
   // then allow the mesh creator to fetch those alone
 

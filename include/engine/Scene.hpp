@@ -6,6 +6,9 @@
 namespace monkeysworld {
 namespace engine {
 
+// TODO: create includes which forward decl all members of a folder
+class Context;
+
 /**
  *  A scene represents a series of deployed assets.
  *  For the time being, scenes expose root-level assets,
@@ -21,7 +24,7 @@ class Scene {
   /**
    *  Used by the scene to set up all objects.
    */ 
-  virtual void Initialize() = 0;
+  virtual void Initialize(Context* ctx) = 0;
 
   /**
    *  Our engine only really needs to know that it's an object,

@@ -44,7 +44,7 @@ static void UpdateObjects(std::shared_ptr<critter::Object>);
 static void RenderObjects(std::shared_ptr<critter::Object>, RenderContext&);
 // subtype context to enable access to frequent update functions
 // pass supertype to scene
-void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<engine::Context> ctx, GLFWwindow* window) {
+void GameLoop(std::shared_ptr<engine::Context> ctx, GLFWwindow* window) {
   #ifdef DEBUG
   if (GLAD_GL_ARB_debug_output) {
     BOOST_LOG_TRIVIAL(debug) << "GL debug output supported!";
@@ -53,12 +53,10 @@ void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<engine::Context> ctx
   }
   #endif
 
-  // initialize the scene
-  scene->Initialize();
+  
   // setup timing
   auto start = std::chrono::high_resolution_clock::now();
   auto finish = std::chrono::high_resolution_clock::now();
-  std::shared_ptr<Scene> current_scene = scene;
   std::chrono::duration<double, std::ratio<1, 1>> dur = finish - start;
 
   LightVisitor light_visitor;
@@ -82,11 +80,6 @@ void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<engine::Context> ctx
     // poll for events
     // check to see if a new scene needs to be initialized
     // if so: do that
-    if (auto s = ctx->GetNextScene()) {
-      // swap out the scene!
-      s->Initialize();
-      scene = s;
-    }
 
     UpdateCtx(dur.count(), ctx.get());
 
@@ -94,9 +87,10 @@ void GameLoop(std::shared_ptr<Scene> scene, std::shared_ptr<engine::Context> ctx
     // use a friend func to update some constants inherent to the context
     //   ex. the frame delta
     // visit objects in our component tree and call their "update" funcs
-    UpdateObjects(current_scene->GetGameObjectRoot());
-    current_scene->GetGameObjectRoot()->Accept(light_visitor);
-    current_scene->GetGameObjectRoot()->Accept(cam_visitor);
+    auto scene = ctx->GetScene();
+    UpdateObjects(scene->GetGameObjectRoot());
+    scene->GetGameObjectRoot()->Accept(light_visitor);
+    scene->GetGameObjectRoot()->Accept(cam_visitor);
     // for each light:
     //   - do a depth render from the perspective of our lights
 

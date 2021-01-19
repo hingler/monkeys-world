@@ -297,10 +297,10 @@ class FrameText : public TextObject {
  */ 
 class TestScene : public Scene {
  public:
-  TestScene(Context* ctx) {
-    this->ctx = ctx;
+  TestScene() {
+
   }
-  void Initialize() override {
+  void Initialize(Context* ctx) override {
     // USE THE RAT! https://sketchfab.com/3d-models/rat-847629266c0f442da74fb132f46f3baf
     game_object_root_ = std::make_shared<Empty>(ctx);
     auto cam = std::make_shared<MovingCamera>(ctx);
@@ -346,7 +346,8 @@ class TestScene : public Scene {
 
 int main(int argc, char** argv) {
   GLFWwindow* main_win = InitializeGLFW(1280, 720, "and he never stoped playing, he always was keep beliving");
-  auto ctx = std::make_shared<Context>(main_win);
+  auto scene = std::make_shared<TestScene>();
+  auto ctx = std::make_shared<Context>(main_win, scene);
   while (true) {
     auto prog = ctx->GetCachedFileLoader()->GetLoaderProgress();
     BOOST_LOG_TRIVIAL(trace) << "loading progress: " << (((float)prog.bytes_read * 100.0f) / prog.bytes_sum);
@@ -354,10 +355,10 @@ int main(int argc, char** argv) {
       break;
     }
     
-    // std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
-  auto scene = std::make_shared<TestScene>(ctx.get());
-  GameLoop(scene, ctx, main_win);
+
+  GameLoop(ctx, main_win);
 
   glfwDestroyWindow(main_win);
   glfwTerminate();

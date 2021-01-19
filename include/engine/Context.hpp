@@ -54,11 +54,12 @@ class Context {
   friend void ::monkeysworld::engine::baseengine::UpdateCtx(double, Context*);
  public:
   /**
-   *  Default constructor which attempts to initialize all fields.
+   *  Creates a context which is associated with the first desired scene.
+   *  Scene is initialized in constructor.
    *  @param window - reference to the GLFWwindow this context occupies
-   *  TODO: Reconfigure the context so that we can spin it up on each scene.
+   *  @param scene - the first scene associated with this context.
    */ 
-  Context(GLFWwindow* window);
+  Context(GLFWwindow* window, std::shared_ptr<Scene> scene);
 
   // the following functions return some higher level component
 
@@ -82,14 +83,13 @@ class Context {
   /**
    *  Notifies the context that it should swap to the next scene
    */ 
-  void SwapScene(std::shared_ptr<engine::Scene> scene);
+  void SwapScene(std::shared_ptr<Scene> scene);
 
   /**
-   *  If a new scene has been set, this will return it.
+   *  @returns the currently displayed scene.
    */ 
-  std::shared_ptr<engine::Scene> GetNextScene();
-  // functions to add some object as the root
-  // functions to get delta time
+  std::shared_ptr<Scene> GetScene();
+
   double GetDeltaTime();
 
  private:
@@ -97,6 +97,8 @@ class Context {
   std::shared_ptr<input::WindowEventManager> event_mgr_;
   std::shared_ptr<audio::AudioManager> audio_mgr_;
   GLFWwindow* window_;
+  // the current scene
+  std::shared_ptr<Scene> scene_;
   double frame_delta_;
 
  protected:

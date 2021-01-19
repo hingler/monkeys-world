@@ -11,7 +11,7 @@ namespace input {
 
 utils::IDGenerator WindowEventManager::event_desc_generator_;
 
-WindowEventManager::WindowEventManager(GLFWwindow* window) {
+WindowEventManager::WindowEventManager(GLFWwindow* window, engine::Context* ctx) {
   glfwSetWindowUserPointer(window, this);
   // lambdas are equiv. to fptrs if there are no captures
   glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -19,6 +19,8 @@ WindowEventManager::WindowEventManager(GLFWwindow* window) {
       reinterpret_cast<WindowEventManager*>(glfwGetWindowUserPointer(window));
     that->GenerateKeyEvent(window, key, scancode, action, mods);
   });
+
+  ctx_ = ctx;
 }
 
 void WindowEventManager::GenerateKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods) {

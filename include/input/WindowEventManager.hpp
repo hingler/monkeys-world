@@ -39,8 +39,7 @@ struct event_info {
   int mods;
 };
 
-// TODO: Add a "GetFocus" method which accepts an object,
-// and passes new events exclusively to that object while in focus.
+// TODO: Add a "Focus(obj)" method to get focus, and a "GetFocused()" method to see who's focused.
 
 /**
  *  Integrates with GLFW to allow components to listen to input updates.
@@ -55,7 +54,7 @@ class WindowEventManager {
   /**
    * Creates a new window manager.
    */ 
-  WindowEventManager(GLFWwindow* window);
+  WindowEventManager(GLFWwindow* window, engine::Context* ctx);
   
   /**
    *  Handles incoming GLFW events.
@@ -100,6 +99,9 @@ class WindowEventManager {
 
   // lock for event queue
   std::shared_timed_mutex event_mutex_;
+
+  // ptr to context
+  engine::Context* ctx_;
  protected:
 
     /**

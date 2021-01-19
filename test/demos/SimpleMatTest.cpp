@@ -12,6 +12,7 @@
 #include <shader/ShaderProgramBuilder.hpp>
 #include <shader/ShaderProgram.hpp>
 #include <engine/Context.hpp>
+#include <engine/Scene.hpp>
 
 #include <file/CachedFileLoader.hpp>
 
@@ -36,6 +37,7 @@ using ::monkeysworld::shader::materials::MatteMaterial;
 using ::monkeysworld::shader::ShaderProgram;
 using ::monkeysworld::shader::ShaderProgramBuilder;
 using ::monkeysworld::engine::Context;
+using ::monkeysworld::critter::Object;
 
 using ::monkeysworld::storage::VertexPacket3D;
 
@@ -121,7 +123,16 @@ void main(int argc, char** argv) {
     { 0.1f,  0.1f,  0.1f, 1.0f}
   });
 
-  std::shared_ptr<Context> ctx = std::make_shared<Context>(test_window);
+  class DummyScene : public ::monkeysworld::engine::Scene {
+   public:
+    DummyScene() {}
+    void Initialize(Context* ctx) {}
+    std::shared_ptr<Object> GetGameObjectRoot() {
+      return std::shared_ptr<Object>(nullptr);
+    }
+  };
+
+  std::shared_ptr<Context> ctx = std::make_shared<Context>(test_window, std::make_shared<DummyScene>());
 
   MatteMaterial test_material(ctx.get());
   
