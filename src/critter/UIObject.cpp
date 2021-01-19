@@ -107,7 +107,7 @@ void UIObject::RenderMaterial(const engine::RenderContext& rc) {
     glm::vec2 min, max;
     GetInvalidatedBoundingBox(&min, &max);
     
-    // render all children first (bottom up rendering
+    // render all children first (bottom up rendering)
     for (auto child : GetChildren()) {
       if (auto c = child.lock()) {
         auto ui = std::static_pointer_cast<UIObject>(c);
@@ -116,7 +116,6 @@ void UIObject::RenderMaterial(const engine::RenderContext& rc) {
     }
     // pass to DrawUI
     DrawUI(min, max);
-    // this uiobject is now valid
     valid_.store(true);
   }
 }
