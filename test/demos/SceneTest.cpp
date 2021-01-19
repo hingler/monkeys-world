@@ -346,7 +346,8 @@ class TestScene : public Scene {
 
 int main(int argc, char** argv) {
   GLFWwindow* main_win = InitializeGLFW(1280, 720, "and he never stoped playing, he always was keep beliving");
-  auto scene = std::make_shared<TestScene>();
+  // give the context ownership of the scene!
+  auto scene = new TestScene();
   auto ctx = std::make_shared<Context>(main_win, scene);
   while (true) {
     auto prog = ctx->GetCachedFileLoader()->GetLoaderProgress();

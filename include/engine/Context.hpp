@@ -57,9 +57,10 @@ class Context {
    *  Creates a context which is associated with the first desired scene.
    *  Scene is initialized in constructor.
    *  @param window - reference to the GLFWwindow this context occupies
-   *  @param scene - the first scene associated with this context.
+   *  @param scene - the first scene associated with this context. The context takes ownership
+   *                 of the passed-in scene.
    */ 
-  Context(GLFWwindow* window, std::shared_ptr<Scene> scene);
+  Context(GLFWwindow* window, Scene* scene);
 
   // the following functions return some higher level component
 
@@ -83,22 +84,26 @@ class Context {
   /**
    *  Notifies the context that it should swap to the next scene
    */ 
-  void SwapScene(std::shared_ptr<Scene> scene);
+  void SwapScene(Scene* scene);
 
   /**
    *  @returns the currently displayed scene.
    */ 
-  std::shared_ptr<Scene> GetScene();
+  Scene* GetScene();
 
   double GetDeltaTime();
+
+  ~Context() {
+    delete scene_;
+  }
 
  private:
   std::shared_ptr<file::CachedFileLoader> file_loader_;
   std::shared_ptr<input::WindowEventManager> event_mgr_;
   std::shared_ptr<audio::AudioManager> audio_mgr_;
+  Scene* scene_;
   GLFWwindow* window_;
   // the current scene
-  std::shared_ptr<Scene> scene_;
   double frame_delta_;
 
  protected:
