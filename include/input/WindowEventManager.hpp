@@ -39,6 +39,9 @@ struct event_info {
   int mods;
 };
 
+// TODO: Add a "GetFocus" method which accepts an object,
+// and passes new events exclusively to that object while in focus.
+
 /**
  *  Integrates with GLFW to allow components to listen to input updates.
  *  Events are stored as they arrive, then processed in order when
