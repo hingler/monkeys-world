@@ -114,7 +114,9 @@ void UIObject::RenderMaterial(const engine::RenderContext& rc) {
         ui->RenderMaterial(rc);
       }
     }
-    // pass to DrawUI
+
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
+    glViewport(0, 0, fb_size_.x, fb_size_.y);
     DrawUI(min, max);
     valid_.store(true);
   }
