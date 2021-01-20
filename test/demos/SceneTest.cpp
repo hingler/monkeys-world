@@ -13,6 +13,7 @@
 #include <critter/Empty.hpp>
 #include <critter/GameCamera.hpp>
 #include <critter/GameObject.hpp>
+#include <critter/ui/UIObject.hpp>
 #include <critter/Model.hpp>
 
 #include <critter/Skybox.hpp>
@@ -41,6 +42,8 @@ using ::monkeysworld::critter::GameObject;
 using ::monkeysworld::critter::Object;
 using ::monkeysworld::critter::Model;
 using ::monkeysworld::critter::Skybox;
+
+using ::monkeysworld::critter::ui::UIObject;
 
 using ::monkeysworld::critter::camera_info;
 
@@ -336,11 +339,11 @@ class TestScene : public Scene {
     t->AddChild(rat_two);
   }
 
-  std::shared_ptr<Object> GetGameObjectRoot() {
+  std::shared_ptr<GameObject> GetGameObjectRoot() {
     return game_object_root_;
   }
 
-  std::shared_ptr<Object> GetUIObjectRoot() {
+  std::shared_ptr<UIObject> GetUIObjectRoot() {
     return nullptr;
   }
  private:

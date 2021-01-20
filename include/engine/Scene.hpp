@@ -2,6 +2,8 @@
 #define SCENE_H_
 
 #include <critter/Object.hpp>
+#include <critter/GameObject.hpp>
+#include <critter/ui/UIObject.hpp>
 
 namespace monkeysworld {
 namespace engine {
@@ -30,8 +32,8 @@ class Scene {
    *  Our engine only really needs to know that it's an object,
    *  and our components will know better. So this should be OK.
    */ 
-  virtual std::shared_ptr<critter::Object> GetGameObjectRoot() = 0;
-  virtual std::shared_ptr<critter::Object> GetUIObjectRoot() = 0;
+  virtual std::shared_ptr<critter::GameObject> GetGameObjectRoot() = 0;
+  virtual std::shared_ptr<critter::ui::UIObject> GetUIObjectRoot() = 0;
 };
 
 }
