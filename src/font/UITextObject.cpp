@@ -27,7 +27,9 @@ void UITextObject::DrawUI(glm::vec2 xMin, glm::vec2 xMax) {
   scale.x = (window_size.x / text_fb_size.x) * (static_cast<float>(window_size.x), window_size.y);
   scale.y = (window_size.y / text_fb_size.y);
   float y_max = 0.0f;
-  for (const VertexPacket2D* c = text_mesh->GetVertexData(), int i = 0; i < text_mesh->GetVertexCount(); c++, i++) {
+  
+  int i = 0;
+  for (const VertexPacket2D* c = text_mesh->GetVertexData(); i < text_mesh->GetVertexCount(); c++, i++) {
     y_max = (y_max < c->position.y ? y_max : c->position.y);
   }
 
