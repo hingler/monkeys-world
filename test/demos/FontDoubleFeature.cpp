@@ -20,10 +20,12 @@ layout(location = 1) in vec4 texcoord;\n                  \
 layout(location = 0) out vec4 position_output;\n          \
 layout(location = 1) out vec4 texcoord_output;\n          \
 \n                                                        \
-void main() {\n                                           \
-  position_output = position;\n                           \
+void main() {\n   \
+  vec4 pos = position; \
+  pos.y /= (768.0f/1440.0f);                                \
+  position_output = pos;\n                           \
   texcoord_output = texcoord;\n                           \
-  gl_Position = position;\n                               \
+  gl_Position = pos;\n                               \
 }\n                                                       \
 ";
 
@@ -62,7 +64,7 @@ int main(int argc, char** argv) {
     exit(EXIT_FAILURE);
   }
 
-  GLFWwindow* win = glfwCreateWindow(1024, 768, "hello spongebob", NULL, NULL);
+  GLFWwindow* win = glfwCreateWindow(1440, 768, "hello spongebob", NULL, NULL);
   if (!win) {
     std::cout << "window create failed" << std::endl;
     glfwTerminate();
@@ -83,12 +85,12 @@ int main(int argc, char** argv) {
   SetupGLDebug();
 
   // create some shitty square geom
-  float geom_data[12] = {-1.0, -1.0,
+  float geom_data[12] = {-1.0, -0.8,
                          -1.0,  1.0,
                           1.0,  1.0,
                           1.0,  1.0,
-                          1.0, -1.0,
-                         -1.0, -1.0};
+                          1.0, -0.8,
+                         -1.0, -0.8};
   
   GLuint buf;
   glGenBuffers(1, &buf);
@@ -149,7 +151,7 @@ int main(int argc, char** argv) {
   float time = 0.0;
   glClearColor(0.1, 0.1, 0.1, 1.0);
   int framecount = 0;
-  glViewport(0, 0, 1024, 1024);
+  glViewport(0, 0, 360, 192);
   while (!glfwWindowShouldClose(win)) {
     std::cout << framecount << std::endl;
     time += 0.01;
