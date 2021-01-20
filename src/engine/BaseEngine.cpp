@@ -12,6 +12,8 @@
 // TODO: create an actual logging setup -- we can config it in init :)
 #include <boost/log/trivial.hpp>
 
+#include <critter/ui/UIObject.hpp>
+
 #ifdef DEBUG
 #include <shader/GLDebugSetup.hpp>
 #endif
@@ -31,6 +33,8 @@ using ::monkeysworld::shader::Material;
 using ::monkeysworld::shader::light::SpotLight;
 using ::monkeysworld::shader::light::spotlight_info;
 
+using ::monkeysworld::critter::ui::UIObject;
+
 using ::monkeysworld::engine::RenderContext;
 
 /**
@@ -42,6 +46,12 @@ static void UpdateObjects(std::shared_ptr<critter::Object>);
  *  Renders all objects nested within the passed root.
  */ 
 static void RenderObjects(std::shared_ptr<critter::Object>, RenderContext&);
+
+/**
+ *  Renders all UI objects.
+ */ 
+static void RenderUI(std::shared_ptr<critter::Object>, RenderContext&);
+
 // subtype context to enable access to frequent update functions
 // pass supertype to scene
 void GameLoop(std::shared_ptr<engine::Context> ctx, GLFWwindow* window) {
@@ -133,7 +143,21 @@ void GameLoop(std::shared_ptr<engine::Context> ctx, GLFWwindow* window) {
     ctx->GetFramebufferSize(&w, &h);
     glViewport(0, 0, w, h);
     RenderObjects(scene->GetGameObjectRoot(), rc);
-
+    
+    // render UI
+    if (scene->GetUIObjectRoot()) {
+      RenderUI(scene->GetUIObjectRoot(), rc);
+      glViewport(0, 0, w, h);
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      auto ui_root = std::dynamic_pointer_cast<UIObject>(scene->GetUIObjectRoot());
+      if (ui_root) {
+        ui_root->DrawToScreen();
+      }
+    }
+    // render UI on top
+    // call drawtoscreen on ui root
     // create render context
     // add lights to the render context
     // then: render!
@@ -161,11 +185,25 @@ void UpdateObjects(std::shared_ptr<critter::Object> obj) {
 //       prepared!
 void RenderObjects(std::shared_ptr<critter::Object> obj, RenderContext& rc) {
   // todo: generate this on the fly!
+  if (!obj) {
+    // nothing to render!
+    return;
+  }
+
   obj->PrepareAttributes();
   obj->RenderMaterial(rc);
   for (auto child : obj->GetChildren()) {
     RenderObjects(child, rc);
   }
+}
+
+void RenderUI(std::shared_ptr<critter::Object> obj, RenderContext& rc) {
+  if (!obj) {
+    return;
+  }
+
+  // note: components can fuck it up when they want to :)
+  obj->RenderMaterial(rc);
 }
 
 GLFWwindow* InitializeGLFW(int win_width, int win_height, const std::string& window_name) {
