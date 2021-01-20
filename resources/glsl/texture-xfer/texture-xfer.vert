@@ -7,5 +7,5 @@ layout(location = 0) out vec2 tex;
 
 void main() {
   tex = texcoord;
-  gl_Position = position;
+  gl_Position = vec4(position.xy, -1.0, 1.0);
 }
