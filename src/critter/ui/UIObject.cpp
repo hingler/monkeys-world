@@ -100,12 +100,13 @@ void UIObject::RenderMaterial(const engine::RenderContext& rc) {
     glGenTextures(1, &color_attach_);
     glGenTextures(1, &depth_stencil_);
     glBindTexture(GL_TEXTURE_2D, depth_stencil_);
-    glTexStorage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, size_.x, size_.y);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, size_.x, size_.y, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
     glBindTexture(GL_TEXTURE_2D, color_attach_);
-    glTexStorage2D(GL_TEXTURE_2D, 0, GL_RGBA, size_.x, size_.y);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size_.x, size_.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
     glGenFramebuffers(1, &framebuffer_);
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color_attach_, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depth_stencil_, 0);
 
@@ -134,6 +135,8 @@ void UIObject::RenderMaterial(const engine::RenderContext& rc) {
 
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
     glViewport(0, 0, fb_size_.x, fb_size_.y);
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     DrawUI(min, max);
     valid_.store(true);
   }
@@ -158,7 +161,7 @@ void UIObject::DrawToScreen() {
     // this will be our sign that the mesh has been prepared
     for (int i = 0; i < 4; i++) {
       temp.texcoords.x = (i >= 2 ? 1 : 0);
-      temp.texcoords.y = (i > 0 && i < 3 ? 1 : 0);
+      temp.texcoords.y = (i > 0 && i < 3 ? 0 : 1);
       xfer_mesh_.AddVertex(temp);
     }
 
@@ -171,19 +174,19 @@ void UIObject::DrawToScreen() {
 
   // top left
   xfer_mesh_[0].position.x = (pos.x / win.x) * 2 - 1;
-  xfer_mesh_[0].position.y = (pos.y / win.y) * 2 - 1;
+  xfer_mesh_[0].position.y = 1 - (pos.y / win.y) * 2;
 
   // bottom left
   xfer_mesh_[1].position.x = (pos.x / win.x) * 2 - 1;
-  xfer_mesh_[1].position.y = ((pos.y + dim.y) / win.y) * 2 - 1;
+  xfer_mesh_[1].position.y = 1 - ((pos.y + dim.y) / win.y) * 2;
 
   // bottom right
   xfer_mesh_[2].position.x = ((pos.x + dim.x) / win.x) * 2 - 1;
-  xfer_mesh_[2].position.y = ((pos.y + dim.y) / win.y) * 2 - 1;
+  xfer_mesh_[2].position.y = 1 - ((pos.y + dim.y) / win.y) * 2;
   
   // top right
   xfer_mesh_[3].position.x = ((pos.x + dim.x) / win.x) * 2 - 1;
-  xfer_mesh_[3].position.y = (pos.y / win.y) * 2 - 1;
+  xfer_mesh_[3].position.y = 1 - (pos.y / win.y) * 2;
 
   xfer_mesh_.PointToVertexAttribs();
   xfer_mat_->SetTexture(color_attach_);
