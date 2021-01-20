@@ -69,7 +69,8 @@ add_library(monkeys-world-components
                                     
                                     ${SRC_DIR}/font/Font.cpp
                                     ${SRC_DIR}/font/Text.cpp
-                                    ${SRC_DIR}/font/TextObject.cpp)
+                                    ${SRC_DIR}/font/TextObject.cpp
+                                    ${SRC_DIR}/font/UITextObject.cpp)
 
 add_library(MonkeysWorld::Engine ALIAS monkeys-world-components)
 
