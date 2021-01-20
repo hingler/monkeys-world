@@ -11,7 +11,7 @@ set(INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(TST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)
 
-set(compile_tests ON)
+set(compile_tests OFF)
 
 add_executable(monkeys-world main.cpp)
 
@@ -129,6 +129,14 @@ target_include_directories(monkeys-world-components PUBLIC ${Boost_INCLUDE_DIRS}
 
 target_link_libraries(monkeys-world monkeys-world-components)
 
+add_executable(scene-test test/demos/SceneTest.cpp)
+target_link_libraries(scene-test monkeys-world-components )
+
+# tba: fix this command
+add_custom_command(TARGET scene-test POST_BUILD
+COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/resources $<TARGET_FILE_DIR:monkeys-world>/resources)
+
+
 if(compile_tests)
   add_executable(mesh-test test/MeshTest.cpp)
   target_include_directories(mesh-test PRIVATE ${INC_DIR})
@@ -149,9 +157,6 @@ if(compile_tests)
   add_executable(model-test test/demos/SimpleModelTest.cpp)
   target_link_libraries(model-test monkeys-world-components )
 
-  add_executable(scene-test test/demos/SceneTest.cpp)
-  target_link_libraries(scene-test monkeys-world-components )
-
   add_executable(font-test test/demos/FontDoubleFeature.cpp)
   target_link_libraries(font-test monkeys-world-components )
 
@@ -160,9 +165,6 @@ if(compile_tests)
   target_link_libraries(streambuf-test GTest::gtest_main monkeys-world-components)
   add_test(NAME streambuf-test COMMAND streambuf-test
               WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
-
-  add_custom_command(TARGET mat-test POST_BUILD
-                    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/resources $<TARGET_FILE_DIR:monkeys-world>/resources)
 
   add_executable(loader-test test/CacheFileLoaderTest.cpp)
   target_include_directories(loader-test PRIVATE ${INC_DIR})

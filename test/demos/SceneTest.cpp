@@ -27,6 +27,7 @@
 
 #include <glm/gtx/euler_angles.hpp>
 
+#include <functional>
 #include <sstream>
 #include <iomanip>
 
@@ -35,6 +36,8 @@
 using ::monkeysworld::engine::Scene;
 using ::monkeysworld::engine::RenderContext;
 using namespace ::monkeysworld::engine::baseengine;
+
+using namespace std::placeholders;
 
 using ::monkeysworld::font::UITextObject;
 
@@ -85,7 +88,7 @@ class RatModel : public Model {
  public:
   RatModel(Context* ctx) : Model(ctx), rot_(0), m(ctx) {
     SetMesh(ctx->GetCachedFileLoader()->LoadModel("resources/test/rat/Rat.obj"));
-    ctx->GetAudioManager()->AddFileToBuffer("resources/igor.ogg", AudioFiletype::OGG);
+    ctx->GetAudioManager()->AddFileToBuffer("resources/chamberofreflection.ogg", AudioFiletype::OGG);
     // create a key listener which accomplishes rat motion
     // or just rotate consistently with time
   }
@@ -298,6 +301,76 @@ class FrameText : public TextObject {
   float hue;
 };
 
+class DebugText : public UITextObject {
+ public:
+  DebugText(Context* ctx, const std::string& font_path) : UITextObject(ctx, font_path) {
+    a = 0;
+    frame_ctr = 0;
+    for (int i = 0; i < 144; i++) {
+      fps_buffer[i] = 0.083f;
+    }
+
+    auto event_mgr = ctx->GetEventManager();
+    event_mgr->RegisterKeyListener(GLFW_KEY_F5, std::bind(&DebugText::keyfunc, this, _1, _2, _3));
+    SetTextColor(glm::vec4(0));
+  }
+
+  void keyfunc(int key, int action, int mod) {
+    if (action != GLFW_PRESS) {
+      return;
+    }
+
+    if (GetTextColor().a != 0.0) {
+      SetTextColor(glm::vec4(0.0, 0.0, 0.0, 0.0));
+    } else {
+      SetTextColor(glm::vec4(0.0, 0.0, 0.0, 1.0));
+    }
+  }
+
+
+  void Update() override {
+    // figure out the text
+    frame_ctr++;
+    std::stringstream debug_text;
+    debug_text << "monkeysworld v0.0.1 (0.0.1 / vanilla)\n";
+    a += GetContext()->GetDeltaTime();
+    fps_buffer[frame_ctr % 144] = GetContext()->GetDeltaTime();
+    if (a > 1.0f) {
+      a -= 1.0f;
+      float g = 0;
+      for (int i = 0; i < 144; i++) {
+        g += fps_buffer[i];
+      }
+
+      last_fps_polled = 144 / g;
+    }
+
+    debug_text << std::to_string(last_fps_polled) << " FPS\n";
+
+    debug_text << "Standalone client @ " << 6 << "ms ticks\n\n";
+
+    debug_text << "XYZ: " << std::fixed << std::setprecision(4) << camera_pos_.x << " / " << camera_pos_.y << " / " << camera_pos_.z << "\n";
+    SetText(debug_text.str());
+    Invalidate();
+  }
+
+  void RenderMaterial(const RenderContext& rc) {
+    camera_pos_ = rc.GetActiveCamera().position;
+    UITextObject::RenderMaterial(rc);
+  }
+
+ private:
+  float a;
+  float fps_buffer[144];
+
+  int last_fps_polled;
+  int frame_ctr;
+
+  glm::vec3 camera_pos_;
+
+
+};
+
 /**
  *  Simple test scene
  */ 
@@ -341,13 +414,18 @@ class TestScene : public Scene {
     game_object_root_->AddChild(w);
     t->AddChild(rat_two);
 
+    auto tui_twoey = std::make_shared<DebugText>(ctx, "resources/8bitoperator_jve.ttf");
+    tui_twoey->SetPosition(glm::vec2(100, 100));
+    tui_twoey->SetDimensions(glm::vec2(800, 400));
+    tui_twoey->SetTextSize(32.0f);
+
     auto tui = std::make_shared<UITextObject>(ctx, "resources/8bitoperator_jve.ttf");
-    tui->SetText("hello");
     tui->SetPosition(glm::vec2(100, 100));
     tui->SetDimensions(glm::vec2(800, 400));
-    tui->SetTextColor(glm::vec4(0, 0, 0, 1));
-    tui->SetTextSize(48.0f);
-    ui_object_root_ = tui;
+    tui->SetTextSize(32.0f);
+    tui->SetTextColor(glm::vec4(0.0, 0.0, 0.0, 1.0));
+    tui->SetText("hello\nspongebob\ncleveland brown\ncomedy show");
+    ui_object_root_ = tui_twoey;
   }
 
   std::shared_ptr<GameObject> GetGameObjectRoot() {
