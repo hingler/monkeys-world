@@ -68,6 +68,11 @@ std::shared_ptr<font::Font> FontLoader::LoadFile(const std::string& path) {
   return res;
 }
 
+bool FontLoader::IsCached(const std::string& path) {
+  auto res = font_cache_.find(path);
+  return (res != font_cache_.end());
+}
+
 void FontLoader::LoadFontToCache(cache_record& record) {
   auto load_font = [=] {
     std::shared_ptr<font::Font> res;

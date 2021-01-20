@@ -28,6 +28,8 @@ class FontLoader : public CachedLoader<std::shared_ptr<font::Font>, FontLoader> 
   std::vector<cache_record> GetCache() override;
   loader_progress GetLoaderProgress() override;
   void WaitUntilLoaded() override;
+
+  bool IsCached(const std::string& path) override;
  private:
   void LoadFontToCache(cache_record& record);
 

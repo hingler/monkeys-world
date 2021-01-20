@@ -7,6 +7,7 @@
 #include <future>
 #include <mutex>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 // Re-TBA: Use CRTP to call a loader function belonging to the child.
@@ -92,11 +93,45 @@ class CachedLoader {
    *  Returns once cache loading is complete.
    */ 
   virtual void WaitUntilLoaded() = 0;
+
+  /**
+   *  Returned by implementors.
+   *  Returns true if the provided path is cached.
+   *  False otherwise.
+   */ 
+  virtual bool IsCached(const std::string& path) = 0;
  protected:
   // implement synchronous loading in LoadFile
   T LoadFromFile(const std::string& path) {
+    bool load_fresh = false;
     U* derived_ptr = static_cast<U*>(this);
-    return derived_ptr->LoadFile(path);
+    // check cache here
+    {
+      std::unique_lock<std::mutex> lock(loads_lock_);
+      auto rec = loads_.find(path);
+      if (rec != loads_.end()) {
+        // someone is loading for the first time, RIGHT NOW
+        rec->second->wait(lock, [&] { return IsCached(); });
+      } else if (!IsCached()) {
+        // no one's ever loaded this before -- create a record to let everyone know
+        // that we're loading for the first time
+        load_fresh = true;
+        loads_.insert(std::make_pair(path, std::make_shared<std::condition_variable>()));
+      }
+    }
+
+    auto res = derived_ptr->LoadFile(path);
+
+    if (load_fresh) {
+      // first load, so we created a record. remove that record now :)
+      std::unique_lock<std::mutex> lock(loads_lock_);
+      auto rec = loads_.find(path);
+      auto cond_var = rec->second;
+      loads_.erase(rec);
+      cond_var->notify_all();
+    }
+
+    return res;
   }
 
   std::shared_ptr<LoaderThreadPool>& GetThreadPool() {
@@ -105,6 +140,9 @@ class CachedLoader {
 
  private:
   std::shared_ptr<LoaderThreadPool> thread_pool_;
+
+  std::unordered_map<std::string, std::shared_ptr<std::condition_variable>> loads_;
+  std::mutex loads_lock_;
   
   
 };

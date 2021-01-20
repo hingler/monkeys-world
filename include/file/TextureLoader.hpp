@@ -27,8 +27,8 @@ class TextureLoader : public CachedLoader<std::shared_ptr<shader::Texture>, Text
   void WaitUntilLoaded() override;
   
   std::shared_ptr<shader::Texture> LoadFile(const std::string& path);
- 
- protected:
+
+  bool IsCached(const std::string& path) override;
  
  private:
 

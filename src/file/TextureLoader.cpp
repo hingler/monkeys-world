@@ -76,6 +76,11 @@ std::shared_ptr<shader::Texture> TextureLoader::LoadFile(const std::string& path
   return t;
 }
 
+bool TextureLoader::IsCached(const std::string& path) {
+  auto res = texture_cache_.find(path);
+  return (res != texture_cache_.end());
+}
+
 void TextureLoader::LoadTextureToCache(const cache_record& record) {
   auto lambda = [=] {
     std::shared_ptr<shader::Texture> t;

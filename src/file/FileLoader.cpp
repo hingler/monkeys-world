@@ -82,6 +82,11 @@ CacheStreambuf FileLoader::LoadFile(const std::string& path) {
   return CacheStreambuf(res);
 }
 
+bool FileLoader::IsCached(const std::string& path) {
+  auto res = file_cache_.find(path);
+  return (res != file_cache_.end());
+}
+
 void FileLoader::LoadFileToCache(cache_record& record) {
   auto load_file = [=] {
     std::ifstream source_stream(record.path, std::ios_base::in | std::ios_base::binary);

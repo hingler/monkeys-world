@@ -48,6 +48,8 @@ class ModelLoader : public CachedLoader<std::shared_ptr<model::Mesh<storage::Ver
    *  Also handles placing the OBJ file in the cache.
    */ 
   std::shared_ptr<model::Mesh<storage::VertexPacket3D>> LoadFile(const std::string& path);
+
+  bool IsCached(const std::string& path) override;
  protected:
  
  private:

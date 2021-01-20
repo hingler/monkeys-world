@@ -104,6 +104,11 @@ void ModelLoader::WaitUntilLoaded() {
   }
 }
 
+bool ModelLoader::IsCached(const std::string& path) {
+  auto res = model_cache_.find(path);
+  return (res != model_cache_.end());
+}
+
 void ModelLoader::LoadOBJToCache(cache_record& record) {
   auto load_model = [=] {
     uint64_t file_size;

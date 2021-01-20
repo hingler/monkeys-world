@@ -88,6 +88,11 @@ std::shared_ptr<shader::CubeMap> CubeMapLoader::LoadFile(const std::string& path
   }
 }
 
+bool CubeMapLoader::IsCached(const std::string& path) {
+  auto res = file_cache_.find(path);
+  return (res != file_cache_.end());
+}
+
 void CubeMapLoader::LoadFileToCache(cache_record& record) {
   if (record.path[0] == ':') {
     std::vector<std::string> paths;

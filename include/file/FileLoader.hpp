@@ -27,6 +27,8 @@ class FileLoader : public CachedLoader<CacheStreambuf, FileLoader> {
   std::vector<cache_record> GetCache() override;
   loader_progress GetLoaderProgress() override;
   void WaitUntilLoaded() override;
+
+  bool IsCached(const std::string& path) override;
  
  private:
   // loads a file into an std::vector, puts that vector in the cache,

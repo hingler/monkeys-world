@@ -26,7 +26,7 @@ class CubeMapLoader : public CachedLoader<std::shared_ptr<shader::CubeMap>, Cube
    */ 
   std::shared_ptr<shader::CubeMap> LoadFile(const std::string& path);
 
- protected:
+  bool IsCached(const std::string& path) override;
  private:
   void LoadFileToCache(cache_record& record);
 
