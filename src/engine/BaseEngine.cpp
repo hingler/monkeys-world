@@ -86,7 +86,8 @@ void GameLoop(std::shared_ptr<engine::Context> ctx, GLFWwindow* window) {
     light_visitor.Clear();
     cam_visitor.Clear();
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     // poll for events
     // check to see if a new scene needs to be initialized
     // if so: do that
@@ -99,6 +100,7 @@ void GameLoop(std::shared_ptr<engine::Context> ctx, GLFWwindow* window) {
     // visit objects in our component tree and call their "update" funcs
     auto scene = ctx->GetScene();
     UpdateObjects(scene->GetGameObjectRoot());
+    UpdateObjects(scene->GetUIObjectRoot());
     scene->GetGameObjectRoot()->Accept(light_visitor);
     scene->GetGameObjectRoot()->Accept(cam_visitor);
     // for each light:
