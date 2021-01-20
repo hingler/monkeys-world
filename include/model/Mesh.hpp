@@ -73,6 +73,7 @@ class Mesh {
    *  @param index - desired index.
    */ 
   Packet& operator[](std::size_t index) {
+    dirty_ = true;
     return data_.at(index);
   }
 

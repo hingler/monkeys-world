@@ -4,6 +4,12 @@ namespace monkeysworld {
 namespace critter {
 namespace ui {
 
+using shader::materials::TextureXferMaterial;
+
+std::weak_ptr<shader::materials::TextureXferMaterial> UIObject::xfer_mat_singleton_;
+std::mutex UIObject::xfer_lock_;
+model::Mesh<storage::VertexPacket2D> UIObject::xfer_mesh_;
+
 UIObject::UIObject(engine::Context* ctx) : Object(ctx) {
   pos_ = glm::vec2(0, 0);
   size_ = glm::vec2(0, 0);
@@ -56,6 +62,14 @@ glm::vec2 UIObject::GetPosition() const {
 
 void UIObject::SetPosition(glm::vec2 pos) {
   pos_ = pos;
+}
+
+glm::vec2 UIObject::GetAbsolutePosition() const {
+  if (auto i = parent_.lock()) {
+    return i->GetAbsolutePosition() + GetPosition();
+  }
+
+  return GetPosition();
 }
 
 glm::vec2 UIObject::GetDimensions() const {
@@ -123,6 +137,58 @@ void UIObject::RenderMaterial(const engine::RenderContext& rc) {
     DrawUI(min, max);
     valid_.store(true);
   }
+}
+
+void UIObject::DrawToScreen() {
+  // create a mesh
+  std::unique_lock<std::mutex> lock(xfer_lock_);
+  if (!xfer_mat_) {
+    if (!(xfer_mat_ = xfer_mat_singleton_.lock())) {
+      xfer_mat_ = std::make_shared<TextureXferMaterial>(GetContext());
+      xfer_mat_singleton_ = xfer_mat_;
+    }
+  }
+
+  auto pos = GetAbsolutePosition();
+  auto dim = GetDimensions();
+
+
+  storage::VertexPacket2D temp;
+  if (xfer_mesh_.GetVertexCount() == 0) {
+    // this will be our sign that the mesh has been prepared
+    for (int i = 0; i < 4; i++) {
+      temp.texcoords.x = (i >= 2 ? 1 : 0);
+      temp.texcoords.y = (i > 0 && i < 3 ? 1 : 0);
+      xfer_mesh_.AddVertex(temp);
+    }
+
+    xfer_mesh_.AddPolygon(0, 1, 2);
+    xfer_mesh_.AddPolygon(0, 2, 3);
+  }
+
+  glm::ivec2 win;
+  GetContext()->GetFramebufferSize(&win.x, &win.y);
+
+  // top left
+  xfer_mesh_[0].position.x = (pos.x / win.x) * 2 - 1;
+  xfer_mesh_[0].position.y = (pos.y / win.y) * 2 - 1;
+
+  // bottom left
+  xfer_mesh_[1].position.x = (pos.x / win.x) * 2 - 1;
+  xfer_mesh_[1].position.y = ((pos.y + dim.y) / win.y) * 2 - 1;
+
+  // bottom right
+  xfer_mesh_[2].position.x = ((pos.x + dim.x) / win.x) * 2 - 1;
+  xfer_mesh_[2].position.y = ((pos.y + dim.y) / win.y) * 2 - 1;
+  
+  // top right
+  xfer_mesh_[3].position.x = ((pos.x + dim.x) / win.x) * 2 - 1;
+  xfer_mesh_[3].position.y = (pos.y / win.y) * 2 - 1;
+
+  xfer_mesh_.PointToVertexAttribs();
+  xfer_mat_->SetTexture(color_attach_);
+  xfer_mat_->UseMaterial();
+  glDrawElements(GL_TRIANGLES, xfer_mesh_.GetIndexCount(), GL_UNSIGNED_INT, (void*)0);
 }
 
 GLuint UIObject::GetFramebufferColor() {

@@ -7,7 +7,12 @@
 
 #include <critter/GameObject.hpp>
 
+#include <shader/materials/TextureXferMaterial.hpp>
+
+#include <model/Mesh.hpp>
+
 #include <atomic>
+#include <mutex>
 
 namespace monkeysworld {
 namespace critter {
@@ -74,6 +79,11 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
   void SetPosition(glm::vec2 pos);
 
   /**
+   *  @returns the absolute position, in xy coords, of this object, from top left.
+   */ 
+  glm::vec2 GetAbsolutePosition() const;
+
+  /**
    *  @returns the XY size of this UI object.
    */ 
   glm::vec2 GetDimensions() const;
@@ -92,6 +102,11 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
    *  Calls DrawUI if the UI element has been invalidated by another call.
    */ 
   void RenderMaterial(const engine::RenderContext& rc) override;
+
+  /**
+   *  Draws the contents of this framebuffer directly to the screen.
+   */ 
+  void DrawToScreen();
 
   // also deprecated
   void Draw() override {}
@@ -144,8 +159,8 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
    */ 
   bool IsValid();
 
-  std::weak_ptr<UIObject> parent_;                      // parent object if valid
  private:
+  std::weak_ptr<UIObject> parent_;                      // parent object if valid
   glm::vec2 pos_;                                       // offset of this component relative to parent
   glm::vec2 size_;                                      // size of ui object, pixels wide/tall
   std::atomic_bool valid_;                              // whether or not the view has been invalidated.
@@ -156,6 +171,31 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
   GLuint depth_stencil_;
 
   glm::vec2 fb_size_;                                   // last framebuffer size
+
+  // for rendering directly to screen
+  // this is typically only done by a single UI object, so all fields are static.
+  // however, they technically could be used to draw other components to screen as well.
+  static std::weak_ptr<shader::materials::TextureXferMaterial> xfer_mat_singleton_; 
+  static std::mutex xfer_lock_;
+  static model::Mesh<storage::VertexPacket2D> xfer_mesh_;
+
+  // handling drawing to screen
+  // we should probably cache the mesh, instead of recreating it on each call
+  // (i won't deal with it yet though >:])
+  // uiobjects would have a mesh which contains their screen draw data
+  // this mesh would generally be very small, but could be used
+  // (in fact most of the time it would just be empty)
+  // alternatively...
+  // we could allocate a static mesh, and let all instances share it
+  // only one instance draws at a time, and we just contractually lock it
+
+  std::shared_ptr<shader::materials::TextureXferMaterial> xfer_mat_;
+
+  // weak ptr for shader (shader will only ever run on a single thread -- no problem!)
+  // UIObject will contain a method which draws the UIObject directly to the screen,
+  // bypassing the hierarchy altogether.
+
+  // plus: ideally, only one element (the top level group) will need it at a time
 
   /**
    *  Calculates the minimal bounding box which needs to be updated.
