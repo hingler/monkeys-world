@@ -36,14 +36,6 @@ ModelLoader::ModelLoader(std::shared_ptr<LoaderThreadPool> thread_pool,
 }
 
 std::shared_ptr<model::Mesh<>> ModelLoader::LoadFile(const std::string& path) {
-  {
-    std::unique_lock<std::mutex>(loader_mutex_);
-    if (loader_.bytes_read != loader_.bytes_sum) {
-      // more content to load
-      // TODO: Write an exception to throw here instead of returning nullptr
-      return std::shared_ptr<model::Mesh<>>();
-    }
-  }
 
   {
     // wait until the cache is done loading :)
