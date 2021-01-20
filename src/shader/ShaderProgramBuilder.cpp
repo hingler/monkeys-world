@@ -142,7 +142,7 @@ GLuint ShaderProgramBuilder::CreateShaderFromFile(const std::string& shader_path
     BOOST_LOG_TRIVIAL(debug) << "ERROR CODE: " << std::to_string(success);
     error_msg.resize(std::string::size_type(log_size));
     glGetShaderInfoLog(shader, log_size, NULL, &error_msg[0]);
-    BOOST_LOG_TRIVIAL(error) << GetShaderType(shader_type) << " failed to compile: " << error_msg;
+    BOOST_LOG_TRIVIAL(error) << GetShaderType(shader_type) << " " << shader_path << " failed to compile: " << error_msg;
     throw InvalidShaderException("Shader failed to compile: " + error_msg);
   }
 
