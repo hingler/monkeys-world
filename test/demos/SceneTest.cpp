@@ -339,6 +339,10 @@ class TestScene : public Scene {
   std::shared_ptr<Object> GetGameObjectRoot() {
     return game_object_root_;
   }
+
+  std::shared_ptr<Object> GetUIObjectRoot() {
+    return nullptr;
+  }
  private:
   Context* ctx;
   std::shared_ptr<GameObject> game_object_root_;  // game object root lol

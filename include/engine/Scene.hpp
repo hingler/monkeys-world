@@ -31,6 +31,7 @@ class Scene {
    *  and our components will know better. So this should be OK.
    */ 
   virtual std::shared_ptr<critter::Object> GetGameObjectRoot() = 0;
+  virtual std::shared_ptr<critter::Object> GetUIObjectRoot() = 0;
 };
 
 }
