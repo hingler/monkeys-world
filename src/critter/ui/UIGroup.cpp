@@ -69,6 +69,7 @@ void UIGroup::RemoveChild(uint64_t id) {
 
 void UIGroup::DrawUI(glm::vec2 min, glm::vec2 max) {
   // note: framebuffer is bound if this is being called
+  // plus, all of its children have already been drawn
   glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &max_textures_);
   BOOST_LOG_TRIVIAL(trace) << max_textures_ << " texture units available";
   model::Mesh<UIGroupPacket> mesh;
@@ -84,22 +85,27 @@ void UIGroup::DrawUI(glm::vec2 min, glm::vec2 max) {
       p.index = j;
 
       // top left
-      p.pos = (child->GetPosition()) / GetDimensions();
+      p.pos = ((child->GetPosition()) / GetDimensions());
+      p.pos *= 2;
+      p.pos.x -= 1;
+      p.pos.y -= 1;
+
+
       p.texcoord = glm::vec2(0);
       mesh.AddVertex(p);
 
       // bottom left
-      p.pos.y += (child->GetDimensions().y / GetDimensions().y);
+      p.pos.y += (child->GetDimensions().y / GetDimensions().y) * 2;
       p.texcoord = glm::vec2(0, 1);
       mesh.AddVertex(p);
 
       // bottom right
-      p.pos.x += (child->GetDimensions().x / GetDimensions().x);
+      p.pos.x += (child->GetDimensions().x / GetDimensions().x) * 2;
       p.texcoord = glm::vec2(1, 1);
       mesh.AddVertex(p);
 
       // top right
-      p.pos.y -= (child->GetDimensions().y / GetDimensions().y);
+      p.pos.y -= (child->GetDimensions().y / GetDimensions().y) * 2;
       p.texcoord = glm::vec2(1, 0);
       mesh.AddVertex(p);
 
