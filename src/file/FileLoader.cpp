@@ -64,6 +64,7 @@ CacheStreambuf FileLoader::LoadFile(const std::string& path) {
   if (!source_stream.good()) {
     // bad ptr
     BOOST_LOG_TRIVIAL(error) << "bad path for new file";
+    BOOST_LOG_TRIVIAL(error) << path;
     return CacheStreambuf();
   }
 
