@@ -250,6 +250,69 @@ void UIObject::GetInvalidatedBoundingBox(glm::vec2* xyMin, glm::vec2* xyMax) {
   }
 }
 
+UIObject::UIObject(const UIObject& other) : Object(other) {
+  pos_ = other.pos_;
+  size_ = other.size_;
+  fb_size_ = glm::vec2(0, 0);
+
+  valid_ = false;
+  parent_ = std::weak_ptr<UIObject>();
+  
+  framebuffer_ = 0;
+  color_attach_ = 0;
+  depth_stencil_ = 0;
+}
+
+UIObject& UIObject::operator=(const UIObject& other) {
+  Object::operator=(other);
+  pos_ = other.pos_;
+  size_ = other.size_;
+  valid_ = false;
+  return *this;
+}
+
+UIObject::UIObject(UIObject&& other) : Object(other) {
+  pos_ = std::move(other.pos_);
+  size_ = std::move(other.size_);
+  fb_size_ = std::move(other.fb_size_);
+
+  valid_ = other.valid_.load();
+  parent_ = std::weak_ptr<UIObject>();
+
+  framebuffer_ = other.framebuffer_;
+  color_attach_ = other.color_attach_;
+  depth_stencil_ = other.depth_stencil_;
+
+  other.framebuffer_ = other.color_attach_ = other.depth_stencil_ = 0;
+}
+
+UIObject& UIObject::operator=(UIObject&& other) {
+  Object::operator=(other);
+  pos_ = std::move(other.pos_);
+  size_ = std::move(other.size_);
+  fb_size_ = std::move(other.fb_size_);
+
+  valid_ = other.valid_.load();
+  parent_ = std::weak_ptr<UIObject>();
+
+  framebuffer_ = other.framebuffer_;
+  color_attach_ = other.color_attach_;
+  depth_stencil_ = other.depth_stencil_;
+
+  other.framebuffer_ = other.color_attach_ = other.depth_stencil_ = 0;
+  return *this;
+}
+
+UIObject::~UIObject() {
+  if (glfwGetCurrentContext()) {
+    if (framebuffer_ != 0) {
+      glDeleteFramebuffers(1, &framebuffer_);
+      glDeleteTextures(1, &color_attach_);
+      glDeleteTextures(1, &depth_stencil_);
+    }
+  }
+}
+
 }
 }
 }
