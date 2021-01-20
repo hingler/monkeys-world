@@ -21,7 +21,6 @@ class UITextObject : public critter::ui::UIObject, public Text {
    *  @param font_path - the path to the desired font.
    */ 
   UITextObject(engine::Context* ctx, const std::string& font_path);
-  void Accept(critter::Visitor& v) override;
   void DrawUI(glm::vec2 xMin, glm::vec2 xMax) override;
 
  private:
