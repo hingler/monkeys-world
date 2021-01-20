@@ -111,8 +111,8 @@ class CachedLoader {
       auto rec = loads_.find(path);
       if (rec != loads_.end()) {
         // someone is loading for the first time, RIGHT NOW
-        rec->second->wait(lock, [&] { return IsCached(); });
-      } else if (!IsCached()) {
+        rec->second->wait(lock, [&] { return IsCached(path); });
+      } else if (!IsCached(path)) {
         // no one's ever loaded this before -- create a record to let everyone know
         // that we're loading for the first time
         load_fresh = true;
