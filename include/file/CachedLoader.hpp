@@ -103,6 +103,9 @@ class CachedLoader {
  protected:
   // implement synchronous loading in LoadFile
   T LoadFromFile(const std::string& path) {
+    // ensure cache is complete
+    WaitUntilLoaded();
+
     bool load_fresh = false;
     U* derived_ptr = static_cast<U*>(this);
     // check cache here
@@ -111,7 +114,8 @@ class CachedLoader {
       auto rec = loads_.find(path);
       if (rec != loads_.end()) {
         // someone is loading for the first time, RIGHT NOW
-        rec->second->wait(lock, [&] { return IsCached(path); });
+        auto cond_var = rec->second;
+        cond_var->wait(lock, [&] { return IsCached(path); });
       } else if (!IsCached(path)) {
         // no one's ever loaded this before -- create a record to let everyone know
         // that we're loading for the first time
@@ -120,9 +124,11 @@ class CachedLoader {
       }
     }
 
+    BOOST_LOG_TRIVIAL(trace) << "loading your model: " << path;
     auto res = derived_ptr->LoadFile(path);
 
     if (load_fresh) {
+      BOOST_LOG_TRIVIAL(trace) << "removing from load list...";
       // first load, so we created a record. remove that record now :)
       std::unique_lock<std::mutex> lock(loads_lock_);
       auto rec = loads_.find(path);
