@@ -49,7 +49,7 @@ class Mesh {
    */ 
   Mesh() : dirty_(true) {
     context_ = std::make_unique<VertexDataContextGL<Packet>>();
-   }
+  }
 
   /**
    *  Constructs a new VertexData object from a preallocated context object.
@@ -66,6 +66,14 @@ class Mesh {
   void AddVertex(const Packet& packet) {
     data_.push_back(packet);
     dirty_ = true;
+  }
+
+  /**
+   *  Allows direct access to vertices.
+   *  @param index - desired index.
+   */ 
+  Packet& operator[](std::size_t index) {
+    return data_.at(index);
   }
 
   /**
