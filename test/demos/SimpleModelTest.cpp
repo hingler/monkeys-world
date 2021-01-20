@@ -7,6 +7,7 @@
 #include <critter/GameCamera.hpp>
 
 #include <critter/Object.hpp>
+#include <critter/GameObject.hpp>
 
 #include <model/Mesh.hpp>
 
@@ -37,6 +38,8 @@ using ::monkeysworld::audio::AudioFiletype;
 using ::monkeysworld::model::Mesh;
 using ::monkeysworld::engine::RenderContext;
 using ::monkeysworld::critter::Object;
+using ::monkeysworld::critter::GameObject;
+using ::monkeysworld::critter::ui::UIObject;
 
 using milli = std::chrono::milliseconds;
 
@@ -101,12 +104,17 @@ void main(int argc, char** argv) {
    public:
     DummyScene() {}
     void Initialize(Context* ctx) {}
-    std::shared_ptr<Object> GetGameObjectRoot() {
-      return std::shared_ptr<Object>(nullptr);
+    std::shared_ptr<GameObject> GetGameObjectRoot() {
+      return nullptr;
+    }
+
+    std::shared_ptr<UIObject> GetUIObjectRoot() {
+      return nullptr;
     }
   };
 
-  std::shared_ptr<Context> ctx = std::make_shared<Context>(window, std::make_shared<DummyScene>());
+
+  std::shared_ptr<Context> ctx = std::make_shared<Context>(window, new DummyScene());
     
   AudioManager audio_mgr;
   TestingEventManager event_mgr(window, ctx.get());

@@ -19,6 +19,7 @@
 #include <critter/Skybox.hpp>
 
 #include <font/TextObject.hpp>
+#include <font/UITextObject.hpp>
 
 #include <shader/light/SpotLight.hpp>
 
@@ -34,6 +35,8 @@
 using ::monkeysworld::engine::Scene;
 using ::monkeysworld::engine::RenderContext;
 using namespace ::monkeysworld::engine::baseengine;
+
+using ::monkeysworld::font::UITextObject;
 
 using ::monkeysworld::engine::Context;
 using ::monkeysworld::critter::Empty;
@@ -337,6 +340,14 @@ class TestScene : public Scene {
     w->SetCubeMap(res);
     game_object_root_->AddChild(w);
     t->AddChild(rat_two);
+
+    auto tui = std::make_shared<UITextObject>(ctx, "resources/8bitoperator_jve.ttf");
+    tui->SetText("hello");
+    tui->SetPosition(glm::vec2(100, 100));
+    tui->SetDimensions(glm::vec2(800, 400));
+    tui->SetTextColor(glm::vec4(0, 0, 0, 1));
+    tui->SetTextSize(48.0f);
+    ui_object_root_ = tui;
   }
 
   std::shared_ptr<GameObject> GetGameObjectRoot() {
@@ -344,11 +355,12 @@ class TestScene : public Scene {
   }
 
   std::shared_ptr<UIObject> GetUIObjectRoot() {
-    return nullptr;
+    return ui_object_root_;
   }
  private:
   Context* ctx;
   std::shared_ptr<GameObject> game_object_root_;  // game object root lol
+  std::shared_ptr<UIObject> ui_object_root_;
 };
 
 int main(int argc, char** argv) {
