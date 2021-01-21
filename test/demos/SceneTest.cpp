@@ -9,6 +9,8 @@
 #include <engine/Scene.hpp>
 #include <engine/RenderContext.hpp>
 
+#include <font/TextFormat.hpp>
+
 #include <engine/Context.hpp>
 #include <critter/Empty.hpp>
 #include <critter/GameCamera.hpp>
@@ -40,6 +42,9 @@ using namespace ::monkeysworld::engine::baseengine;
 using namespace std::placeholders;
 
 using ::monkeysworld::font::UITextObject;
+
+using namespace ::monkeysworld::font;
+
 
 using ::monkeysworld::engine::Context;
 using ::monkeysworld::critter::Empty;
@@ -244,6 +249,11 @@ class FrameText : public TextObject {
     a = 0;
     counter = 0;
     hue = 0;
+    TextFormat format;
+    format.horiz_align = AlignmentH::CENTER;
+    format.char_spacing = 0;
+    format.vert_align = AlignmentV::MIDDLE;
+    SetTextFormat(format);
     // assume l = 0.5, s = 1 
     for (int i = 0; i < FRAME_WINDOW; i++) {
       frames[i] = 1.0f;

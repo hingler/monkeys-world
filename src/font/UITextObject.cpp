@@ -11,10 +11,16 @@ namespace font {
 using storage::VertexPacket2D;
 
 UITextObject::UITextObject(engine::Context* ctx, const std::string& font_path)
-  : Text(ctx, font_path), UIObject(ctx), mat_(ctx) { }
+  : UIObject(ctx), mat_(ctx), text_(ctx, font_path) { 
+    TextFormat format;
+    format.char_spacing = 0;
+    format.horiz_align = LEFT;
+    format.vert_align = TOP;
+    text_.SetTextFormat(format);
+  }
 
 void UITextObject::DrawUI(glm::vec2 xMin, glm::vec2 xMax) {
-  auto text_mesh = GetGeometry();
+  auto text_mesh = text_.GetGeometry();
 
   glm::mat4 model_mat(1.0);
   glm::ivec2 window_size;
@@ -33,11 +39,6 @@ void UITextObject::DrawUI(glm::vec2 xMin, glm::vec2 xMax) {
   
   float y_max = 0.0f;
 
-  int i = 0;
-  for (const VertexPacket2D* c = text_mesh->GetVertexData(); i < text_mesh->GetVertexCount(); c++, i++) {
-    y_max = (y_max > c->position.y ? y_max : c->position.y);
-  }
-
   y_max *= scale.y;
 
   // translate so that our text lines up with top left corner of the framebuffer
@@ -48,8 +49,8 @@ void UITextObject::DrawUI(glm::vec2 xMin, glm::vec2 xMax) {
 
   mat_.SetModelTransforms(model_mat);
   mat_.SetCameraTransforms(glm::mat4(1.0));
-  mat_.SetGlyphTexture(GetTexture());
-  mat_.SetTextColor(GetTextColor());
+  mat_.SetGlyphTexture(text_.GetTexture());
+  mat_.SetTextColor(text_.GetTextColor());
   mat_.UseMaterial();
 
   glDrawElements(GL_TRIANGLES, text_mesh->GetIndexCount(), GL_UNSIGNED_INT, (void*)0);
