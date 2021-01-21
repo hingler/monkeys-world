@@ -456,6 +456,17 @@ int main(int argc, char** argv) {
   // give the context ownership of the scene!
   auto scene = new TestScene();
   auto ctx = std::make_shared<Context>(main_win, scene);
+  #ifdef DEBUG
+  ctx->GetEventManager()->RegisterKeyListener(GLFW_KEY_Z, [&](int k, int a, int m) {
+    if (a == GLFW_PRESS) {
+      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
+
+    if (a == GLFW_RELEASE) {
+      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
+  });
+  #endif
   while (true) {
     auto prog = ctx->GetCachedFileLoader()->GetLoaderProgress();
     BOOST_LOG_TRIVIAL(trace) << "loading progress: " << (((float)prog.bytes_read * 100.0f) / prog.bytes_sum);

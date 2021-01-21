@@ -135,7 +135,13 @@ void UIObject::RenderMaterial(const engine::RenderContext& rc) {
 
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
     glViewport(0, 0, fb_size_.x, fb_size_.y);
-    glClearColor(0.0, 0.0, 0.0, 0.0);
+    
+    #ifdef DEBUG
+      glClearColor(1.0, 0.0, 0.0, 0.2);
+    #else
+      glClearColor(0.0, 0.0, 0.0, 0.0);
+    #endif
+    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     DrawUI(min, max);
     valid_.store(true);

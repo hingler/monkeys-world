@@ -36,13 +36,9 @@ void UITextObject::DrawUI(glm::vec2 xMin, glm::vec2 xMax) {
   scale.x = (window_size.x / text_fb_size.x);
   scale.y = (window_size.y / text_fb_size.y) * (static_cast<float>(window_size.x) / window_size.y);
   scale *= (960.0f / window_size.x);
-  
-  float y_max = 0.0f;
-
-  y_max *= scale.y;
 
   // translate so that our text lines up with top left corner of the framebuffer
-  model_mat = glm::translate(model_mat, glm::vec3(-1.0, 1.0 - y_max, 0.0));
+  model_mat = glm::translate(model_mat, glm::vec3(-1.0, 1.0, 0.0));
   model_mat = glm::scale(model_mat, scale);
 
   text_mesh->PointToVertexAttribs();

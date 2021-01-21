@@ -12,12 +12,6 @@ namespace font {
 
 /**
  *   Renders text onto the UI.
- *   TODO: separate UITextObject into UIText and UITextObject
- *   Use UIText to draw text to a 2d framebuffer
- *   Use UITextObject to create text which exists in its own UIObject
- * 
- *  UITextObject transforms outputted geometry
- *  We should be able to do this from our UIText object
  */ 
 class UITextObject : public critter::ui::UIObject {
  public:
