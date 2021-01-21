@@ -322,6 +322,7 @@ class DebugText : public UITextObject {
 
     auto event_mgr = ctx->GetEventManager();
     event_mgr->RegisterKeyListener(GLFW_KEY_F5, std::bind(&DebugText::keyfunc, this, _1, _2, _3));
+    SetHorizontalAlign(RIGHT);
     SetTextColor(glm::vec4(0));
   }
 
