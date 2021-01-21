@@ -21,6 +21,11 @@ UITextObject::UITextObject(engine::Context* ctx, const std::string& font_path)
 
 void UITextObject::DrawUI(glm::vec2 xMin, glm::vec2 xMax) {
   auto text_mesh = text_.GetGeometry();
+  if (text_.GetTextFormat().horiz_align == RIGHT) {
+    for (int i = 0; i < text_mesh->GetVertexCount(); i++) {
+      text_mesh->operator[](i).position.x += 1;
+    }
+  }
 
   glm::mat4 model_mat(1.0);
   glm::ivec2 window_size;
