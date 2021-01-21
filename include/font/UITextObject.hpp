@@ -29,13 +29,22 @@ class UITextObject : public critter::ui::UIObject {
     text_.SetFont(font_path);
   }
 
+  /**
+   *  Sets the text being displayed.
+   *  @param text - new text
+   */ 
   void SetText(const std::string& text) {
     text_.SetText(text);
   }
 
+  /**
+   *  @returns the text associated with this object.
+   */ 
   std::string GetText() {
     return text_.GetText();
   }
+
+  // get/set text color
 
   void SetTextColor(const glm::vec4& col) {
     text_.SetTextColor(col);
@@ -45,6 +54,8 @@ class UITextObject : public critter::ui::UIObject {
     return text_.GetTextColor();
   }
 
+  // get/set text size
+
   void SetTextSize(float size_pt) {
     text_.SetTextSize(size_pt);
   }
@@ -53,12 +64,19 @@ class UITextObject : public critter::ui::UIObject {
     return text_.GetTextSize();
   }
 
+  /**
+   *  Sets the horizontal alignment of this text object.
+   *  @param align - the new desired alignment.
+   */ 
   void SetHorizontalAlign(AlignmentH align) {
     TextFormat tx = text_.GetTextFormat();
     tx.horiz_align = align;
     text_.SetTextFormat(tx);
   }
 
+  /**
+   *  Draws text to screen.
+   */ 
   void DrawUI(glm::vec2 xMin, glm::vec2 xMax) override;
 
  private:
