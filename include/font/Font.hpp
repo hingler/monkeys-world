@@ -5,6 +5,7 @@
 #include FT_FREETYPE_H
 
 #include <font/FTLibWrapper.hpp>
+#include <font/TextFormat.hpp>  
 
 #include <glad/glad.h>
 
@@ -54,8 +55,19 @@ class Font {
    *  @returns A 3D mesh corresponding with the desired text. Texture coordinates correspond with the
    *           glyph atlas (see GetGlyphAtlas()).
    */ 
-  model::Mesh<storage::VertexPacket2D> GetTextGeometry(const std::string& text, float size_pt) const;
+  model::Mesh<storage::VertexPacket2D> GetTextGeometry(const std::string& text, float size_pt) const {
+    TextFormat format;
+    format.char_spacing = 0;
+    format.vert_align = DEFAULT;
+    format.horiz_align = LEFT;
+    return GetTextGeometry(text, size_pt, format);
+  }
   // probably add a param for some simple font formatting :)
+
+  /**
+   *  Same as above but with feeling this time
+   */ 
+  model::Mesh<storage::VertexPacket2D> GetTextGeometry(const std::string& text, float size_pt, TextFormat opts) const;
 
   /**
    *  Gets the glyph atlas associated with this font.
@@ -109,6 +121,9 @@ class Font {
 
   // height of a line (1/64th px)
   float line_height_;
+
+  // distance between baseline and highest glyph (1/64 px)
+  float ascent_;
 };
 
 }

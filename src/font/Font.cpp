@@ -48,6 +48,8 @@ Font::Font(const std::string& font_path) {
 
   }
 
+  ascent_ = face->size->metrics.ascender;
+
   // what should char size be?
   // let's go with 256px for now
   e = FT_Set_Char_Size(face, 0, bitmap_desired_scale * 64, 72, 72);
@@ -175,7 +177,7 @@ Font::Font(const std::string& font_path) {
 // advance is stored in 1/64 pixels
 #define ADVANCE_SCALE 64.0f
 
-model::Mesh<storage::VertexPacket2D> Font::GetTextGeometry(const std::string& text, float size_pt) const {
+model::Mesh<storage::VertexPacket2D> Font::GetTextGeometry(const std::string& text, float size_pt, TextFormat opts) const {
   // scales our fonts down to screenspace scale (roughly:)
   const float SCREENSPACE_FAC = (960.0f * bitmap_desired_scale) / size_pt;
   
@@ -197,17 +199,46 @@ model::Mesh<storage::VertexPacket2D> Font::GetTextGeometry(const std::string& te
   float geom_width;
   float geom_height;
 
+  // for rearranging lines later
+  float y_min = 0, y_max = 0;
+
   glyph_info* info;
+
+  // for alignment: determines when the last line began.
+  int last_line_start = 0;
 
   int cur = 0;
   for (auto c : text) {
     if (c == '\n') {
       origin_x = 0;
+      // center all characters recorded thus far
+      float x_width = 0;
+      if (cur > 0) {
+        x_width = result[(cur - 1) * 4 + 3].position.x;
+      }
+
+      switch (opts.horiz_align) {
+        case CENTER:
+          x_width /= 2;
+        case RIGHT:
+          break;
+        case LEFT:
+        default:
+          x_width = 0;
+          break;
+      }
+
+      for (int i = last_line_start * 4; i < cur * 4; i++) {
+        result[i].position.x -= x_width;
+      }
+
+      last_line_start = cur;
+
       origin_y -= (line_height_ / (SCREENSPACE_FAC * ADVANCE_SCALE)); 
       continue;
     } else if (c < glyph_lower_ || c > glyph_upper_) {
       // skip, make space
-      origin_x += glyph_cache_[0].advance / (SCREENSPACE_FAC * ADVANCE_SCALE);
+      origin_x += (glyph_cache_[0].advance + opts.char_spacing) / (SCREENSPACE_FAC * ADVANCE_SCALE);
       continue;
     }
 
@@ -221,6 +252,14 @@ model::Mesh<storage::VertexPacket2D> Font::GetTextGeometry(const std::string& te
     geom_width = info->width / SCREENSPACE_FAC;
     geom_height = info->height / SCREENSPACE_FAC;
 
+    if (glyph_origin_y > y_max) {
+      y_max = glyph_origin_y;
+    }
+
+    if (glyph_origin_y - geom_height < y_min) {
+      y_min = glyph_origin_y;
+    }
+
     result.AddVertex({glm::vec2(glyph_origin_x, glyph_origin_y),                            glm::vec2(info->origin_x, 0.0f)});
     result.AddVertex({glm::vec2(glyph_origin_x, glyph_origin_y - geom_height),              glm::vec2(info->origin_x, tex_height)});
     result.AddVertex({glm::vec2(glyph_origin_x + geom_width, glyph_origin_y - geom_height), glm::vec2(info->origin_x + tex_width, tex_height)});
@@ -232,6 +271,52 @@ model::Mesh<storage::VertexPacket2D> Font::GetTextGeometry(const std::string& te
 
     origin_x += (info->advance / (SCREENSPACE_FAC * ADVANCE_SCALE));
   }
+
+  if (cur != last_line_start) {
+    float x_width = 0;
+    if (cur > 0) {
+      x_width = result[(cur - 1) * 4 + 3].position.x;
+    }
+
+    switch (opts.horiz_align) {
+      case CENTER:
+        x_width /= 2;
+      case RIGHT:
+        break;
+      case LEFT:
+      default:
+        x_width = 0;
+        break;
+    }
+
+    for (int i = last_line_start * 4; i < cur * 4; i++) {
+      result[i].position.x -= x_width;
+    }
+
+    last_line_start = cur;
+  }
+
+  float v_alignment_offset;
+  switch (opts.vert_align) {
+    case TOP:
+      v_alignment_offset = y_max;
+      break;
+    case MIDDLE:
+      v_alignment_offset = (y_max + y_min) / 2;
+      break;
+    case BOTTOM:
+      v_alignment_offset = y_min;
+      break;
+    case DEFAULT:
+    default:
+      v_alignment_offset = 0;
+  }
+
+  for (int i = 0; i < result.GetVertexCount(); i++) {
+    result[i].position.y -= v_alignment_offset;
+  }
+
+  // account for vertical alignment
 
   return result;
 }

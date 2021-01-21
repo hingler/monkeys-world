@@ -4,6 +4,8 @@
 #include <engine/Context.hpp>
 #include <font/Font.hpp>
 
+#include <font/TextFormat.hpp>
+
 #include <memory>
 
 namespace monkeysworld {
@@ -72,11 +74,17 @@ class Text {
    */ 
   GLuint GetTexture();
 
- protected:
+  void SetTextFormat(TextFormat format);
+
+  TextFormat GetTextFormat() {
+    return format_;
+  }
+
   /**
    *  @returns geometry corresponding with the text.
    */ 
   std::shared_ptr<model::Mesh<storage::VertexPacket2D>> GetGeometry();
+ protected:
 
  private:
   engine::Context* ctx_;
@@ -86,6 +94,7 @@ class Text {
   float size_;
   bool mesh_valid_;
   std::shared_ptr<model::Mesh<storage::VertexPacket2D>> mesh_;
+  TextFormat format_;
 };
 
 }

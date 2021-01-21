@@ -13,6 +13,9 @@ Text::Text(engine::Context* ctx, const std::string& font_path) {
   size_ = 24.0f;
   text_ = "";
   mesh_valid_ = false;
+  format_.char_spacing = 0;
+  format_.horiz_align = LEFT;
+  format_.vert_align = DEFAULT;
 }
 
 void Text::SetFont(const std::string& font_path) {
@@ -50,9 +53,13 @@ float Text::GetTextSize() {
   return size_;
 }
 
+void Text::SetTextFormat(TextFormat format) {
+  format_ = format;
+}
+
 std::shared_ptr<model::Mesh<storage::VertexPacket2D>> Text::GetGeometry() {
   if (!mesh_valid_) {
-    mesh_->operator=(std::move(font_->GetTextGeometry(text_, size_)));
+    mesh_->operator=(std::move(font_->GetTextGeometry(text_, size_, format_)));
     mesh_valid_ = true;
   }
 
