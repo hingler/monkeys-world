@@ -4,7 +4,7 @@
 
 precision mediump float;
 
-layout(location = 0) in sampler2D textures[4];
+layout(location = 0) uniform sampler2D textures[4];
 
 layout(location = 0) in vec2 v_tex;
 layout(location = 1) in float v_ind;
