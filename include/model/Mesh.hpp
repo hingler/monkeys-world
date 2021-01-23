@@ -69,6 +69,15 @@ class Mesh {
   }
 
   /**
+   *  Clears all data stored in this mesh.
+   */ 
+  void Clear() {
+    data_.clear();
+    indices_.clear();
+    dirty_ = true;
+  }
+
+  /**
    *  Allows direct access to vertices.
    *  @param index - desired index.
    */ 
