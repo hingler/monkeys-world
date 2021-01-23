@@ -71,53 +71,53 @@ void UIGroup::DrawUI(glm::vec2 min, glm::vec2 max) {
   // note: framebuffer is bound if this is being called
   // plus, all of its children have already been drawn
   glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &max_textures_);
-  BOOST_LOG_TRIVIAL(trace) << max_textures_ << " texture units available";
-  model::Mesh<UIGroupPacket> mesh;
   UIGroupPacket p;
   std::shared_ptr<UIObject> child;
   GLuint textures[4];
   for (int i = 0; i < children_.size(); i += TEXTURES_PER_CALL) {
+    mesh_.Clear();
     for (int j = 0; j < TEXTURES_PER_CALL && (i + j) < children_.size(); j++) {
       child = children_[i + j];
       
-      // tba: pass textures to material
       textures[j] = child->GetFramebufferColor();
       p.index = j;
 
+      auto pos = child->GetPosition();
+      auto dims = GetDimensions();
+
+      auto dims_child = child->GetDimensions();
+
       // top left
-      p.pos = ((child->GetPosition()) / GetDimensions());
-      p.pos *= 2;
-      p.pos.x -= 1;
-      p.pos.y -= 1;
+      p.pos.x = (pos.x / dims.x) * 2 - 1;
+      p.pos.y = 1 - (pos.y / dims.y) * 2;
 
 
-      p.texcoord = glm::vec2(0);
-      mesh.AddVertex(p);
+      p.texcoord = glm::vec2(0, 1);
+      mesh_.AddVertex(p);
 
       // bottom left
-      p.pos.y += (child->GetDimensions().y / GetDimensions().y) * 2;
-      p.texcoord = glm::vec2(0, 1);
-      mesh.AddVertex(p);
+      p.pos.y -= (dims_child.y / dims.y) * 2;
+      p.texcoord = glm::vec2(0, 0);
+      mesh_.AddVertex(p);
 
       // bottom right
-      p.pos.x += (child->GetDimensions().x / GetDimensions().x) * 2;
-      p.texcoord = glm::vec2(1, 1);
-      mesh.AddVertex(p);
+      p.pos.x += (dims_child.x / dims.x) * 2;
+      p.texcoord = glm::vec2(1, 0);
+      mesh_.AddVertex(p);
 
       // top right
-      p.pos.y -= (child->GetDimensions().y / GetDimensions().y) * 2;
-      p.texcoord = glm::vec2(1, 0);
-      mesh.AddVertex(p);
+      p.pos.y += (dims_child.y / dims.y) * 2;
+      p.texcoord = glm::vec2(1, 1);
+      mesh_.AddVertex(p);
 
-      mesh.AddPolygon(0, 1, 2);
-      mesh.AddPolygon(0, 2, 3);
+      mesh_.AddPolygon(4 * j, 4 * j + 1, 4 * j + 2);
+      mesh_.AddPolygon(4 * j, 4 * j + 2, 4 * j + 3);
       // position / fb size
       // (position + dimensions) / fb size
       // tex coords always 0 - 1
       // index defined by the order we get to it in
     }
 
-    mesh_ = mesh;
     mat_.SetTextures(textures);
 
     // point attribs
@@ -135,7 +135,7 @@ void UIGroup::UIGroupPacket::Bind() {
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(UIGroupPacket), (void*)(sizeof(glm::vec2)));
   glEnableVertexAttribArray(1);
 
-  glVertexAttribIPointer(2, 1, GL_UNSIGNED_SHORT, sizeof(UIGroupPacket), (void*)(2 * sizeof(glm::vec2)));
+  glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(UIGroupPacket), (void*)(2 * sizeof(glm::vec2)));
   glEnableVertexAttribArray(2);
 }
 

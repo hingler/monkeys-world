@@ -16,6 +16,7 @@
 #include <critter/GameCamera.hpp>
 #include <critter/GameObject.hpp>
 #include <critter/ui/UIObject.hpp>
+#include <critter/ui/UIGroup.hpp>
 #include <critter/Model.hpp>
 
 #include <critter/Skybox.hpp>
@@ -54,6 +55,7 @@ using ::monkeysworld::critter::Object;
 using ::monkeysworld::critter::Model;
 using ::monkeysworld::critter::Skybox;
 
+using ::monkeysworld::critter::ui::UIGroup;
 using ::monkeysworld::critter::ui::UIObject;
 
 using ::monkeysworld::critter::camera_info;
@@ -250,7 +252,7 @@ class FrameText : public TextObject {
     counter = 0;
     hue = 0;
     TextFormat format;
-    format.horiz_align = AlignmentH::CENTER;
+    format.horiz_align = AlignmentH::LEFT;
     format.char_spacing = 0;
     format.vert_align = AlignmentV::MIDDLE;
     SetTextFormat(format);
@@ -322,7 +324,7 @@ class DebugText : public UITextObject {
 
     auto event_mgr = ctx->GetEventManager();
     event_mgr->RegisterKeyListener(GLFW_KEY_F5, std::bind(&DebugText::keyfunc, this, _1, _2, _3));
-    SetHorizontalAlign(RIGHT);
+    SetHorizontalAlign(LEFT);
     SetTextColor(glm::vec4(0));
   }
 
@@ -332,9 +334,9 @@ class DebugText : public UITextObject {
     }
 
     if (GetTextColor().a != 0.0) {
-      SetTextColor(glm::vec4(0.0, 0.0, 0.0, 0.0));
+      SetTextColor(glm::vec4(1.0, 0.0, 0.0, 0.0));
     } else {
-      SetTextColor(glm::vec4(0.0, 0.0, 0.0, 1.0));
+      SetTextColor(glm::vec4(1.0, 0.0, 0.0, 1.0));
     }
   }
 
@@ -431,12 +433,19 @@ class TestScene : public Scene {
     tui_twoey->SetTextSize(32.0f);
 
     auto tui = std::make_shared<UITextObject>(ctx, "resources/8bitoperator_jve.ttf");
-    tui->SetPosition(glm::vec2(100, 100));
+    tui->SetPosition(glm::vec2(600, 600));
     tui->SetDimensions(glm::vec2(800, 400));
     tui->SetTextSize(32.0f);
-    tui->SetTextColor(glm::vec4(0.0, 0.0, 0.0, 1.0));
+    tui->SetTextColor(glm::vec4(1.0, 0.0, 0.0, 1.0));
     tui->SetText("hello\nspongebob\ncleveland brown\ncomedy show");
-    ui_object_root_ = tui_twoey;
+
+    auto group = std::make_shared<UIGroup>(ctx);
+    group->SetPosition(glm::vec2(0, 0));
+    group->SetDimensions(glm::vec2(1600, 900));
+    // create a group and add the text to that
+    group->AddChild(tui);
+    group->AddChild(tui_twoey);
+    ui_object_root_ = group;
   }
 
   std::shared_ptr<GameObject> GetGameObjectRoot() {
