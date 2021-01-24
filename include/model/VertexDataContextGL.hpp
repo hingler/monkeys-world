@@ -26,6 +26,8 @@ class VertexDataContextGL : public VertexDataContext<Packet> {
    */ 
   VertexDataContextGL() {
     gl_alloced_ = false;
+    index_buffer_size_ = 0;
+    array_buffer_size_ = 0;
   }
 
   /**
@@ -41,19 +43,45 @@ class VertexDataContextGL : public VertexDataContext<Packet> {
       bool* alloced_nonconst_ = const_cast<bool*>(&gl_alloced_);
       *alloced_nonconst_ = true;
     }
-    glBindVertexArray(vao_);
-    glBindBuffer(GL_ARRAY_BUFFER, array_buffer_);
-    glBufferData(GL_ARRAY_BUFFER,
-                 sizeof(Packet) * data.size(),
-                 data.data(),
-                 GL_STATIC_DRAW);
 
-    
+    glBindVertexArray(vao_);
+
+    glBindBuffer(GL_ARRAY_BUFFER, array_buffer_);
+    int ab_size = sizeof(Packet) * data.size();
+
+    if (ab_size > array_buffer_size_) {
+      glBufferData(GL_ARRAY_BUFFER,
+                  sizeof(Packet) * data.size(),
+                  data.data(),
+                  GL_DYNAMIC_DRAW);
+      int* ab_size_nonconst_ = const_cast<int*>(&array_buffer_size_);
+      *ab_size_nonconst_ = ab_size;
+      BOOST_LOG_TRIVIAL(trace) << "buffer " << array_buffer_ << " reallocated";
+    } else {
+      glBufferSubData(GL_ARRAY_BUFFER,
+                      0,
+                      ab_size,
+                      data.data());
+    }
+
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                 sizeof(unsigned int) * indices.size(),
-                reinterpret_cast<const void*>(indices.data()),
-                 GL_STATIC_DRAW);
+    int ib_size = sizeof(unsigned int) * indices.size();
+
+    if (ib_size > index_buffer_size_) {
+      glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                  sizeof(unsigned int) * indices.size(),
+                  reinterpret_cast<const void*>(indices.data()),
+                  GL_DYNAMIC_DRAW);
+      int* ib_size_nonconst_ = const_cast<int*>(&index_buffer_size_);
+      *ib_size_nonconst_ = ib_size;
+      BOOST_LOG_TRIVIAL(trace) << "index buffer " << element_buffer_ << " reallocated";
+    } else {
+      glBufferSubData(GL_ELEMENT_ARRAY_BUFFER,
+                    0,
+                    ib_size,
+                    indices.data());
+    }
+    
 
     Packet::Bind();
 
@@ -86,6 +114,9 @@ class VertexDataContextGL : public VertexDataContext<Packet> {
 
   // true if our buffers have been created -- false otherwise
   bool gl_alloced_;
+
+  int array_buffer_size_;
+  int index_buffer_size_;
 };
 
 };  // namespace opengl
