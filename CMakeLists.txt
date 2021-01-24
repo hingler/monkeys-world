@@ -25,6 +25,7 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/shader/materials/ShadowMapMaterial.cpp
                                     ${SRC_DIR}/shader/materials/TextMaterial.cpp
                                     ${SRC_DIR}/shader/materials/SkyboxMaterial.cpp
+                                    ${SRC_DIR}/shader/materials/UIGroupMaterial.cpp
                                     ${SRC_DIR}/shader/materials/TextureXferMaterial.cpp
 
                                     ${SRC_DIR}/file/CacheStreambuf.cpp
