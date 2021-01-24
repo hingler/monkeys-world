@@ -39,18 +39,30 @@ std::shared_ptr<Object> UIObject::GetParent() {
   return parent_.lock();
 }
 
-bool UIObject::HandleClickEvent() {
-  bool event = OnClick();
+bool UIObject::HandleClickEvent(input::MouseEvent& e) {
+  bool event = OnClick(e);
   if (event) {
     return true;
   }
 
+  std::shared_ptr<UIObject> ui_child;
+  glm::vec2 child_pos;
+  glm::vec2 child_dims;
   for (auto child : GetChildren()) {
-    if (auto i = std::static_pointer_cast<UIObject>(child)) {
-      if (i->HandleClickEvent()) {
+    ui_child = std::static_pointer_cast<UIObject>(child);
+    child_pos = ui_child->GetPosition();
+    child_dims = ui_child->GetDimensions();
+    e.local_pos -= child_pos;
+    if (   e.local_pos.x >= 0 && e.local_pos.x < child_dims.x
+        && e.local_pos.y >= 0 && e.local_pos.y < child_dims.y) {
+      if (ui_child->HandleClickEvent(e)) {
+        e.local_pos += child_pos;
         return true;
       }
     }
+
+    // ensure local is positioned properly at the end of it
+    e.local_pos += child_pos;
   }
 
   return false;
