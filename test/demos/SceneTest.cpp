@@ -19,6 +19,8 @@
 #include <critter/ui/UIGroup.hpp>
 #include <critter/Model.hpp>
 
+#include <input/MouseEvent.hpp>
+
 #include <critter/Skybox.hpp>
 
 #include <font/TextObject.hpp>
@@ -69,6 +71,8 @@ using ::monkeysworld::shader::materials::MatteMaterial;
 using ::monkeysworld::audio::AudioFiletype;
 
 using ::monkeysworld::font::TextObject;
+
+using ::monkeysworld::input::MouseEvent;
 
 class RatModel2 : public Model {
  public:
@@ -136,6 +140,12 @@ class MovingCamera : public GameCamera {
 
     rot_x = 0;
     rot_y = 0;
+
+    auto click_lambda = [&, this](MouseEvent e) {
+      BOOST_LOG_TRIVIAL(trace) << "hello: x=" << e.absolute_pos.x << ", y=" << e.absolute_pos.y;
+    };
+
+    uint64_t hi = GetContext()->GetEventManager()->RegisterClickListener(click_lambda);
 
     // ideally: we always pass the context in instead of relying on *this*
     // note also: the creator is responsible for destroying this event handler or else shit will break
@@ -235,6 +245,8 @@ class MovingCamera : public GameCamera {
   int do_event;
   int l_event;
   int r_event;
+
+  int click_event;
 
   float motion_x;
   float motion_z;
