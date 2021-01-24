@@ -76,7 +76,7 @@ void GameLoop(std::shared_ptr<engine::Context> ctx, GLFWwindow* window) {
   RenderContext rc;
   std::vector<spotlight_info> spotlights;
 
-  glfwSwapInterval(1);
+  glfwSwapInterval(0);
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LEQUAL);
 
