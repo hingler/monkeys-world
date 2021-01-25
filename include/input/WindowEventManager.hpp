@@ -9,9 +9,11 @@
 #include <unordered_map>
 
 #include <shared_mutex>
+#include <memory>
 
 #include <utils/IDGenerator.hpp>
 
+#include <input/Cursor.hpp>
 #include <input/MouseEvent.hpp>
 
 namespace monkeysworld {
@@ -66,6 +68,11 @@ class WindowEventManager {
    * Creates a new window manager.
    */ 
   WindowEventManager(GLFWwindow* window, engine::Context* ctx);
+
+  /**
+   *  @returns a ptr to the active cursor object.
+   */ 
+  std::shared_ptr<Cursor> GetCursor();
   
   /**
    *  Handles incoming GLFW events.
@@ -94,11 +101,6 @@ class WindowEventManager {
    */ 
   uint64_t RegisterClickListener(std::function<void(MouseEvent)> callback);
 
-  /**
-   *  Immediately returns the current state of the provided key.
-   *  @param key - GLFW key code.
-   */ 
-  int GetKey(int key);
 
   /**
    * Removes the key listener associated with the provided event descriptor.
@@ -114,6 +116,11 @@ class WindowEventManager {
    */ 
   bool RemoveClickListener(uint64_t event_id);
 
+  // /**
+  //  *  Immediately returns the current state of the provided key.
+  //  *  @param key - GLFW key code.
+  //  */ 
+  // int GetKey(int key);
  private:
   // generates a click event
   void GenerateClickEvent(GLFWwindow* window, int click, int action, int mods);
@@ -126,6 +133,8 @@ class WindowEventManager {
 
   std::unordered_map<uint64_t, std::function<void(MouseEvent)>> mouse_callbacks_;
 
+  // TODO: add functions for requesting focus from the event manager
+
   // lock for class scope fields
   std::shared_timed_mutex callback_mutex_;
 
@@ -137,6 +146,9 @@ class WindowEventManager {
 
   // lock for event queue
   std::shared_timed_mutex event_mutex_;
+
+  // ptr to cursor object
+  std::shared_ptr<Cursor> cursor_;
 
   // ptr to context
   engine::Context* ctx_;
