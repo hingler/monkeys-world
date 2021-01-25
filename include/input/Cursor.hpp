@@ -25,6 +25,7 @@ class Cursor {
 
   /**
    *  @returns the position of the cursor relative to the top left corner of the screen.
+   *           If the cursor exceeds the bounds of the window, returns -1 for X and Y.
    */ 
   glm::dvec2 GetCursorPosition();
 
