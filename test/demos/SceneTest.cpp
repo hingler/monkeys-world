@@ -217,6 +217,9 @@ class MovingCamera : public GameCamera {
     initial = rotation * initial;
     initial_x = rotation * initial_x;
 
+    auto cur = GetContext()->GetEventManager()->GetCursor()->GetCursorPosition();
+    BOOST_LOG_TRIVIAL(trace) << "cursor pos: " << cur.x << ", " << cur.y;
+
     SetPosition(w + glm::vec3(initial * (motion_z * delta)) + glm::vec3(initial_x * (motion_x * delta)));
     SetRotation(glm::vec3(r.x + rot_x * delta, r.y + rot_y * delta, r.z));
   }
