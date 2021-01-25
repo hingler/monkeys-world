@@ -217,9 +217,6 @@ class MovingCamera : public GameCamera {
     initial = rotation * initial;
     initial_x = rotation * initial_x;
 
-    auto cur = GetContext()->GetEventManager()->GetCursor()->GetCursorPosition();
-    BOOST_LOG_TRIVIAL(trace) << "cursor pos: " << cur.x << ", " << cur.y;
-
     SetPosition(w + glm::vec3(initial * (motion_z * delta)) + glm::vec3(initial_x * (motion_x * delta)));
     SetRotation(glm::vec3(r.x + rot_x * delta, r.y + rot_y * delta, r.z));
   }
@@ -318,7 +315,7 @@ class FrameText : public TextObject {
     avg /= FRAME_WINDOW;
     avg = (1.0 / avg);
     std::stringstream stream;
-    stream << std::fixed << std::setprecision(2) << avg << " fps\n" << a << " sec\nmonkeysworld v0.0.1";
+    stream << std::fixed << std::setprecision(2) << avg << " fps\n" << a << " sec\nmonkeysworld v0.0.1\n\n";
     SetText(stream.str());
   }
  private:
@@ -378,6 +375,12 @@ class DebugText : public UITextObject {
     debug_text << "Standalone client @ " << 6 << "ms ticks\n\n";
 
     debug_text << "XYZ: " << std::fixed << std::setprecision(4) << camera_pos_.x << " / " << camera_pos_.y << " / " << camera_pos_.z << "\n";
+    for (int i = 0; i < 512; i++) {
+      auto cur = GetContext()->GetEventManager()->GetCursor()->GetCursorPosition();
+    }
+    
+    auto cur = GetContext()->GetEventManager()->GetCursor()->GetCursorPosition();
+    debug_text << "looking at -- X:" << cur.x << " Y:" << cur.y << "\n";
     SetText(debug_text.str());
     Invalidate();
   }
@@ -444,7 +447,7 @@ class TestScene : public Scene {
 
     auto tui_twoey = std::make_shared<DebugText>(ctx, "resources/8bitoperator_jve.ttf");
     tui_twoey->SetPosition(glm::vec2(100, 100));
-    tui_twoey->SetDimensions(glm::vec2(800, 400));
+    tui_twoey->SetDimensions(glm::vec2(800, 600));
     tui_twoey->SetTextSize(32.0f);
 
     auto tui = std::make_shared<UITextObject>(ctx, "resources/8bitoperator_jve.ttf");

@@ -10,15 +10,16 @@ Cursor::Cursor(GLFWwindow* window) {
 }
 
 glm::dvec2 Cursor::GetCursorPosition() {
-  glm::dvec2 cur;
-  glm::ivec2 win;
-  glfwGetCursorPos(window_, &cur.x, &cur.y);
-  glfwGetFramebufferSize(window_, &win.x, &win.y);
-  if (cur.x >= 0 && cur.y >= 0 && cur.x < win.x && cur.y < win.y) {
-    return cur;
-  }
+  return cursor_cache_;
+}
 
-  return glm::dvec2(-1);
+void Cursor::UpdateCursorPosition() {
+  glm::ivec2 win;
+  glfwGetCursorPos(window_, &cursor_cache_.x, &cursor_cache_.y);
+  glfwGetFramebufferSize(window_, &win.x, &win.y);
+  if (cursor_cache_.x < 0 || cursor_cache_.y < 0 || cursor_cache_.x >= win.x || cursor_cache_.y >= win.y) {
+    cursor_cache_ = glm::dvec2(-1);
+  }
 }
 
 void Cursor::LockCursor() {

@@ -30,6 +30,12 @@ class Cursor {
   glm::dvec2 GetCursorPosition();
 
   /**
+   *  Grabs the latest cursor position from GLFW. Typically called by context -- will probably
+   *  have no impact on what you're doing.
+   */ 
+  void UpdateCursorPosition();
+
+  /**
    *  Returns whether or not a mouse button is pressed.
    *  @param key - the GLFW key identifier associated with the desired key press.
    */ 
@@ -55,6 +61,8 @@ class Cursor {
   GLFWwindow* window_;
   GLFWcursor* cursor_;
   bool locked_;
+
+  glm::dvec2 cursor_cache_;
 };
 
 }

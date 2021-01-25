@@ -48,6 +48,7 @@ void WindowEventManager::GenerateClickEvent(GLFWwindow* window, int button, int 
 }
 
 void WindowEventManager::ProcessWaitingEvents() {
+  cursor_->UpdateCursorPosition();
   std::shared_lock<std::shared_timed_mutex>(callback_mutex_);
   std::vector<event_info> events;
   {
