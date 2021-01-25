@@ -36,6 +36,9 @@
 #include <sstream>
 #include <iomanip>
 
+#define M_PI_ 3.1415926535897932384626
+#define M_PI_2_ 1.57079632679489661923
+
 // create everything inline -- its pretty lazy
 
 using ::monkeysworld::engine::Scene;
@@ -141,6 +144,8 @@ class MovingCamera : public GameCamera {
     rot_x = 0;
     rot_y = 0;
 
+    cursor_cache_ = GetContext()->GetEventManager()->GetCursor()->GetCursorPosition();
+
     auto click_lambda = [&, this](MouseEvent e) {
       BOOST_LOG_TRIVIAL(trace) << "hello: x=" << e.absolute_pos.x << ", y=" << e.absolute_pos.y;
     };
@@ -200,25 +205,41 @@ class MovingCamera : public GameCamera {
     s_event = GetContext()->GetEventManager()->RegisterKeyListener(GLFW_KEY_S, event_lambda);
     a_event = GetContext()->GetEventManager()->RegisterKeyListener(GLFW_KEY_A, event_lambda);
     d_event = GetContext()->GetEventManager()->RegisterKeyListener(GLFW_KEY_D, event_lambda);
-
-    u_event = GetContext()->GetEventManager()->RegisterKeyListener(GLFW_KEY_UP, rotation_lambda);
-    do_event = GetContext()->GetEventManager()->RegisterKeyListener(GLFW_KEY_DOWN, rotation_lambda);
-    l_event = GetContext()->GetEventManager()->RegisterKeyListener(GLFW_KEY_LEFT, rotation_lambda);
-    r_event = GetContext()->GetEventManager()->RegisterKeyListener(GLFW_KEY_RIGHT, rotation_lambda);
   }
 
   void Update() override {
+    // tba: use cursor position to rotate
     auto w = GetPosition();
     float delta = GetContext()->GetDeltaTime();
     auto r = GetRotation();
+
+
+
     glm::mat4 rotation = glm::eulerAngleYXZ(r.y, r.x, r.z);
     glm::vec4 initial(0, 0, -1, 0);
     glm::vec4 initial_x(-1, 0, 0, 0);
     initial = rotation * initial;
     initial_x = rotation * initial_x;
-
+    glm::dvec2 cur_new = GetContext()->GetEventManager()->GetCursor()->GetCursorPosition();
     SetPosition(w + glm::vec3(initial * (motion_z * delta)) + glm::vec3(initial_x * (motion_x * delta)));
-    SetRotation(glm::vec3(r.x + rot_x * delta, r.y + rot_y * delta, r.z));
+
+    if (!GetContext()->GetEventManager()->GetCursor()->IsCursorLocked()) {
+      cursor_cache_ = cur_new;
+      return;
+    }
+    rot_y = r.y - delta * (cur_new.x - cursor_cache_.x) * 1.414;
+    rot_x = r.x - delta * (cur_new.y - cursor_cache_.y) * 1.414;
+
+    cursor_cache_ = cur_new;
+
+    if (rot_x > M_PI_2_) {
+      rot_x = M_PI_2_;
+    } else if (rot_x < -M_PI_2_) {
+      rot_x = -M_PI_2_;
+    }
+
+
+    SetRotation(glm::vec3(rot_x, rot_y, r.z));
   }
 
   ~MovingCamera() {
@@ -229,11 +250,6 @@ class MovingCamera : public GameCamera {
     manager->RemoveKeyListener(s_event);
     manager->RemoveKeyListener(w_event);
     manager->RemoveKeyListener(d_event);
-
-    manager->RemoveKeyListener(u_event);
-    manager->RemoveKeyListener(do_event);
-    manager->RemoveKeyListener(l_event);
-    manager->RemoveKeyListener(r_event);
   }
  private:
   int a_event;
@@ -253,6 +269,8 @@ class MovingCamera : public GameCamera {
 
   float rot_x;
   float rot_y;
+
+  glm::dvec2 cursor_cache_;
 };
 
 #define FRAME_WINDOW 240
@@ -334,8 +352,22 @@ class DebugText : public UITextObject {
       fps_buffer[i] = 0.083f;
     }
 
+
     auto event_mgr = ctx->GetEventManager();
+    event_mgr->GetCursor()->LockCursor();
     event_mgr->RegisterKeyListener(GLFW_KEY_F5, std::bind(&DebugText::keyfunc, this, _1, _2, _3));
+    event_mgr->RegisterKeyListener(GLFW_KEY_LEFT_ALT, [=](int a, int b, int c) {
+      auto cur = ctx->GetEventManager()->GetCursor();
+      if (b != GLFW_PRESS) {
+        return;
+      }
+
+      if (cur->IsCursorLocked()) {
+        cur->UnlockCursor();
+      } else {
+        cur->LockCursor();
+      }
+    });
     SetHorizontalAlign(LEFT);
     SetTextColor(glm::vec4(0));
   }
