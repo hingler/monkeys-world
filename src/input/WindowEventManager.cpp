@@ -29,6 +29,12 @@ WindowEventManager::WindowEventManager(GLFWwindow* window, engine::Context* ctx)
 
   ctx_ = ctx;
   window_ = window;
+
+  cursor_ = std::make_shared<Cursor>(window);
+}
+
+std::shared_ptr<Cursor> WindowEventManager::GetCursor() {
+  return cursor_;
 }
 
 void WindowEventManager::GenerateKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods) {
