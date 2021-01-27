@@ -44,6 +44,11 @@ struct VertexPacket3D {
   static void Bind();
 };
 
+struct PositionPacket {
+  glm::vec3 position;
+  static void Bind();
+};
+
 };  // namespace storage
 };  // namespace monkeysworld
 
