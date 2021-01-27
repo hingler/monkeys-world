@@ -34,5 +34,10 @@ void VertexPacket3D::Bind() {
   
 }
 
+void PositionPacket::Bind() {
+  glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(PositionPacket), (void*)0);
+  glEnableVertexAttribArray(0);
+}
+
 };  // namespace storage
 };  // namespace monkeysworld
