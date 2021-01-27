@@ -134,7 +134,8 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
    *  
    *  The parameters to this method represent the minimally invalidated bounding box
    *  for this component -- implementors can use these args to save performance
-   *  by only updating a part of the screen, instead of the whole thing.
+   *  by only updating a part of the screen, instead of the whole thing. This only really applies
+   *  to groups, so do what you want, for the most part.
    * 
    *  @param minXY, the minXY of the invalid bounding box, origin top left.
    *  @param maxXY, the maxXY of the invalid bounding box, origin top left.
