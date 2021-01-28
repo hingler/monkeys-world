@@ -28,7 +28,6 @@ class ShadowMapMaterial : public ::monkeysworld::shader::Material {
 
   void SetCameraTransforms(const glm::mat4& vp_matrix);
   void SetModelTransforms(const glm::mat4& model_matrix);
-  GLuint GetProgramDescriptor() override;
 
  private:
   ShaderProgram shadow_prog_;

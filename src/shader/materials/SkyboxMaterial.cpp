@@ -41,10 +41,6 @@ void SkyboxMaterial::SetCubeMap(GLuint cube_map) {
   cube_map_ = cube_map;
 }
 
-GLuint SkyboxMaterial::GetProgramDescriptor() {
-  return skybox_prog_.GetProgramDescriptor();
-}
-
 }
 }
 }

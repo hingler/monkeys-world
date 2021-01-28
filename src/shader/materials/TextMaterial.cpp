@@ -43,10 +43,6 @@ void TextMaterial::SetModelTransforms(const glm::mat4& model_matrix) {
                             glm::value_ptr(model_matrix));
 }
 
-GLuint TextMaterial::GetProgramDescriptor() {
-  return text_prog_.GetProgramDescriptor();
-}
-
 void TextMaterial::SetTextColor(const glm::vec4& color) {
   glProgramUniform4fv(text_prog_.GetProgramDescriptor(),
                       3,

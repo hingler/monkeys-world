@@ -51,8 +51,6 @@ class MatteMaterial : public ::monkeysworld::shader::Material {
    */ 
   void SetSpotlights(const std::vector<light::spotlight_info>& lights);
 
-  GLuint GetProgramDescriptor() override;
-
   /**
    *  Sets the color associated with the material.
    */ 

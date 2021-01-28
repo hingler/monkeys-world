@@ -31,8 +31,6 @@ class SkyboxMaterial : public shader::Material {
    */ 
   void SetCubeMap(GLuint cube_map);
 
-  GLuint GetProgramDescriptor() override;
-
  private:
   glm::mat4 view_mat_;
   glm::mat4 model_mat_;

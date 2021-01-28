@@ -24,10 +24,6 @@ void TextureXferMaterial::SetTexture(GLuint tex) {
   tex_ = tex;
 }
 
-GLuint TextureXferMaterial::GetProgramDescriptor() {
-  return xfer_prog_.GetProgramDescriptor();
-}
-
 }
 }
 }

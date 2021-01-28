@@ -24,8 +24,6 @@ class TextureXferMaterial : public shader::Material {
    *  @param tex - texture descriptor for onscreen texture.
    */ 
   void SetTexture(GLuint tex);
-
-  GLuint GetProgramDescriptor() override;
  private:
   GLuint tex_;
   ShaderProgram xfer_prog_;

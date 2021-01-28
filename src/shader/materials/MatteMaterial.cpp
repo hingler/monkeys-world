@@ -85,10 +85,6 @@ void MatteMaterial::SetSurfaceColor(const glm::vec4& color) {
   glProgramUniform4f(matte_prog_.GetProgramDescriptor(), 3, color.r, color.g, color.b, color.a);
 }
 
-GLuint MatteMaterial::GetProgramDescriptor() {
-  return matte_prog_.GetProgramDescriptor();
-}
-
 } // namespace materials
 } // namespace shader
 } // namespace monkeysworld

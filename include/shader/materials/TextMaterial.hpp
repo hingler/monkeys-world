@@ -25,8 +25,6 @@ class TextMaterial : public ::monkeysworld::shader::Material {
   void SetCameraTransforms(const glm::mat4& vp_matrix);
   void SetModelTransforms(const glm::mat4& model_matrix);
 
-  GLuint GetProgramDescriptor() override;
-
   void SetTextColor(const glm::vec4& color);
   void SetGlyphTexture(GLuint tex);
 

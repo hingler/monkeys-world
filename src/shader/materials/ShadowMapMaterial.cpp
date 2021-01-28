@@ -39,10 +39,6 @@ void ShadowMapMaterial::SetModelTransforms(const glm::mat4& model_matrix) {
                             glm::value_ptr(model_matrix));
 }
 
-GLuint ShadowMapMaterial::GetProgramDescriptor() {
-  return shadow_prog_.GetProgramDescriptor();
-}
-
 }
 }
 }

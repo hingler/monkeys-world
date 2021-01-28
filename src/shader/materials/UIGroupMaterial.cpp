@@ -33,10 +33,6 @@ void UIGroupMaterial::UseMaterial() {
   }
 }
 
-GLuint UIGroupMaterial::GetProgramDescriptor() {
-  return prog_.GetProgramDescriptor();
-}
-
 }
 }
 }

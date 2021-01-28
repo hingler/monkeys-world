@@ -22,8 +22,6 @@ class Material {
    *  Prepares openGL to draw with this material by passing all uniforms.
    */ 
   virtual void UseMaterial() = 0;
-
-  virtual GLuint GetProgramDescriptor() = 0;
 };
 
 } // namespace shader

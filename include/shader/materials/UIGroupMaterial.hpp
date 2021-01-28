@@ -30,7 +30,6 @@ class UIGroupMaterial : public Material {
    *  Uses the underlying program.
    */ 
   void UseMaterial() override;
-  GLuint GetProgramDescriptor() override;
  private:
   ShaderProgram prog_;
   GLuint textures_[TEXTURES_PER_CALL];
