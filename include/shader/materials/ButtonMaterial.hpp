@@ -15,7 +15,7 @@ struct ButtonMaterial : public Material {
 
   void UseMaterial() override;
 
-  glm::ivec2 resolution;
+  glm::vec2 resolution;
   float border_width;
   float border_radius;
   glm::vec4 button_color;
@@ -23,7 +23,6 @@ struct ButtonMaterial : public Material {
 
  private:
   ShaderProgram prog_;
-  engine::Context* ctx_;
 };
 
 }

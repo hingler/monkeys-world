@@ -10,7 +10,6 @@ namespace materials {
 using engine::Context;
 
 ButtonMaterial::ButtonMaterial(Context* ctx) {
-  ctx_ = ctx;
   auto loader = ctx->GetCachedFileLoader();
   prog_ = ShaderProgramBuilder(loader)
             .WithVertexShader("resources/glsl/button-material/button-material.vert")
