@@ -21,11 +21,7 @@ UITextObject::UITextObject(engine::Context* ctx, const std::string& font_path)
 
 void UITextObject::DrawUI(glm::vec2 xMin, glm::vec2 xMax) {
   auto text_mesh = text_.GetGeometry();
-  if (text_.GetTextFormat().horiz_align == RIGHT) {
-    for (int i = 0; i < text_mesh->GetVertexCount(); i++) {
-      text_mesh->operator[](i).position.x += 1;
-    }
-  }
+  auto format = text_.GetTextFormat();
 
   glm::mat4 model_mat(1.0);
   glm::ivec2 window_size;
@@ -43,7 +39,28 @@ void UITextObject::DrawUI(glm::vec2 xMin, glm::vec2 xMax) {
   scale *= (960.0f / window_size.x);
 
   // translate so that our text lines up with top left corner of the framebuffer
-  model_mat = glm::translate(model_mat, glm::vec3(-1.0, 1.0, 0.0));
+  switch (format.horiz_align) {
+    case LEFT:
+      model_mat = glm::translate(model_mat, glm::vec3(-1.0, 0.0, 0.0));
+      break;
+    case RIGHT:
+      model_mat = glm::translate(model_mat, glm::vec3(1.0, 0.0, 0.0));
+      break;
+    case CENTER:
+      break;
+  }
+
+  switch (format.vert_align) {
+    case TOP:
+      model_mat = glm::translate(model_mat, glm::vec3(0.0, 1.0, 0.0));
+      break;
+    case MIDDLE:
+      break;
+    case BOTTOM:
+      model_mat = glm::translate(model_mat, glm::vec3(0.0, -1.0, 0.0));
+      break;
+  }
+
   model_mat = glm::scale(model_mat, scale);
 
   text_mesh->PointToVertexAttribs();

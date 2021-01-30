@@ -282,7 +282,7 @@ class FrameText : public TextObject {
     counter = 0;
     hue = 0;
     TextFormat format;
-    format.horiz_align = AlignmentH::LEFT;
+    format.horiz_align = AlignmentH::CENTER;
     format.char_spacing = 0;
     format.vert_align = AlignmentV::MIDDLE;
     SetTextFormat(format);
@@ -346,6 +346,8 @@ class FrameText : public TextObject {
 class DebugText : public UITextObject {
  public:
   DebugText(Context* ctx, const std::string& font_path) : UITextObject(ctx, font_path) {
+    SetHorizontalAlign(CENTER);
+    SetVerticalAlign(MIDDLE);
     a = 0;
     frame_ctr = 0;
     for (int i = 0; i < 144; i++) {
@@ -368,7 +370,7 @@ class DebugText : public UITextObject {
         cur->LockCursor();
       }
     });
-    SetHorizontalAlign(LEFT);
+
     SetTextColor(glm::vec4(0));
   }
 

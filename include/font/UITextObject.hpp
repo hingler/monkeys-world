@@ -74,6 +74,12 @@ class UITextObject : public critter::ui::UIObject {
     text_.SetTextFormat(tx);
   }
 
+  void SetVerticalAlign(AlignmentV align) {
+    TextFormat tx = text_.GetTextFormat();
+    tx.vert_align = align;
+    text_.SetTextFormat(tx);
+  }
+
   /**
    *  Draws text to screen.
    */ 
