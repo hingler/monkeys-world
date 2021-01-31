@@ -3,6 +3,7 @@
 
 #include <font/UITextObject.hpp>
 #include <shader/materials/ButtonMaterial.hpp>
+#include <storage/VertexPacketTypes.hpp>
 
 namespace monkeysworld {
 namespace critter {
@@ -18,6 +19,7 @@ class UIButton : public font::UITextObject {
   float border_radius;
 
   void DrawUI(glm::vec2 xyMin, glm::vec2 xyMax) override;
+  bool OnClick(const input::MouseEvent& e) override;
  private:
   shader::materials::ButtonMaterial mat_;
 
@@ -26,6 +28,8 @@ class UIButton : public font::UITextObject {
   // contains a static mesh which contains a full-screen quad
   static std::weak_ptr<model::Mesh<storage::PositionPacket>> mesh_;
   static std::mutex mesh_mutex_;
+
+  bool pressed_;
 };
 
 }

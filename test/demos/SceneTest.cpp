@@ -17,6 +17,7 @@
 #include <critter/GameObject.hpp>
 #include <critter/ui/UIObject.hpp>
 #include <critter/ui/UIGroup.hpp>
+#include <critter/ui/UIButton.hpp>
 #include <critter/Model.hpp>
 
 #include <input/MouseEvent.hpp>
@@ -62,6 +63,7 @@ using ::monkeysworld::critter::Skybox;
 
 using ::monkeysworld::critter::ui::UIGroup;
 using ::monkeysworld::critter::ui::UIObject;
+using ::monkeysworld::critter::ui::UIButton;
 
 using ::monkeysworld::critter::camera_info;
 
@@ -491,12 +493,23 @@ class TestScene : public Scene {
     tui->SetTextColor(glm::vec4(1.0, 0.0, 0.0, 1.0));
     tui->SetText("hello\nspongebob\ncleveland brown\ncomedy show");
 
+    auto but = std::make_shared<UIButton>(ctx, "resources/8bitoperator_jve.ttf");
+    but->SetPosition(glm::vec2(300, 300));
+    but->SetDimensions(glm::vec2(200, 70));
+    but->border_radius = 5.0f;
+    but->border_width = 2.0f;
+    but->SetText("click me!");
+    but->SetTextSize(64.0f);
+    but->SetHorizontalAlign(CENTER);
+    but->SetVerticalAlign(MIDDLE);
+
     auto group = std::make_shared<UIGroup>(ctx);
     group->SetPosition(glm::vec2(0, 0));
     group->SetDimensions(glm::vec2(1600, 900));
     // create a group and add the text to that
     group->AddChild(tui);
     group->AddChild(tui_twoey);
+    group->AddChild(but);
     ui_object_root_ = group;
   }
 
