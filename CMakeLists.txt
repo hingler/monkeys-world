@@ -52,6 +52,7 @@ add_library(monkeys-world-components
 
                                     ${SRC_DIR}/critter/ui/UIObject.cpp
                                     ${SRC_DIR}/critter/ui/UIGroup.cpp
+                                    ${SRC_DIR}/critter/ui/UIButton.cpp
 
                                     ${SRC_DIR}/critter/visitor/LightVisitor.cpp
                                     ${SRC_DIR}/critter/visitor/ActiveCameraFindVisitor.cpp

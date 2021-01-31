@@ -20,18 +20,17 @@ float button_fill(float dist_from_edge) {
   // abs function is center - button_dims / 2
   vec2 center = u_resolution / 2;
   vec2 button_dims = center - dist_from_edge;
-  vec2 coord = gl_FragCoord;
+  vec2 coord = gl_FragCoord.xy;
   float x_abs = abs(coord.x - center.x) - button_dims.x;
   float y_abs = abs(coord.y - center.y) - button_dims.y;
-  return min(step(x_abs, 0)
-           + step(y_abs, 0)
+  return min(step(x_abs, 0) * step(y_abs, border_radius)
+           + step(y_abs, 0) * step(x_abs, border_radius)
            + step(x_abs * x_abs + y_abs * y_abs, border_radius * border_radius), 1);
 }
 
 void main() {
-  vec4 output = vec4(0);
-  float fill_outer = button_fill(0.0);
-  float fill_inner = button_fill(border_width);
+  float fill_outer = button_fill(border_radius);
+  float fill_inner = button_fill(border_width + border_radius);
   fill_outer = min(1 - fill_inner, fill_outer);
   fragcolor = button_color * fill_inner + border_color * fill_outer;
 }
