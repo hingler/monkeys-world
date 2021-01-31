@@ -19,6 +19,10 @@ void Cursor::UpdateCursorPosition() {
   glfwGetFramebufferSize(window_, &win.x, &win.y);
 }
 
+bool Cursor::IsMouseButtonPressed(int key) {
+  return glfwGetMouseButton(window_, key) == GLFW_PRESS;
+}
+
 void Cursor::LockCursor() {
   glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   locked_ = true;
