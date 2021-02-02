@@ -44,6 +44,20 @@ struct VertexPacket3D {
   static void Bind();
 };
 
+/**
+ *  Same as VertexPacket3D, but additionally stores tangent/bitangent data
+ *  for proper tangent space mapping.
+ */ 
+struct TangentSpacePacket3D {
+  glm::vec3 position;
+  glm::vec2 coords;
+  glm::vec3 normals;
+  glm::vec3 tangent;
+  glm::vec3 bitangent;
+
+  static void Bind();
+};
+
 struct PositionPacket {
   glm::vec3 position;
   static void Bind();

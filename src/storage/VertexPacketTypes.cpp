@@ -39,5 +39,22 @@ void PositionPacket::Bind() {
   glEnableVertexAttribArray(0);
 }
 
+void TangentSpacePacket3D::Bind() {
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(TangentSpacePacket3D), (void*)0);
+  glEnableVertexAttribArray(0);
+  
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(TangentSpacePacket3D), (void*)(3 * sizeof(float))); 
+  glEnableVertexAttribArray(1);
+
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(TangentSpacePacket3D), (void*)(5 * sizeof(float)));
+  glEnableVertexAttribArray(2);
+
+  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(TangentSpacePacket3D), (void*)(8 * sizeof(float)));
+  glEnableVertexAttribArray(3);
+
+  glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(TangentSpacePacket3D), (void*)(11 * sizeof(float)));
+  glEnableVertexAttribArray(4);
+}
+
 };  // namespace storage
 };  // namespace monkeysworld
