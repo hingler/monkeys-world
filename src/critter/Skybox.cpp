@@ -64,7 +64,7 @@ void Skybox::RenderMaterial(const engine::RenderContext& rc) {
 }
 
 void Skybox::Draw() {
-  glDrawElements(GL_TRIANGLES, mesh_.GetIndexCount(), GL_UNSIGNED_INT, (void*)0);
+  glDrawElements(GL_TRIANGLES, static_cast<int>(mesh_.GetIndexCount()), GL_UNSIGNED_INT, (void*)0);
 }
 
 }

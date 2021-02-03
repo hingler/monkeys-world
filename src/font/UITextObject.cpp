@@ -71,7 +71,7 @@ void UITextObject::DrawUI(glm::vec2 xMin, glm::vec2 xMax) {
   mat_.SetTextColor(text_.GetTextColor());
   mat_.UseMaterial();
 
-  glDrawElements(GL_TRIANGLES, text_mesh->GetIndexCount(), GL_UNSIGNED_INT, (void*)0);
+  glDrawElements(GL_TRIANGLES, static_cast<uint32_t>(text_mesh->GetIndexCount()), GL_UNSIGNED_INT, (void*)0);
 }
 
 }

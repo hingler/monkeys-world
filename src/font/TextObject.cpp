@@ -30,7 +30,7 @@ void TextObject::RenderMaterial(const engine::RenderContext& rc) {
 }
 
 void TextObject::Draw() {
-  glDrawElements(GL_TRIANGLES, GetGeometry()->GetIndexCount(), GL_UNSIGNED_INT, (void*)0);
+  glDrawElements(GL_TRIANGLES, static_cast<uint32_t>(GetGeometry()->GetIndexCount()), GL_UNSIGNED_INT, (void*)0);
 }
 
 }

@@ -110,7 +110,7 @@ class RatModel : public Model {
   }
 
   void Update() override {
-    rot_ += rot_inc_ * (GetContext()->GetDeltaTime());
+    rot_ += static_cast<float>(rot_inc_ * (GetContext()->GetDeltaTime()));
     SetRotation(glm::vec3(0.0, rot_, 0.0));
     auto gc = std::dynamic_pointer_cast<GameCamera>(GetActiveCamera());
   }
@@ -212,7 +212,7 @@ class MovingCamera : public GameCamera {
   void Update() override {
     // tba: use cursor position to rotate
     auto w = GetPosition();
-    float delta = GetContext()->GetDeltaTime();
+    double delta = GetContext()->GetDeltaTime();
     auto r = GetRotation();
 
 
@@ -223,14 +223,14 @@ class MovingCamera : public GameCamera {
     initial = rotation * initial;
     initial_x = rotation * initial_x;
     glm::dvec2 cur_new = GetContext()->GetEventManager()->GetCursor()->GetCursorPosition();
-    SetPosition(w + glm::vec3(initial * (motion_z * delta)) + glm::vec3(initial_x * (motion_x * delta)));
+    SetPosition(w + glm::vec3(initial * static_cast<float>(motion_z * delta)) + glm::vec3(initial_x * static_cast<float>(motion_x * delta)));
 
     if (!GetContext()->GetEventManager()->GetCursor()->IsCursorLocked()) {
       cursor_cache_ = cur_new;
       return;
     }
-    rot_y = r.y - delta * (cur_new.x - cursor_cache_.x) * 1.414;
-    rot_x = r.x - delta * (cur_new.y - cursor_cache_.y) * 1.414;
+    rot_y = r.y - delta * (cur_new.x - cursor_cache_.x) * 1.414f;
+    rot_x = r.x - delta * (cur_new.y - cursor_cache_.y) * 1.414f;
 
     cursor_cache_ = cur_new;
 
@@ -254,17 +254,17 @@ class MovingCamera : public GameCamera {
     manager->RemoveKeyListener(d_event);
   }
  private:
-  int a_event;
-  int d_event;
-  int s_event;
-  int w_event;
+  uint64_t a_event;
+  uint64_t d_event;
+  uint64_t s_event;
+  uint64_t w_event;
 
-  int u_event;
-  int do_event;
-  int l_event;
-  int r_event;
+  uint64_t u_event;
+  uint64_t do_event;
+  uint64_t l_event;
+  uint64_t r_event;
 
-  int click_event;
+  uint64_t click_event;
 
   float motion_x;
   float motion_z;

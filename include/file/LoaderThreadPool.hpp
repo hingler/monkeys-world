@@ -1,6 +1,7 @@
 #ifndef LOADER_THREAD_POOL_H_
 #define LOADER_THREAD_POOL_H_
 
+#include <atomic>
 #include <condition_variable>
 #include <functional>
 #include <mutex>

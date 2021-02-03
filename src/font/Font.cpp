@@ -48,13 +48,13 @@ Font::Font(const std::string& font_path) {
 
   }
 
-  ascent_ = face->size->metrics.ascender;
+  ascent_ = static_cast<float>(face->size->metrics.ascender);
 
   // what should char size be?
   // let's go with 256px for now
   e = FT_Set_Char_Size(face, 0, bitmap_desired_scale * 64, 72, 72);
   
-  line_height_ = face->size->metrics.height;
+  line_height_ = static_cast<float>(face->size->metrics.height);
 
   // create an array of glyphs we can use from here on out
 
@@ -123,8 +123,8 @@ Font::Font(const std::string& font_path) {
     if (temp_glyph->bitmap.pitch > 0) {
       cursor_x = width_px;
       cursor_y = 0;
-      for (int i = 0; i < temp_glyph->bitmap.rows; i++, cursor_y++) {
-        for (int j = 0; j < temp_glyph->bitmap.width; j++) {
+      for (uint32_t i = 0; i < temp_glyph->bitmap.rows; i++, cursor_y++) {
+        for (uint32_t j = 0; j < temp_glyph->bitmap.width; j++) {
           memory_cache_[cursor_y * atlas_width + cursor_x + j]
             = temp_glyph->bitmap.buffer[i * temp_glyph->bitmap.pitch + j];
         }
@@ -133,7 +133,7 @@ Font::Font(const std::string& font_path) {
       cursor_x = width_px;
       cursor_y = height_px - temp_glyph->bitmap.rows;
       for (int i = 0; cursor_y < atlas_height; cursor_y++, i++) {
-        for (int j = 0; j < temp_glyph->bitmap.width; j++) {
+        for (uint32_t j = 0; j < temp_glyph->bitmap.width; j++) {
           memory_cache_[cursor_y * atlas_width + cursor_x + j]
             = temp_glyph->bitmap.buffer[j - (i * temp_glyph->bitmap.pitch)];
         }
@@ -141,7 +141,7 @@ Font::Font(const std::string& font_path) {
     }
 
     // add glyph data to the glyph info
-    temp_info.advance = temp_glyph->advance.x;
+    temp_info.advance = static_cast<float>(temp_glyph->advance.x);
 
     temp_info.bearing_x = temp_glyph->bitmap_left;
     temp_info.bearing_y = temp_glyph->bitmap_top;

@@ -80,7 +80,7 @@ void UIGroup::DrawUI(glm::vec2 min, glm::vec2 max) {
       child = children_[i + j];
       
       textures[j] = child->GetFramebufferColor();
-      p.index = j;
+      p.index = static_cast<float>(j);
 
       auto pos = child->GetPosition();
       auto dims = GetDimensions();
@@ -124,7 +124,7 @@ void UIGroup::DrawUI(glm::vec2 min, glm::vec2 max) {
     mesh_.PointToVertexAttribs();
     mat_.UseMaterial();
 
-    glDrawElements(GL_TRIANGLES, mesh_.GetIndexCount(), GL_UNSIGNED_INT, (void*)0);
+    glDrawElements(GL_TRIANGLES, static_cast<int>(mesh_.GetIndexCount()), GL_UNSIGNED_INT, (void*)0);
   }
 }
 

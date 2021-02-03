@@ -319,7 +319,7 @@ void Model::PrepareAttributes() {
 }
 
 void Model::Draw() {
-  glDrawElements(GL_TRIANGLES, mesh_->GetIndexCount(), GL_UNSIGNED_INT, (void*)0);
+  glDrawElements(GL_TRIANGLES, static_cast<int>(mesh_->GetIndexCount()), GL_UNSIGNED_INT, (void*)0);
 }
 
 Model::Model(const Model& other) : GameObject(other) {

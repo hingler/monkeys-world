@@ -93,9 +93,7 @@ class Context {
 
   double GetDeltaTime();
 
-  ~Context() {
-    delete scene_;
-  }
+  ~Context();
 
  private:
   std::shared_ptr<file::CachedFileLoader> file_loader_;

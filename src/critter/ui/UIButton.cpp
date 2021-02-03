@@ -12,8 +12,8 @@ std::mutex UIButton::mesh_mutex_;
 
 
 UIButton::UIButton(engine::Context* ctx, const std::string& font_path) : UITextObject(ctx, font_path),
-                                                                         button_color(glm::vec3(0.8), 1.0),
-                                                                         border_color(glm::vec3(0.6), 1.0),
+                                                                         button_color(glm::vec3(0.8f), 1.0f),
+                                                                         border_color(glm::vec3(0.6f), 1.0f),
                                                                          border_width(2.0f),
                                                                          border_radius(5.0f),
                                                                          mat_(ctx),
@@ -51,7 +51,7 @@ void UIButton::DrawUI(glm::vec2 xyMin, glm::vec2 xyMax) {
 
   mat_.UseMaterial();
   mesh_local_->PointToVertexAttribs();
-  glDrawElements(GL_TRIANGLES, mesh_local_->GetIndexCount(), GL_UNSIGNED_INT, (void*)0);
+  glDrawElements(GL_TRIANGLES, static_cast<int>(mesh_local_->GetIndexCount()), GL_UNSIGNED_INT, (void*)0);
   glDisable(GL_DEPTH_TEST);
   UITextObject::DrawUI(xyMin, xyMax);
   glEnable(GL_DEPTH_TEST);

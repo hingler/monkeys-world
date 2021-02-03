@@ -105,7 +105,7 @@ std::vector<cache_record> CachedFileLoader::ReadCacheFileToVector(const std::str
   BOOST_LOG_TRIVIAL(debug) << "Cache file with " << num_entries << " entries found";
   cache_record temp;
   uint16_t pathlen;
-  for (int i = 0; i < num_entries; i++) {
+  for (unsigned int i = 0; i < num_entries; i++) {
     temp.type = static_cast<CacheType>(ReadAsBytes<uint16_t>(cache));
     pathlen = ReadAsBytes<uint16_t>(cache);
     temp.path.resize(pathlen);

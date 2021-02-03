@@ -47,6 +47,10 @@ void Context::FrameUpdate() {
   event_mgr_->ProcessWaitingEvents();
 }
 
+Context::~Context() {
+  delete scene_;
+}
+
 
 } // namespace critter
 } // namespace monkeysworld

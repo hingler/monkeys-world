@@ -112,9 +112,9 @@ void UIObject::RenderMaterial(const engine::RenderContext& rc) {
     glGenTextures(1, &color_attach_);
     glGenTextures(1, &depth_stencil_);
     glBindTexture(GL_TEXTURE_2D, depth_stencil_);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, size_.x, size_.y, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, static_cast<uint32_t>(size_.x), static_cast<uint32_t>(size_.y), 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
     glBindTexture(GL_TEXTURE_2D, color_attach_);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size_.x, size_.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, static_cast<uint32_t>(size_.x), static_cast<uint32_t>(size_.y), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
     glGenFramebuffers(1, &framebuffer_);
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
@@ -146,12 +146,12 @@ void UIObject::RenderMaterial(const engine::RenderContext& rc) {
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
-    glViewport(0, 0, fb_size_.x, fb_size_.y);
+    glViewport(0, 0, static_cast<uint32_t>(fb_size_.x), static_cast<uint32_t>(fb_size_.y));
     
     #ifdef DEBUG
-      glClearColor(1.0, 0.0, 0.0, 0.2);
+      glClearColor(1.0f, 0.0f, 0.0f, 0.2f);
     #else
-      glClearColor(0.0, 0.0, 0.0, 0.0);
+      glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     #endif
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -178,8 +178,8 @@ void UIObject::DrawToScreen() {
   if (xfer_mesh_.GetVertexCount() == 0) {
     // this will be our sign that the mesh has been prepared
     for (int i = 0; i < 4; i++) {
-      temp.texcoords.x = (i >= 2 ? 1 : 0);
-      temp.texcoords.y = (i > 0 && i < 3 ? 0 : 1);
+      temp.texcoords.x = static_cast<float>(i >= 2 ? 1 : 0);
+      temp.texcoords.y = static_cast<float>(i > 0 && i < 3 ? 0 : 1);
       xfer_mesh_.AddVertex(temp);
     }
 
@@ -209,7 +209,7 @@ void UIObject::DrawToScreen() {
   xfer_mesh_.PointToVertexAttribs();
   xfer_mat_->SetTexture(color_attach_);
   xfer_mat_->UseMaterial();
-  glDrawElements(GL_TRIANGLES, xfer_mesh_.GetIndexCount(), GL_UNSIGNED_INT, (void*)0);
+  glDrawElements(GL_TRIANGLES, static_cast<uint32_t>(xfer_mesh_.GetIndexCount()), GL_UNSIGNED_INT, (void*)0);
 }
 
 GLuint UIObject::GetFramebufferColor() {
