@@ -239,6 +239,13 @@ if(compile_tests)
             WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
 
 endif()
+
+if(MSVC)
+  target_compile_options(monkeys-world-components PRIVATE /W3)
+else()
+  target_compile_options(monkeys-world-components PRIVATE -Wall)
+endif()
+
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
