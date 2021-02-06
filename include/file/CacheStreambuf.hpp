@@ -24,12 +24,6 @@ class CacheStreambuf : public std::streambuf {
   std::streamsize xsputn(const char* s, std::streamsize n) override;
   int_type overflow(int_type c) override;
 
-  /**
-   *  @returns true if the streambuf points to a valid buffer, i.e. the associated file could be loaded.
-   *           false otherwise.
-   */ 
-  bool valid();
-
   CacheStreambuf(const CacheStreambuf& other);
   CacheStreambuf& operator=(const CacheStreambuf& other);
   CacheStreambuf(CacheStreambuf&& other);

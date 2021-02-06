@@ -61,7 +61,7 @@ std::streamsize CacheStreambuf::showmanyc() {
   if (!data_) {
     throw FileNotFoundException("streambuf not valid");
   }
-  
+
   return 0;
 }
 
@@ -79,10 +79,6 @@ CacheStreambuf::int_type CacheStreambuf::overflow(CacheStreambuf::int_type c) {
   }
 
   return traits_type::eof();
-}
-
-bool CacheStreambuf::valid() {
-  return !!data_;
 }
 
 CacheStreambuf::CacheStreambuf(const CacheStreambuf& other) : std::streambuf(other),
