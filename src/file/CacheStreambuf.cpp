@@ -1,4 +1,5 @@
 #include <file/CacheStreambuf.hpp>
+#include <file/exception/FileNotFoundException.hpp>
 
 #include <iostream>
 
@@ -8,6 +9,7 @@ namespace file {
 // contract: always expose the full cached vector
 
 using std::ios_base;
+using exception::FileNotFoundException;
 
 CacheStreambuf::CacheStreambuf() : data_(nullptr) {
   setg(nullptr, nullptr, nullptr);
@@ -18,8 +20,11 @@ CacheStreambuf::CacheStreambuf(const std::shared_ptr<std::vector<char>>& data) :
   setg(data_ptr, data_ptr, data_ptr + data_->size());
 }
 
-
 std::streampos CacheStreambuf::seekoff(std::streamoff off, ios_base::seekdir way, ios_base::openmode which) {
+  if (!data_) {
+    throw FileNotFoundException("streambuf not valid");
+  }
+
   if (which == ios_base::out) {
     return -1;
   }
@@ -42,6 +47,10 @@ std::streampos CacheStreambuf::seekoff(std::streamoff off, ios_base::seekdir way
 }
 
 std::streampos CacheStreambuf::seekpos(std::streampos sp, ios_base::openmode which) {
+  if (!data_) {
+    throw FileNotFoundException("streambuf not valid");
+  }
+  
   if (which == ios_base::out) {
     return -1;
   }
@@ -49,14 +58,26 @@ std::streampos CacheStreambuf::seekpos(std::streampos sp, ios_base::openmode whi
 }
 
 std::streamsize CacheStreambuf::showmanyc() {
+  if (!data_) {
+    throw FileNotFoundException("streambuf not valid");
+  }
+  
   return 0;
 }
 
 std::streamsize CacheStreambuf::xsputn(const char* s, std::streamsize n) {
+  if (!data_) {
+    throw FileNotFoundException("streambuf not valid");
+  }
+
   return 0;
 }
 
 CacheStreambuf::int_type CacheStreambuf::overflow(CacheStreambuf::int_type c) {
+  if (!data_) {
+    throw FileNotFoundException("streambuf not valid");
+  }
+
   return traits_type::eof();
 }
 
