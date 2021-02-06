@@ -3,6 +3,8 @@
 
 #include <file/LoaderThreadPool.hpp>
 
+#include <boost/log/trivial.hpp>
+
 #include <condition_variable>
 #include <future>
 #include <mutex>
