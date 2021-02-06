@@ -99,10 +99,15 @@ void GameLoop(std::shared_ptr<engine::Context> ctx, GLFWwindow* window) {
     //   ex. the frame delta
     // visit objects in our component tree and call their "update" funcs
     auto scene = ctx->GetScene();
-    UpdateObjects(scene->GetGameObjectRoot());
-    UpdateObjects(scene->GetUIObjectRoot());
-    scene->GetGameObjectRoot()->Accept(light_visitor);
-    scene->GetGameObjectRoot()->Accept(cam_visitor);
+    if (scene->GetGameObjectRoot()) {
+      UpdateObjects(scene->GetGameObjectRoot());
+      scene->GetGameObjectRoot()->Accept(light_visitor);
+      scene->GetGameObjectRoot()->Accept(cam_visitor);
+    }
+
+    if (scene->GetUIObjectRoot()) {
+      UpdateObjects(scene->GetUIObjectRoot());
+    }
     // for each light:
     //   - do a depth render from the perspective of our lights
 
