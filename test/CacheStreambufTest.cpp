@@ -94,4 +94,11 @@ TEST(StreambufTests, VerifyIstreamBehavior) {
   std::cout << "should EOF!" << std::endl;
   ASSERT_EQ(EOF, test_stream.get());
   ASSERT_TRUE(test_stream.eof());
+
+  // ensure exceptions are handled by istream
+  CacheStreambuf bad_streambuf;
+  std::cout << "test" << std::endl;
+  std::istream bad_i(&bad_streambuf);
+  bad_i.get();
+  ASSERT_FALSE(bad_i.good());
 }

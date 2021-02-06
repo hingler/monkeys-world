@@ -11,7 +11,7 @@ namespace file {
 using std::ios_base;
 using exception::FileNotFoundException;
 
-CacheStreambuf::CacheStreambuf() : data_(nullptr) {
+CacheStreambuf::CacheStreambuf() : data_() {
   setg(nullptr, nullptr, nullptr);
 }
 
@@ -46,6 +46,8 @@ std::streampos CacheStreambuf::seekoff(std::streamoff off, ios_base::seekdir way
   return offset;
 }
 
+
+
 std::streampos CacheStreambuf::seekpos(std::streampos sp, ios_base::openmode which) {
   if (!data_) {
     throw FileNotFoundException("streambuf not valid");
@@ -79,6 +81,22 @@ CacheStreambuf::int_type CacheStreambuf::overflow(CacheStreambuf::int_type c) {
   }
 
   return traits_type::eof();
+}
+
+CacheStreambuf::int_type CacheStreambuf::underflow() {
+  std::cout << "underflow" << std::endl;
+  if (!data_) {
+    std::cout << "hello!" << std::endl;
+    throw FileNotFoundException("streambuf not valid");
+  }
+
+  char* ptr = gptr();
+  if (ptr == (data_->data() + data_->size())) {
+    return EOF;
+  }
+
+  return *ptr;
+  
 }
 
 CacheStreambuf::CacheStreambuf(const CacheStreambuf& other) : std::streambuf(other),
