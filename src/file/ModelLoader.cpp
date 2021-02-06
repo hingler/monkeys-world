@@ -1,6 +1,8 @@
 #include <file/ModelLoader.hpp>
 #include <critter/Model.hpp>
 
+#include <file/exception/FileNotFoundException.hpp>
+
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
@@ -11,6 +13,7 @@
 namespace monkeysworld {
 namespace file {
 
+using exception::FileNotFoundException;
 using model::Mesh;
 using storage::VertexPacket3D;
 using boost::lexical_cast;
@@ -193,7 +196,7 @@ static std::shared_ptr<Mesh<VertexPacket3D>> FromObjFile(const std::string& path
   if (!obj_stream.good()) {
     // invalid model location
     BOOST_LOG_TRIVIAL(error) << "File does not exist!";
-    return std::shared_ptr<Mesh<>>();
+    throw FileNotFoundException("File does not exist");
   }
 
   obj_stream.seekg(0, std::ios_base::end);
