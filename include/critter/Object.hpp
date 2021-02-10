@@ -97,6 +97,12 @@ class Object {
   // UPDATE FUNCTIONS
 
   /**
+   *  Initializing function called when the scene is first displayed on-screen.
+   *  Implementors can override this :)
+   */ 
+  virtual void Initialize();
+
+  /**
    *  Update function called once per frame. Implementors are expected to override this.
    */ 
   virtual void Update();
