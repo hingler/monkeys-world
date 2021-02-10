@@ -66,8 +66,7 @@ class Context {
 
   // add timer + timed event handler
 
-  // file loader
-  // TODO: "Why is this const?"
+  // (deprecated)
   const std::shared_ptr<file::CachedFileLoader> GetCachedFileLoader();
 
   const std::shared_ptr<input::WindowEventManager> GetEventManager();
