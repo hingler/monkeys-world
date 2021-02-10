@@ -1,5 +1,8 @@
 #include <input/WindowEventManager.hpp>
 
+#include <input/ClickListener.hpp>
+#include <input/KeyListener.hpp>
+
 #include <boost/log/trivial.hpp>
 
 #include <engine/Context.hpp>
@@ -118,12 +121,22 @@ uint64_t WindowEventManager::RegisterKeyListener(int key, std::function<void(int
   return listener_id;
 }
 
+KeyListener WindowEventManager::CreateKeyListener(int key, std::function<void(int, int, int)> callback) {
+  uint64_t id = RegisterKeyListener(key, callback);
+  return KeyListener(this, id);
+}
+
 uint64_t WindowEventManager::RegisterClickListener(std::function<void(MouseEvent)> callback) {
   // use callback mutex to add to mouse_callbacks.
   std::unique_lock<std::shared_timed_mutex>(callback_mutex_);
   uint64_t listener_id = event_desc_generator_.GetUniqueId();
   mouse_callbacks_.insert(std::make_pair(listener_id, callback));
   return listener_id;
+}
+
+ClickListener WindowEventManager::CreateClickListener(std::function<void(MouseEvent)> callback) {
+  uint64_t id = RegisterClickListener(callback);
+  return ClickListener(this, id);
 }
 
 bool WindowEventManager::RemoveKeyListener(uint64_t event_id) {
