@@ -85,7 +85,19 @@ class UITextObject : public critter::ui::UIObject {
    */ 
   void DrawUI(glm::vec2 xMin, glm::vec2 xMax) override;
 
+  /**
+   *  @returns the minimum width/height required to display all chars.
+   */ 
+  glm::vec2 GetMinimumBoundingDims();
+
  private:
+
+  /**
+   *  Returns the amount we must scale incoming text objects by, to account
+   *  for window size.
+   */ 
+  glm::vec2 GetScaleFactor();
+
   shader::materials::TextMaterial mat_;
   Text text_;
 
