@@ -164,6 +164,15 @@ bool WindowEventManager::RemoveKeyListener(uint64_t event_id) {
   return true;
 }
 
+
+void WindowEventManager::RemoveKeyListener(KeyListener& k) {
+  RemoveKeyListener(k.id);
+}
+
+void WindowEventManager::RemoveClickListener(ClickListener& c) {
+  RemoveClickListener(c.id);
+}
+
 bool WindowEventManager::RemoveClickListener(uint64_t event_id) {
   // remove from mouse_callbacks
   std::unique_lock<std::shared_timed_mutex>(callback_mutex_);

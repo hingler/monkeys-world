@@ -115,6 +115,7 @@ class WindowEventManager {
    * @returns true if the event was removed successfully -- false otherwise.
    */ 
   bool RemoveKeyListener(uint64_t event_id);
+  void RemoveKeyListener(KeyListener& k);
 
   /**
    *  Removes a click listener associated with the provided descriptor.
@@ -122,6 +123,7 @@ class WindowEventManager {
    *  @returns true if the callback was removed -- false otherwise.
    */ 
   bool RemoveClickListener(uint64_t event_id);
+  void RemoveClickListener(ClickListener& c);
 
   // /**
   //  *  Immediately returns the current state of the provided key.

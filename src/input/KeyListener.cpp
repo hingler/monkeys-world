@@ -9,7 +9,7 @@ KeyListener::KeyListener(WindowEventManager* mgr, uint64_t new_id) : id(new_id) 
 }
 
 KeyListener::~KeyListener() {
-  mgr_->RemoveKeyListener(id);
+  mgr_->RemoveKeyListener(*this);
 }
 
 }

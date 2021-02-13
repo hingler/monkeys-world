@@ -11,7 +11,7 @@ ClickListener::ClickListener(WindowEventManager* mgr, uint64_t new_id) : id(new_
 }
 
 ClickListener::~ClickListener() {
-  mgr_->RemoveClickListener(id);
+  mgr_->RemoveClickListener(*this);
 }
 
 }
