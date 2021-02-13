@@ -100,7 +100,7 @@ class Object {
    *  Initializing function called when the scene is first displayed on-screen.
    *  Implementors can override this :)
    */ 
-  virtual void Initialize();
+  virtual void Create();
 
   /**
    *  Update function called once per frame. Implementors are expected to override this.

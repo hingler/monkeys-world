@@ -23,7 +23,7 @@ engine::Context* Object::GetContext() const {
   return ctx_;
 }
 
-void Object::Initialize() {
+void Object::Create() {
   // noop
 }
 
