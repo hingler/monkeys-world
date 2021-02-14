@@ -59,7 +59,7 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/critter/visitor/LightVisitor.cpp
                                     ${SRC_DIR}/critter/visitor/ActiveCameraFindVisitor.cpp
                                     
-                                    ${SRC_DIR}/engine/Context.cpp
+                                    ${SRC_DIR}/engine/EngineContext.cpp
                                     ${SRC_DIR}/engine/BaseEngine.cpp
                                     ${SRC_DIR}/engine/RenderContext.cpp
 

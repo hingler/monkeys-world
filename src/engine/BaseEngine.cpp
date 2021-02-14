@@ -54,7 +54,7 @@ static void RenderUI(std::shared_ptr<critter::Object>, RenderContext&);
 
 // subtype context to enable access to frequent update functions
 // pass supertype to scene
-void GameLoop(std::shared_ptr<engine::Context> ctx, GLFWwindow* window) {
+void GameLoop(std::shared_ptr<engine::EngineContext> ctx, GLFWwindow* window) {
   #ifdef DEBUG
   if (GLAD_GL_ARB_debug_output) {
     BOOST_LOG_TRIVIAL(debug) << "GL debug output supported!";
@@ -62,12 +62,6 @@ void GameLoop(std::shared_ptr<engine::Context> ctx, GLFWwindow* window) {
     ::monkeysworld::shader::gldebug::SetupGLDebug();
   }
   #endif
-
-  
-  // setup timing
-  auto start = std::chrono::high_resolution_clock::now();
-  auto finish = std::chrono::high_resolution_clock::now();
-  std::chrono::duration<double, std::ratio<1, 1>> dur = finish - start;
 
   LightVisitor light_visitor;
   ActiveCameraFindVisitor cam_visitor;
@@ -81,23 +75,13 @@ void GameLoop(std::shared_ptr<engine::Context> ctx, GLFWwindow* window) {
   glDepthFunc(GL_LEQUAL);
 
   while(!glfwWindowShouldClose(window)) {
-    start = std::chrono::high_resolution_clock::now();
     // reset any visitors which store info
     light_visitor.Clear();
     cam_visitor.Clear();
 
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    // poll for events
-    // check to see if a new scene needs to be initialized
-    // if so: do that
 
-    UpdateCtx(dur.count(), ctx.get());
-
-    // process all incoming inputs
-    // use a friend func to update some constants inherent to the context
-    //   ex. the frame delta
-    // visit objects in our component tree and call their "update" funcs
     auto scene = ctx->GetScene();
     if (scene->GetGameObjectRoot()) {
       UpdateObjects(scene->GetGameObjectRoot());
@@ -132,19 +116,11 @@ void GameLoop(std::shared_ptr<engine::Context> ctx, GLFWwindow* window) {
       // no render context needed -- we're just preparing attributes and calling a default shadow func
       // we want to have the shadow map shader prepared beforehand
 
-      // create a simple visitor which will pass this light's properties to the program and render to the map
-      // lastly: add the light to the render context
       spotlights.push_back(light->GetSpotLightInfo());
     }
-    // lights should be able to generate some packet which the renderer can use
-    // render objects, using the render context
-    // swap buffers
     rc.SetSpotlights(spotlights);
     // TODO: handle null case with a default camera :(
     rc.SetActiveCamera(std::static_pointer_cast<Camera>(cam_visitor.GetActiveCamera()));
-    // then: just draw (for now)
-    //    if needed, we can start to collect additional information and add it to the context
-    //    however -- for now, just this.
     glBindFramebuffer(GL_FRAMEBUFFER, NULL);
     int w, h;
     ctx->GetFramebufferSize(&w, &h);
@@ -163,16 +139,11 @@ void GameLoop(std::shared_ptr<engine::Context> ctx, GLFWwindow* window) {
         ui_root->DrawToScreen();
       }
     }
-    // render UI on top
-    // call drawtoscreen on ui root
-    // create render context
-    // add lights to the render context
-    // then: render!
+
     glfwSwapBuffers(window);
-    // loop back
+    
     glfwPollEvents();
-    finish = std::chrono::high_resolution_clock::now();
-    dur = finish - start;
+    ctx->UpdateContext();
   }
 }
 
@@ -243,12 +214,6 @@ GLFWwindow* InitializeGLFW(int win_width, int win_height, const std::string& win
   }
 
   return window;
-}
-
-void UpdateCtx(double delta, engine::Context* ctx) {
-  // don't like this at all
-  ctx->frame_delta_ = delta;
-  ctx->FrameUpdate();
 }
 
 }

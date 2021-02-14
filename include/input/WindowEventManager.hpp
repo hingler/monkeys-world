@@ -22,6 +22,7 @@
 namespace monkeysworld {
 namespace engine {
 class Context;
+class EngineContext;
 }
 }
 
@@ -64,7 +65,8 @@ struct event_info {
  *  called once per frame, after `glfwPollEvents` is called.
  */ 
 class WindowEventManager {
-  friend class ::monkeysworld::engine::Context;
+  // TODO: factor this out later :(
+  friend class ::monkeysworld::engine::EngineContext;
  public:
 
   /**

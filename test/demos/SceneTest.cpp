@@ -11,7 +11,7 @@
 
 #include <font/TextFormat.hpp>
 
-#include <engine/Context.hpp>
+#include <engine/EngineContext.hpp>
 #include <critter/Empty.hpp>
 #include <critter/GameCamera.hpp>
 #include <critter/GameObject.hpp>
@@ -54,6 +54,7 @@ using namespace ::monkeysworld::font;
 
 
 using ::monkeysworld::engine::Context;
+using ::monkeysworld::engine::EngineContext;
 using ::monkeysworld::critter::Empty;
 using ::monkeysworld::critter::GameCamera;
 using ::monkeysworld::critter::GameObject;
@@ -530,7 +531,7 @@ int main(int argc, char** argv) {
   GLFWwindow* main_win = InitializeGLFW(1280, 720, "and he never stoped playing, he always was keep beliving");
   // give the context ownership of the scene!
   auto scene = new TestScene();
-  auto ctx = std::make_shared<Context>(main_win, scene);
+  auto ctx = std::make_shared<EngineContext>(main_win, scene);
   #ifdef DEBUG
   ctx->GetEventManager()->RegisterKeyListener(GLFW_KEY_Z, [&](int k, int a, int m) {
     if (a == GLFW_PRESS) {
