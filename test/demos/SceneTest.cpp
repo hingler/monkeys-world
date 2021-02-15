@@ -447,6 +447,11 @@ class TestScene : public Scene {
   TestScene() {
 
   }
+
+  std::string GetSceneIdentifier() override {
+    return "new-scene";
+  }
+
   void Initialize(Context* ctx) override {
     // USE THE RAT! https://sketchfab.com/3d-models/rat-847629266c0f442da74fb132f46f3baf
     game_object_root_ = std::make_shared<Empty>(ctx);

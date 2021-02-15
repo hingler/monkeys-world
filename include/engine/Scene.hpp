@@ -29,6 +29,12 @@ class Scene {
   virtual void Initialize(Context* ctx) = 0;
 
   /**
+   *  This method must be overwritten for each scene.
+   *  Returns the name of this scene.
+   */ 
+  virtual std::string GetSceneIdentifier() = 0;
+
+  /**
    *  Our engine only really needs to know that it's an object,
    *  and our components will know better. So this should be OK.
    */ 

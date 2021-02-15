@@ -38,6 +38,11 @@ using ::monkeysworld::critter::ui::UIObject;
 using ::monkeysworld::engine::RenderContext;
 
 /**
+ *  Calls create funcs on all objects in the hierarchy.
+ */ 
+static void CreateObjects(std::shared_ptr<critter::Object>);
+
+/**
  *  Calls update funcs on all objects.
  */ 
 static void UpdateObjects(std::shared_ptr<critter::Object>);
@@ -74,6 +79,8 @@ void GameLoop(std::shared_ptr<engine::EngineContext> ctx, GLFWwindow* window) {
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LEQUAL);
 
+  ctx->InitializeScene();
+
   while(!glfwWindowShouldClose(window)) {
     // reset any visitors which store info
     light_visitor.Clear();
@@ -81,6 +88,19 @@ void GameLoop(std::shared_ptr<engine::EngineContext> ctx, GLFWwindow* window) {
 
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+    // swap to the new context if it's ready :)
+    if (auto ctx_new = ctx->GetNewContext()) {
+      ctx = ctx_new;
+      auto scene = ctx->GetScene();
+      if (scene->GetGameObjectRoot()) {
+        CreateObjects(scene->GetGameObjectRoot());
+      }
+
+      if (scene->GetUIObjectRoot()) {
+        CreateObjects(scene->GetUIObjectRoot());
+      }
+    }
 
     auto scene = ctx->GetScene();
     if (scene->GetGameObjectRoot()) {
@@ -144,6 +164,13 @@ void GameLoop(std::shared_ptr<engine::EngineContext> ctx, GLFWwindow* window) {
     
     glfwPollEvents();
     ctx->UpdateContext();
+  }
+}
+
+void CreateObjects(std::shared_ptr<critter::Object> obj) {
+  obj->Create();
+  for (auto child : obj->GetChildren()) {
+    CreateObjects(child);
   }
 }
 

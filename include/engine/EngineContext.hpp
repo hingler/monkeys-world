@@ -7,12 +7,16 @@
 #include <GLFW/glfw3.h>
 
 #include <engine/Context.hpp>
+#include <engine/SceneSwap.hpp>
 #include <input/WindowEventManager.hpp>
 #include <audio/AudioManager.hpp>
 
 #include <atomic>
 #include <chrono>
+#include <condition_variable>
 #include <memory>
+#include <mutex>
+#include <thread>
 
 /**
  *  TODO (while i remember it): if we want to alter vertex positions in shader, pass it to the shadow renderer
@@ -57,9 +61,10 @@ class EngineContext : public Context {
    */ 
   EngineContext(GLFWwindow* window, Scene* scene);
 
-  // the following functions return some higher level component
-
-  // add timer + timed event handler
+  /**
+   *  Initializes the scene associated with this context.
+   */ 
+  void InitializeScene();
 
   // (deprecated)
   std::shared_ptr<file::CachedFileLoader> GetCachedFileLoader() override;
@@ -70,17 +75,26 @@ class EngineContext : public Context {
   
   void GetFramebufferSize(int* width, int* height) override;
 
-  void SwapScene(Scene* scene) override;
+  std::shared_ptr<SceneSwap> SwapScene(Scene* scene) override;
 
   Scene* GetScene() override;
 
   double GetDeltaTime() override;
 
   /**
+   *  If this context is ready to give up control, this call will return a pointer to the new context.
+   *  Otherwise, returns null.
+   */ 
+  std::shared_ptr<EngineContext> GetNewContext();
+
+  /**
    *  Notifies the context to update itself.
    */ 
   void UpdateContext();
 
+  // copy ctor -- used to initialize a new enginecontext from the old one.
+  EngineContext(const EngineContext& other, Scene* scene);
+  
   ~EngineContext();
 
  private:
@@ -94,6 +108,18 @@ class EngineContext : public Context {
   std::chrono::time_point<std::chrono::high_resolution_clock> start_;
   std::chrono::time_point<std::chrono::high_resolution_clock> finish_;
   std::chrono::duration<double, std::ratio<1, 1>> dur_;
+
+  // new scene loading
+  // our load thread will wait for the context to load
+  // once it does, it will
+  std::thread swap_thread_;
+  std::shared_ptr<SceneSwap> swap_obj_;
+  std::shared_ptr<EngineContext> swap_ctx_;
+  std::shared_ptr<std::condition_variable> swap_cv_;
+  std::shared_ptr<std::mutex> swap_mutex_;
+
+  bool initialized_;
+  
 };
 
 } // namespace critter

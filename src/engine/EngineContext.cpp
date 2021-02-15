@@ -1,5 +1,6 @@
 #include <engine/EngineContext.hpp>
 #include <engine/Scene.hpp>
+#include <engine/SceneSwap.hpp>
 
 namespace monkeysworld {
 namespace engine {
@@ -9,15 +10,27 @@ using input::WindowEventManager;
 using audio::AudioManager;
 
 EngineContext::EngineContext(GLFWwindow* window, Scene* scene) {
-  file_loader_ = std::make_shared<CachedFileLoader>("context_cache");
+  file_loader_ = std::make_shared<CachedFileLoader>(scene->GetSceneIdentifier());
   event_mgr_ = std::make_shared<WindowEventManager>(window, this);
   audio_mgr_ = std::make_shared<AudioManager>();
   window_ = window;
 
   start_ = std::chrono::high_resolution_clock::now();
 
+  swap_ctx_ = nullptr;
+  swap_cv_ = std::make_shared<std::condition_variable>();
+  swap_mutex_ = std::make_shared<std::mutex>();
+
   scene_ = scene;
-  scene_->Initialize(this);
+  initialized_ = false;
+}
+
+void EngineContext::InitializeScene() {
+  if (!initialized_) {
+    scene_->Initialize(this);
+  }
+
+  initialized_ = true;
 }
 
 void EngineContext::GetFramebufferSize(int* width, int* height) {
@@ -40,13 +53,30 @@ Scene* EngineContext::GetScene() {
   return scene_;
 }
 
-void EngineContext::SwapScene(Scene* scene) {
-  // create a new context which will handle the new scene
-  // return some new object which lets the current scene monitor how far we've loaded
-  // once completely loaded, and the client gives the OK:
-  //  - expose the new context to the engine
-  //  - on the next tick, the engine will pick it up and delete this context
-  //  - we're done!
+std::shared_ptr<SceneSwap> EngineContext::SwapScene(Scene* scene) {
+  // ensure that the context is created before we create the sceneswap obj
+  
+  swap_ctx_ = std::make_shared<EngineContext>(*this, scene);
+  swap_obj_ = std::make_shared<SceneSwap>(swap_ctx_, swap_mutex_, swap_cv_);
+  return swap_obj_;
+}
+
+std::shared_ptr<EngineContext> EngineContext::GetNewContext() {
+  if (!swap_ctx_) {
+    return nullptr;
+  }
+
+  auto prog = swap_ctx_->GetCachedFileLoader()->GetLoaderProgress();
+  if (prog.bytes_read == prog.bytes_sum) {
+    // notify scene swap object if we're ready
+    swap_cv_->notify_all();
+    if (swap_obj_->IsSwapReady()) {
+      // if it's ready, then return the new ctx
+      return swap_ctx_;
+    }
+  }
+
+  return nullptr;
 }
 
 double EngineContext::GetDeltaTime() {
@@ -63,6 +93,21 @@ void EngineContext::UpdateContext() {
 
 EngineContext::~EngineContext() {
   delete scene_;
+}
+
+EngineContext::EngineContext(const EngineContext& other, Scene* scene) {
+  file_loader_ = std::make_shared<CachedFileLoader>(scene->GetSceneIdentifier());
+  event_mgr_ = other.event_mgr_;
+  audio_mgr_ = other.audio_mgr_;
+  window_ = other.window_;
+
+  start_ = std::chrono::high_resolution_clock::now();
+
+  swap_ctx_ = nullptr;
+  swap_cv_ = std::make_shared<std::condition_variable>();
+  swap_mutex_ = std::make_shared<std::mutex>();
+
+  scene_ = scene;
 }
 
 

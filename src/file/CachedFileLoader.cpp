@@ -45,6 +45,14 @@ loader_progress CachedFileLoader::GetLoaderProgress() {
   res.bytes_read += temp.bytes_read;
   res.bytes_sum += temp.bytes_sum;
 
+  temp = texture_loader_->GetLoaderProgress();
+  res.bytes_read += temp.bytes_read;
+  res.bytes_sum += temp.bytes_sum;
+
+  temp = cubemap_loader_->GetLoaderProgress();
+  res.bytes_read += temp.bytes_read;
+  res.bytes_sum += temp.bytes_sum;
+
   return res;
 }
 

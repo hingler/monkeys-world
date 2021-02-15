@@ -4,6 +4,7 @@
 #include <file/CachedFileLoader.hpp>
 #include <input/WindowEventManager.hpp>
 #include <audio/AudioManager.hpp>
+#include <engine/SceneSwap.hpp>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -27,9 +28,12 @@ class Context {
   virtual void GetFramebufferSize(int* width, int* height) = 0;
 
   /**
-   *  Notifies the context that it should swap to the next scene
+   *  Notifies the context that it should swap to the next scene.
+   *  Once this function is called, the context takes ownership of the scene.
+   *  @param scene - the scene which is to be created.
+   *                 once called, the context will call scene->Initialize().
    */ 
-  virtual void SwapScene(Scene* scene) = 0;
+  virtual std::shared_ptr<SceneSwap> SwapScene(Scene* scene) = 0;
 
   /**
    *  @returns the currently displayed scene.
