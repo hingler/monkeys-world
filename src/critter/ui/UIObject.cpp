@@ -216,6 +216,10 @@ GLuint UIObject::GetFramebufferColor() {
   return color_attach_;
 }
 
+GLuint UIObject::GetFramebuffer() {
+  return framebuffer_;
+}
+
 bool UIObject::IsValid() {
   if (valid_) {
     for (auto child : GetChildren()) {

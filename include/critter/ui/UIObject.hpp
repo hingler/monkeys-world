@@ -153,6 +153,11 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
    */ 
   GLuint GetFramebufferColor();
 
+  /**
+   *  @returns the descriptor for our framebuffer as a whole.
+   */ 
+  GLuint GetFramebuffer();
+
   UIObject(const UIObject& other);
   UIObject& operator=(const UIObject& other);
   UIObject(UIObject&& other);
