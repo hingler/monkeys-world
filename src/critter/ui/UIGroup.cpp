@@ -40,6 +40,9 @@ void UIGroup::AddChild(std::shared_ptr<UIObject> obj) {
   if (obj->GetChild(this->GetId()) != NULL) {
     // bad nesting!
     return;
+  } else if (obj.get() == this) {
+    // no self nesting!
+    return;
   }
 
   if (auto parent = obj->GetParent()) {
