@@ -118,7 +118,6 @@ void UIObject::RenderMaterial(const engine::RenderContext& rc) {
 
     glGenFramebuffers(1, &framebuffer_);
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
-    BOOST_LOG_TRIVIAL(trace) << "invalid";
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color_attach_, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depth_stencil_, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
