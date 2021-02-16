@@ -12,7 +12,7 @@ model::Mesh<storage::VertexPacket2D> UIObject::xfer_mesh_;
 
 UIObject::UIObject(engine::Context* ctx) : Object(ctx) {
   pos_ = glm::vec2(0, 0);
-  size_ = glm::vec2(0, 0);
+  size_ = glm::vec2(1, 1);
   fb_size_ = glm::vec2(0, 0);
 
   valid_ = true;
@@ -118,9 +118,10 @@ void UIObject::RenderMaterial(const engine::RenderContext& rc) {
 
     glGenFramebuffers(1, &framebuffer_);
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    BOOST_LOG_TRIVIAL(trace) << "invalid";
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color_attach_, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depth_stencil_, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
       BOOST_LOG_TRIVIAL(error) << "incomplete ui framebuffer :(";
@@ -133,6 +134,7 @@ void UIObject::RenderMaterial(const engine::RenderContext& rc) {
     fb_size_ = size_;
   }
 
+  
   if (!IsValid()) {
     // at least one child is invalid
     // get invalid binding box (while invalidity still applies)
