@@ -81,6 +81,14 @@ void GameLoop(std::shared_ptr<engine::EngineContext> ctx, GLFWwindow* window) {
 
   ctx->InitializeScene();
 
+  if (ctx->GetScene()->GetGameObjectRoot()) {
+    CreateObjects(ctx->GetScene()->GetGameObjectRoot());
+  }
+
+  if (ctx->GetScene()->GetUIObjectRoot()) {
+    CreateObjects(ctx->GetScene()->GetUIObjectRoot());
+  }
+
   while(!glfwWindowShouldClose(window)) {
     // reset any visitors which store info
     light_visitor.Clear();
