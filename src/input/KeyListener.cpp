@@ -26,6 +26,8 @@ KeyListener& KeyListener::operator=(KeyListener&& other) {
   uint64_t* other_id = const_cast<uint64_t*>(&other.id);
   *this_id = other.id;
   *other_id = 0;
+
+  return *this;
 }
 
 KeyListener::~KeyListener() {
