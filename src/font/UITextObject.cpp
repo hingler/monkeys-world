@@ -76,7 +76,7 @@ void UITextObject::DrawUI(glm::vec2 xMin, glm::vec2 xMax) {
   glDrawElements(GL_TRIANGLES, static_cast<uint32_t>(text_mesh->GetIndexCount()), GL_UNSIGNED_INT, (void*)0);
 }
 
-glm::vec2 UITextObject::GetMinimumBoundingDims() {
+glm::vec2 UITextObject::GetMinimumBoundingDims() const {
   if (text_.GetText().size() <= 0) {
     return glm::vec2(0);
   }
@@ -98,7 +98,7 @@ glm::vec2 UITextObject::GetMinimumBoundingDims() {
   return res;
 }
 
-glm::vec2 UITextObject::GetScaleFactor() {
+glm::vec2 UITextObject::GetScaleFactor() const {
   glm::ivec2 window_size;
   glm::vec2 text_fb_size = GetDimensions();
   GetContext()->GetFramebufferSize(&window_size.x, &window_size.y);
