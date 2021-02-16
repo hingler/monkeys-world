@@ -32,7 +32,7 @@ void Text::SetText(const std::string& text) {
   mesh_valid_ = false;
 }
 
-std::string Text::GetText() {
+std::string Text::GetText() const {
   return text_;
 }
 
@@ -40,7 +40,7 @@ void Text::SetTextColor(const glm::vec4& col) {
   color_ = col;
 }
 
-glm::vec4 Text::GetTextColor() {
+glm::vec4 Text::GetTextColor() const {
   return color_;
 }
 
@@ -49,7 +49,7 @@ void Text::SetTextSize(float size_pt) {
   size_ = size_pt;
 }
 
-float Text::GetTextSize() {
+float Text::GetTextSize() const {
   return size_;
 }
 
@@ -57,16 +57,17 @@ void Text::SetTextFormat(TextFormat format) {
   format_ = format;
 }
 
-std::shared_ptr<model::Mesh<storage::VertexPacket2D>> Text::GetGeometry() {
+std::shared_ptr<model::Mesh<storage::VertexPacket2D>> Text::GetGeometry() const {
   if (!mesh_valid_) {
     mesh_->operator=(std::move(font_->GetTextGeometry(text_, size_, format_)));
-    mesh_valid_ = true;
+    bool* valid_ptr_ = const_cast<bool*>(&mesh_valid_);
+    *valid_ptr_ = true;
   }
 
   return mesh_;
 }
 
-GLuint Text::GetTexture() {
+GLuint Text::GetTexture() const {
   return font_->GetGlyphAtlas();
 }
 

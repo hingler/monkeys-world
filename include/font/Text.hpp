@@ -44,7 +44,7 @@ class Text {
    *  Gets the string associated with this text object.
    *  @returns underlying text string :)
    */ 
-  std::string GetText();
+  std::string GetText() const;
 
   /**
    *  Sets the color of this text.
@@ -55,7 +55,7 @@ class Text {
   /**
    *  @returns the current RGBA text color.
    */ 
-  glm::vec4 GetTextColor();
+  glm::vec4 GetTextColor() const;
 
   /**
    *  Modifies the size of outputted text.
@@ -66,24 +66,24 @@ class Text {
   /**
    *  @returns the current text size, in pt.
    */ 
-  float GetTextSize();
+  float GetTextSize() const;
 
 
   /**
    *  @returns descriptor associated with glyph atals.
    */ 
-  GLuint GetTexture();
+  GLuint GetTexture() const;
 
   void SetTextFormat(TextFormat format);
 
-  TextFormat GetTextFormat() {
+  TextFormat GetTextFormat() const {
     return format_;
   }
 
   /**
    *  @returns geometry corresponding with the text.
    */ 
-  std::shared_ptr<model::Mesh<storage::VertexPacket2D>> GetGeometry();
+  std::shared_ptr<model::Mesh<storage::VertexPacket2D>> GetGeometry() const;
  protected:
 
  private:
