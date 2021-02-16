@@ -39,6 +39,7 @@ class AudioBufferOgg : public AudioBuffer {
   stb_vorbis* vorbis_file_;             // the vorbis file assc'd w this buffer
   std::atomic_bool eof_;                // true if we're at eof
   stb_vorbis_alloc vorbis_buf_;         // alloced space for vorbis
+  stb_vorbis_info info_;
 };
 
 }

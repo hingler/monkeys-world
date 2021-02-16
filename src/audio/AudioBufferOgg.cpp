@@ -14,7 +14,6 @@ namespace audio {
 
 AudioBufferOgg::AudioBufferOgg(int capacity, const std::string& filename) : AudioBuffer(capacity) {
 
-
   int err;
   int memsize = ALLOC_INC;
   vorbis_buf_.alloc_buffer = nullptr;
@@ -36,6 +35,7 @@ AudioBufferOgg::AudioBufferOgg(int capacity, const std::string& filename) : Audi
     BOOST_LOG_TRIVIAL(error) << "Vorbis open failed with err code " << err;
   }
 
+  info_ = stb_vorbis_get_info(vorbis_file_);
   eof_ = false;
 }
 
@@ -72,6 +72,13 @@ int AudioBufferOgg::WriteFromFile(int n) {
       return samples_written;
     }
 
+    if (info_.channels == 1) {
+      // copy data over if in mono
+      for (int i = 0; i < first_write_size; i++) {
+        buffers_[1][i] = buffers_[0][i];
+      }
+    }
+
     // point back to start of buffers
     buffers_[0] = buffer_l_;
     buffers_[1] = buffer_r_;
@@ -90,6 +97,13 @@ int AudioBufferOgg::WriteFromFile(int n) {
     // use an EOF flag
     // if true: file is exhausted
     eof_.store(true);
+  }
+
+  if (info_.channels == 1) {
+    // copy data over if in mono
+    for (int i = 0; i < n; i++) {
+      buffers_[1][i] = buffers_[0][i];
+    }
   }
 
   bytes_written_.fetch_add(samples_written, std::memory_order_release);
