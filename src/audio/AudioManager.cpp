@@ -25,7 +25,13 @@ AudioManager::AudioManager() {
     buffers_[i].buffer = nullptr;
   }
 
-  err = Pa_OpenDefaultStream(&stream_, 0, 2, paFloat32, SAMPLE_RATE, 0, &AudioManager::CallbackFunc, this);
+  PaStreamParameters* out = new PaStreamParameters();
+  out->channelCount = 2;
+  out->device = Pa_GetDefaultOutputDevice();
+  out->sampleFormat = paFloat32;
+  out->suggestedLatency = 0.05;
+
+  err = Pa_OpenStream(&stream_, NULL, out, SAMPLE_RATE, paFramesPerBufferUnspecified, paNoFlag, &AudioManager::CallbackFunc, this);
   if (err != paNoError) {
     BOOST_LOG_TRIVIAL(error) << "Could not initialize PortAudio: " << Pa_GetErrorText(err);
     Pa_Terminate();
@@ -99,7 +105,7 @@ void AudioManager::QueueThreadfunc() {
           delete info_buffer->buffer;
         }
 
-        info_buffer->buffer = new AudioBufferOgg(16384, info_queue.filename);
+        info_buffer->buffer = new AudioBufferOgg(4096, info_queue.filename);
         info_buffer->status = USED;
         info_buffer->buffer->StartWriteThread();
         break;
@@ -137,7 +143,6 @@ int AudioManager::CallbackFunc(const void* input,
                                 const PaStreamCallbackTimeInfo* timeInfo,
                                 PaStreamCallbackFlags statusFlags,
                                 void* userData) {
-
   float* output_buffer = reinterpret_cast<float*>(output);
   AudioManager* mgr = reinterpret_cast<AudioManager*>(userData);
   buffer_info* info;
