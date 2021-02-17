@@ -6,11 +6,9 @@
 #include <glm/glm.hpp>
 
 #include <critter/GameObject.hpp>
-
+#include <shader/Framebuffer.hpp>
 #include <shader/materials/TextureXferMaterial.hpp>
-
 #include <input/MouseEvent.hpp>
-
 #include <model/Mesh.hpp>
 
 #include <atomic>
@@ -177,10 +175,7 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
   glm::vec2 size_;                                      // size of ui object, pixels wide/tall
   std::atomic_bool valid_;                              // whether or not the view has been invalidated.
 
-
-  GLuint framebuffer_;
-  GLuint color_attach_;
-  GLuint depth_stencil_;
+  std::shared_ptr<shader::Framebuffer> fb_;
 
   glm::vec2 fb_size_;                                   // last framebuffer size
 

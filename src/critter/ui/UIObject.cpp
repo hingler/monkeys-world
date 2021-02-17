@@ -5,6 +5,8 @@ namespace critter {
 namespace ui {
 
 using shader::materials::TextureXferMaterial;
+using shader::Framebuffer;
+using shader::FramebufferTarget;
 
 std::weak_ptr<shader::materials::TextureXferMaterial> UIObject::xfer_mat_singleton_;
 std::mutex UIObject::xfer_lock_;
@@ -13,14 +15,10 @@ model::Mesh<storage::VertexPacket2D> UIObject::xfer_mesh_;
 UIObject::UIObject(engine::Context* ctx) : Object(ctx) {
   pos_ = glm::vec2(0, 0);
   size_ = glm::vec2(1, 1);
-  fb_size_ = glm::vec2(0, 0);
+  fb_ = std::make_shared<Framebuffer>();
 
   valid_ = true;
   parent_ = std::weak_ptr<UIObject>();
-
-  framebuffer_ = 0;
-  color_attach_ = 0;
-  depth_stencil_ = 0;
 }
 
 void UIObject::Accept(Visitor& v) {
@@ -90,6 +88,7 @@ glm::vec2 UIObject::GetDimensions() const {
 
 void UIObject::SetDimensions(glm::vec2 size) {
   size_ = size;
+  fb_->SetDimensions(static_cast<glm::ivec2>(size));
   // new size requires a redraw
   Invalidate();
 }
@@ -99,41 +98,6 @@ void UIObject::Invalidate() {
 }
 
 void UIObject::RenderMaterial(const engine::RenderContext& rc) {
-  // get invalid bounding box
-  if (fb_size_ != size_) {
-    if (framebuffer_ != 0) {
-      // out with the old
-      glDeleteFramebuffers(1, &framebuffer_);
-      glDeleteTextures(1, &color_attach_);
-      glDeleteTextures(1, &depth_stencil_);
-    }
-
-    // in with the new
-    glGenTextures(1, &color_attach_);
-    glGenTextures(1, &depth_stencil_);
-    glBindTexture(GL_TEXTURE_2D, depth_stencil_);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, static_cast<uint32_t>(size_.x), static_cast<uint32_t>(size_.y), 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
-    glBindTexture(GL_TEXTURE_2D, color_attach_);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, static_cast<uint32_t>(size_.x), static_cast<uint32_t>(size_.y), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-
-    glGenFramebuffers(1, &framebuffer_);
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color_attach_, 0);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depth_stencil_, 0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-      BOOST_LOG_TRIVIAL(error) << "incomplete ui framebuffer :(";
-    } 
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // update framebuffer size
-    fb_size_ = size_;
-  }
-
-  
   if (!IsValid()) {
     // at least one child is invalid
     // get invalid binding box (while invalidity still applies)
@@ -146,8 +110,9 @@ void UIObject::RenderMaterial(const engine::RenderContext& rc) {
       ui->RenderMaterial(rc);
     }
 
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
-    glViewport(0, 0, static_cast<uint32_t>(fb_size_.x), static_cast<uint32_t>(fb_size_.y));
+    fb_->BindFramebuffer(FramebufferTarget::DEFAULT);
+    auto size = fb_->GetDimensions();
+    glViewport(0, 0, static_cast<uint32_t>(size.x), static_cast<uint32_t>(size.y));
     
     #ifdef DEBUG
       glClearColor(1.0f, 0.0f, 0.0f, 0.2f);
@@ -208,17 +173,21 @@ void UIObject::DrawToScreen() {
   xfer_mesh_[3].position.y = 1 - (pos.y / win.y) * 2;
 
   xfer_mesh_.PointToVertexAttribs();
-  xfer_mat_->SetTexture(color_attach_);
+  xfer_mat_->SetTexture(GetFramebufferColor());
   xfer_mat_->UseMaterial();
   glDrawElements(GL_TRIANGLES, static_cast<uint32_t>(xfer_mesh_.GetIndexCount()), GL_UNSIGNED_INT, (void*)0);
 }
 
 GLuint UIObject::GetFramebufferColor() {
-  return color_attach_;
+  return fb_->GetColorAttachment();
 }
 
+// todo: create a "framebuffer" type object which constitutes an RAII wrapper around a framebuffer
+//       and its attachments.
+
+//       we'll attach our "canvas" functions to here.
 GLuint UIObject::GetFramebuffer() {
-  return framebuffer_;
+  return fb_->GetFramebuffer();
 }
 
 bool UIObject::IsValid() {
@@ -279,14 +248,9 @@ void UIObject::GetInvalidatedBoundingBox(glm::vec2* xyMin, glm::vec2* xyMax) {
 UIObject::UIObject(const UIObject& other) : Object(other) {
   pos_ = other.pos_;
   size_ = other.size_;
-  fb_size_ = glm::vec2(0, 0);
 
   valid_ = false;
   parent_ = std::weak_ptr<UIObject>();
-  
-  framebuffer_ = 0;
-  color_attach_ = 0;
-  depth_stencil_ = 0;
 }
 
 UIObject& UIObject::operator=(const UIObject& other) {
@@ -300,43 +264,23 @@ UIObject& UIObject::operator=(const UIObject& other) {
 UIObject::UIObject(UIObject&& other) : Object(other) {
   pos_ = std::move(other.pos_);
   size_ = std::move(other.size_);
-  fb_size_ = std::move(other.fb_size_);
 
   valid_ = other.valid_.load();
   parent_ = std::weak_ptr<UIObject>();
-
-  framebuffer_ = other.framebuffer_;
-  color_attach_ = other.color_attach_;
-  depth_stencil_ = other.depth_stencil_;
-
-  other.framebuffer_ = other.color_attach_ = other.depth_stencil_ = 0;
 }
 
 UIObject& UIObject::operator=(UIObject&& other) {
   Object::operator=(other);
   pos_ = std::move(other.pos_);
   size_ = std::move(other.size_);
-  fb_size_ = std::move(other.fb_size_);
 
   valid_ = other.valid_.load();
   parent_ = std::weak_ptr<UIObject>();
 
-  framebuffer_ = other.framebuffer_;
-  color_attach_ = other.color_attach_;
-  depth_stencil_ = other.depth_stencil_;
-
-  other.framebuffer_ = other.color_attach_ = other.depth_stencil_ = 0;
   return *this;
 }
 
 UIObject::~UIObject() {
-  if (glfwGetCurrentContext()) {
-    if (framebuffer_ != 0) {
-      glDeleteFramebuffers(1, &framebuffer_);
-      glDeleteTextures(1, &color_attach_);
-      glDeleteTextures(1, &depth_stencil_);
-    }
-  }
 }
 
 }
