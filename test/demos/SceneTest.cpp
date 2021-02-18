@@ -105,7 +105,7 @@ class RatModel : public Model {
  public:
   RatModel(Context* ctx) : Model(ctx), rot_(0), m(ctx) {
     SetMesh(ctx->GetCachedFileLoader()->LoadModel("resources/test/rat/Rat.obj"));
-    ctx->GetAudioManager()->AddFileToBuffer("resources/chamberofreflection.ogg", AudioFiletype::OGG);
+    ctx->GetAudioManager()->AddFileToBuffer("resources/igor.ogg", AudioFiletype::OGG);
     // create a key listener which accomplishes rat motion
     // or just rotate consistently with time
   }
