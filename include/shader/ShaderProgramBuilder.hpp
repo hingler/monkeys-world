@@ -39,6 +39,12 @@ class ShaderProgramBuilder {
    */ 
   ShaderProgramBuilder(std::shared_ptr<file::CachedFileLoader> loader);
 
+  /**
+   *  Default constructor -- loads with fstreams instead of using the cached loader.
+   *  Useful for loading programs which will be used frequently, as opposed to being limited to a few use cases.
+   */ 
+  ShaderProgramBuilder();
+
   ShaderProgramBuilder& WithVertexShader(const std::string& vertex_path);
   ShaderProgramBuilder& WithGeometryShader(const std::string& geometry_path);
   ShaderProgramBuilder& WithFragmentShader(const std::string& fragment_path);
