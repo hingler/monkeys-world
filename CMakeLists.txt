@@ -70,6 +70,7 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/shader/Texture.cpp
                                     ${SRC_DIR}/shader/CubeMap.cpp
                                     ${SRC_DIR}/shader/Framebuffer.cpp
+                                    ${SRC_DIR}/shader/Canvas.cpp
 
                                     ${SRC_DIR}/audio/AudioBuffer.cpp
                                     ${SRC_DIR}/audio/AudioBufferOgg.cpp

@@ -7,6 +7,7 @@ namespace ui {
 using shader::materials::TextureXferMaterial;
 using shader::Framebuffer;
 using shader::FramebufferTarget;
+using shader::Canvas;
 
 std::weak_ptr<shader::materials::TextureXferMaterial> UIObject::xfer_mat_singleton_;
 std::mutex UIObject::xfer_lock_;
@@ -121,7 +122,7 @@ void UIObject::RenderMaterial(const engine::RenderContext& rc) {
     #endif
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    DrawUI(min, max);
+    DrawUI(min, max, Canvas(fb_));
     valid_.store(true);
   }
 }

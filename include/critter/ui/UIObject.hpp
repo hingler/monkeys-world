@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 
 #include <critter/GameObject.hpp>
+#include <shader/Canvas.hpp>
 #include <shader/Framebuffer.hpp>
 #include <shader/materials/TextureXferMaterial.hpp>
 #include <input/MouseEvent.hpp>
@@ -138,7 +139,7 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
    *  @param minXY, the minXY of the invalid bounding box, origin top left.
    *  @param maxXY, the maxXY of the invalid bounding box, origin top left.
    */ 
-  virtual void DrawUI(glm::vec2 minXY, glm::vec2 maxXY) = 0;
+  virtual void DrawUI(glm::vec2 minXY, glm::vec2 maxXY, shader::Canvas canvas) = 0;
 
   /**
    *  Invalidates the framebuffer, notifying the UIObject
