@@ -36,7 +36,7 @@ class UIGroup : public UIObject {
   /**
    *  Uses DrawUI to draw all children to the screen.
    */ 
-  void DrawUI(glm::vec2 min, glm::vec2 max) override;
+  void DrawUI(glm::vec2 min, glm::vec2 max, shader::Canvas canvas) override;
 
  private:
   struct UIGroupPacket {

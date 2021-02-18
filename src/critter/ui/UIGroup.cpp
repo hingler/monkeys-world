@@ -70,7 +70,7 @@ void UIGroup::RemoveChild(uint64_t id) {
   }
 }
 
-void UIGroup::DrawUI(glm::vec2 min, glm::vec2 max) {
+void UIGroup::DrawUI(glm::vec2 min, glm::vec2 max, shader::Canvas canvas) {
   // note: framebuffer is bound if this is being called
   // plus, all of its children have already been drawn
   glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &max_textures_);

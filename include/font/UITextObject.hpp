@@ -83,7 +83,7 @@ class UITextObject : public critter::ui::UIObject {
   /**
    *  Draws text to screen.
    */ 
-  void DrawUI(glm::vec2 xMin, glm::vec2 xMax) override;
+  void DrawUI(glm::vec2 xMin, glm::vec2 xMax, shader::Canvas canvas) override;
 
   /**
    *  @returns the minimum width/height required to display all chars.

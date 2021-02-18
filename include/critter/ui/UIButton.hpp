@@ -18,7 +18,7 @@ class UIButton : public font::UITextObject {
   float border_width;
   float border_radius;
 
-  void DrawUI(glm::vec2 xyMin, glm::vec2 xyMax) override;
+  void DrawUI(glm::vec2 xyMin, glm::vec2 xyMax, shader::Canvas canvas) override;
   bool OnClick(const input::MouseEvent& e) override;
  private:
   shader::materials::ButtonMaterial mat_;

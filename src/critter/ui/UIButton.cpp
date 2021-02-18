@@ -35,7 +35,7 @@ UIButton::UIButton(engine::Context* ctx, const std::string& font_path) : UITextO
   }
 }
 
-void UIButton::DrawUI(glm::vec2 xyMin, glm::vec2 xyMax) {
+void UIButton::DrawUI(glm::vec2 xyMin, glm::vec2 xyMax, shader::Canvas canvas) {
   mat_.resolution = GetDimensions();
   mat_.border_color = border_color;
   mat_.border_width = border_width;
@@ -53,7 +53,7 @@ void UIButton::DrawUI(glm::vec2 xyMin, glm::vec2 xyMax) {
   mesh_local_->PointToVertexAttribs();
   glDrawElements(GL_TRIANGLES, static_cast<int>(mesh_local_->GetIndexCount()), GL_UNSIGNED_INT, (void*)0);
   glDisable(GL_DEPTH_TEST);
-  UITextObject::DrawUI(xyMin, xyMax);
+  UITextObject::DrawUI(xyMin, xyMax, canvas);
   glEnable(GL_DEPTH_TEST);
 }
 
@@ -63,6 +63,7 @@ bool UIButton::OnClick(const input::MouseEvent& e) {
     switch (e.action) {
       case GLFW_PRESS:
         pressed_ = true;
+        // why did i do this? lole
         GetContext()->GetAudioManager()->AddFileToBuffer("resources/flap_jack_scream.ogg", audio::AudioFiletype::OGG);
         Invalidate();
         break;

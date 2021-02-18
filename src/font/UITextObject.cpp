@@ -19,7 +19,7 @@ UITextObject::UITextObject(engine::Context* ctx, const std::string& font_path)
     text_.SetTextFormat(format);
   }
 
-void UITextObject::DrawUI(glm::vec2 xMin, glm::vec2 xMax) {
+void UITextObject::DrawUI(glm::vec2 xMin, glm::vec2 xMax, shader::Canvas canvas) {
   auto text_mesh = text_.GetGeometry();
   auto format = text_.GetTextFormat();
 
