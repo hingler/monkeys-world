@@ -11,6 +11,7 @@ namespace materials {
 
 class FillMaterial : public ::monkeysworld::shader::Material {
  public:
+  FillMaterial();
   FillMaterial(engine::Context* context);
   void UseMaterial() override;
   

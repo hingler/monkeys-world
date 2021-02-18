@@ -8,6 +8,13 @@ namespace monkeysworld {
 namespace shader {
 namespace materials {
 using engine::Context;
+FillMaterial::FillMaterial() {
+  fill_prog_ = ShaderProgramBuilder()
+                 .WithVertexShader("resources/glsl/fill-mat.vert")
+                 .WithFragmentShader("resources/glsl/fill-mat.frag")
+                 .Build();
+  color_cache_ = glm::vec4(glm::vec3(0.0), 1.0);
+}
 FillMaterial::FillMaterial(Context* context) {
   auto loader = context->GetCachedFileLoader();
   fill_prog_ = ShaderProgramBuilder(loader)
