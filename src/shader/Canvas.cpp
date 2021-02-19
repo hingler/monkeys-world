@@ -46,8 +46,9 @@ void Canvas::DrawLine(glm::vec2 start, glm::vec2 end, float thickness, glm::vec4
   end -= glm::vec2(1);
   start -= glm::vec2(1);
   normal /= fb_dims;
-  Mesh<VertexPacket2D> line_geom;
   VertexPacket2D temp;
+  line_geom.Clear();
+
   {
     temp.position = (start - normal * (thickness / 2));
     line_geom.AddVertex(temp);
