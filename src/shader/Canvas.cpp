@@ -40,12 +40,14 @@ Canvas::Canvas(std::shared_ptr<Framebuffer> framebuffer) {
 void Canvas::DrawLine(glm::vec2 start, glm::vec2 end, float thickness, glm::vec4 color) {
   
   fb_->BindFramebuffer();
+  glm::vec2 fb_dims(fb_->GetDimensions());
+  start.y = fb_dims.y - start.y;
+  end.y = fb_dims.y - end.y;
   glm::vec2 direction = glm::normalize(end - start);
   // length of 1px -- need to convert that to screenspace
   glm::vec2 normal = glm::vec2(-direction.y, direction.x);
   // convert start and end to screenspace coordinates
 
-  glm::vec2 fb_dims(fb_->GetDimensions());
   fb_dims /= 2;
   end /= fb_dims;
   start /= fb_dims;
