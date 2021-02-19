@@ -81,8 +81,7 @@ void MatteMaterial::SetSpotlights(const std::vector<spotlight_info>& lights) {
 }
 
 void MatteMaterial::SetSurfaceColor(const glm::vec4& color) {
-  // glProgramUniform4fv(matte_prog_.GetProgramDescriptor(), 3, 1, glm::value_ptr(color));
-  glProgramUniform4f(matte_prog_.GetProgramDescriptor(), 3, color.r, color.g, color.b, color.a);
+  glProgramUniform4fv(matte_prog_.GetProgramDescriptor(), 3, 1, glm::value_ptr(color));
 }
 
 } // namespace materials

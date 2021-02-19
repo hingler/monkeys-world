@@ -42,7 +42,7 @@ void Canvas::DrawLine(glm::vec2 start, glm::vec2 end, float thickness, glm::vec4
   fb_->BindFramebuffer();
   glm::vec2 direction = glm::normalize(end - start);
   // length of 1px -- need to convert that to screenspace
-  glm::vec2 normal = glm::vec2(direction.y, direction.x);
+  glm::vec2 normal = glm::vec2(-direction.y, direction.x);
   // convert start and end to screenspace coordinates
 
   glm::vec2 fb_dims(fb_->GetDimensions());
@@ -67,12 +67,14 @@ void Canvas::DrawLine(glm::vec2 start, glm::vec2 end, float thickness, glm::vec4
       geom_cache.AddVertex(temp);
       temp.position = (end + normal * (thickness / 2));
       geom_cache.AddVertex(temp);
+      geom_cache.AddPolygon(0, 2, 1);
+      geom_cache.AddPolygon(1, 2, 3);
     }
 
     fill_mat->SetColor(color);
     fill_mat->UseMaterial();
     geom_cache.PointToVertexAttribs();
-    glDrawElements(GL_TRIANGLES, geom_cache.GetIndexCount(), GL_UNSIGNED_INT, reinterpret_cast<void*>(0));
+    glDrawElements(GL_TRIANGLES, static_cast<int>(geom_cache.GetIndexCount()), GL_UNSIGNED_INT, reinterpret_cast<void*>(0));
   }
 }
 

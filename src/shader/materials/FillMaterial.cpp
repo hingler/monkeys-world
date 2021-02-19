@@ -26,7 +26,7 @@ FillMaterial::FillMaterial(Context* context) {
 
 void FillMaterial::UseMaterial() {
   glUseProgram(fill_prog_.GetProgramDescriptor());
-  glUniform4fv(0, 4, glm::value_ptr(color_cache_));
+  glUniform4fv(0, 1, glm::value_ptr(color_cache_));
 }
 
 void FillMaterial::SetColor(const glm::vec4& col) {
