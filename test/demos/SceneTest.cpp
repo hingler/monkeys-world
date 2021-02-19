@@ -18,6 +18,7 @@
 #include <critter/ui/UIObject.hpp>
 #include <critter/ui/UIGroup.hpp>
 #include <critter/ui/UIButton.hpp>
+#include <critter/ui/FPSCounter.hpp>
 #include <critter/Model.hpp>
 
 #include <input/MouseEvent.hpp>
@@ -65,6 +66,7 @@ using ::monkeysworld::critter::Skybox;
 using ::monkeysworld::critter::ui::UIGroup;
 using ::monkeysworld::critter::ui::UIObject;
 using ::monkeysworld::critter::ui::UIButton;
+using ::monkeysworld::critter::ui::FPSCounter;
 
 using ::monkeysworld::critter::camera_info;
 
@@ -509,6 +511,11 @@ class TestScene : public Scene {
     but->SetHorizontalAlign(CENTER);
     but->SetVerticalAlign(MIDDLE);
 
+    auto counter = std::make_shared<FPSCounter>(ctx, "resources/8bitoperator_jve.ttf");
+    counter->SetPosition(glm::vec2(5));
+    counter->SetDimensions(glm::vec2(300, 60));
+    counter->SetTextSize(48.0f);
+
     auto group = std::make_shared<UIGroup>(ctx);
     group->SetPosition(glm::vec2(0, 0));
     group->SetDimensions(glm::vec2(1600, 900));
@@ -516,6 +523,7 @@ class TestScene : public Scene {
     group->AddChild(tui);
     group->AddChild(tui_twoey);
     group->AddChild(but);
+    group->AddChild(counter);
     ui_object_root_ = group;
   }
 
