@@ -3,6 +3,8 @@
 
 #include <shader/materials/FillMaterial.hpp>
 
+#include <mutex>
+
 namespace monkeysworld {
 namespace shader {
 
@@ -16,6 +18,10 @@ namespace {
 
   std::mutex build_shaders_mtx;
   std::atomic_bool shaders_built = false;
+
+  // for ensuring geometry need not be reinstanced
+  model::Mesh<storage::VertexPacket2D> geom_cache;
+  std::mutex geom_lock;
 }
 
 Canvas::Canvas(std::shared_ptr<Framebuffer> framebuffer) {
@@ -47,23 +53,27 @@ void Canvas::DrawLine(glm::vec2 start, glm::vec2 end, float thickness, glm::vec4
   start -= glm::vec2(1);
   normal /= fb_dims;
   VertexPacket2D temp;
-  line_geom.Clear();
 
   {
-    temp.position = (start - normal * (thickness / 2));
-    line_geom.AddVertex(temp);
-    temp.position = (start + normal * (thickness / 2));
-    line_geom.AddVertex(temp);
-    temp.position = (end - normal * (thickness / 2));
-    line_geom.AddVertex(temp);
-    temp.position = (end + normal * (thickness / 2));
-    line_geom.AddVertex(temp);
-  }
+    std::unique_lock<std::mutex> lock(geom_lock);
+    geom_cache.Clear();
 
-  fill_mat->SetColor(color);
-  fill_mat->UseMaterial();
-  line_geom.PointToVertexAttribs();
-  glDrawElements(GL_TRIANGLES, line_geom.GetIndexCount(), GL_UNSIGNED_INT, reinterpret_cast<void*>(0));
+    {
+      temp.position = (start - normal * (thickness / 2));
+      geom_cache.AddVertex(temp);
+      temp.position = (start + normal * (thickness / 2));
+      geom_cache.AddVertex(temp);
+      temp.position = (end - normal * (thickness / 2));
+      geom_cache.AddVertex(temp);
+      temp.position = (end + normal * (thickness / 2));
+      geom_cache.AddVertex(temp);
+    }
+
+    fill_mat->SetColor(color);
+    fill_mat->UseMaterial();
+    geom_cache.PointToVertexAttribs();
+    glDrawElements(GL_TRIANGLES, geom_cache.GetIndexCount(), GL_UNSIGNED_INT, reinterpret_cast<void*>(0));
+  }
 }
 
 }

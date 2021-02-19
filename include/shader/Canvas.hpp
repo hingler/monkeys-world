@@ -37,7 +37,6 @@ class Canvas {
   void DrawLine(glm::vec2 start, glm::vec2 end, float thickness, glm::vec4 color);
  private:
   std::shared_ptr<Framebuffer> fb_;
-  ::monkeysworld::model::Mesh<::monkeysworld::storage::VertexPacket2D> line_geom;
   
 };
 
