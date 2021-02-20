@@ -147,7 +147,7 @@ int AudioManager::CallbackFunc(const void* input,
   AudioManager* mgr = reinterpret_cast<AudioManager*>(userData);
   buffer_info* info;
   int samples_read;
-  for (int i = 0; i < frameCount; i++) {
+  for (unsigned int i = 0; i < frameCount; i++) {
     output_buffer[2 * i] = output_buffer[2 * i + 1] = 0.0f;
   }
 

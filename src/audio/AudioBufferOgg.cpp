@@ -13,26 +13,31 @@ namespace monkeysworld {
 namespace audio {
 
 AudioBufferOgg::AudioBufferOgg(int capacity, const std::string& filename) : AudioBuffer(capacity) {
+  file_path_ = filename;
+  vorbis_file_ = nullptr;
+}
 
+void AudioBufferOgg::OpenFile() {
   int err;
   int memsize = ALLOC_INC;
   vorbis_buf_.alloc_buffer = nullptr;
 
   do {
-    BOOST_LOG_TRIVIAL(trace) << "open " << filename << " -- trying " << memsize << " bytes of mem";
+    BOOST_LOG_TRIVIAL(trace) << "open " << file_path_ << " -- trying " << memsize << " bytes of mem";
     if (vorbis_buf_.alloc_buffer != nullptr) {
       delete[] vorbis_buf_.alloc_buffer;
     }
 
     vorbis_buf_.alloc_buffer = new char[memsize];
     vorbis_buf_.alloc_buffer_length_in_bytes = memsize;
-    vorbis_file_ = stb_vorbis_open_filename(filename.c_str(), &err, &vorbis_buf_);
+    vorbis_file_ = stb_vorbis_open_filename(file_path_.c_str(), &err, &vorbis_buf_);
     memsize += ALLOC_INC;
   } while (vorbis_file_ == NULL && err == STBVorbisError::VORBIS_outofmem && memsize <= ALLOC_MAX);
 
   if (vorbis_file_ == NULL) {
     // some other error occurred
     BOOST_LOG_TRIVIAL(error) << "Vorbis open failed with err code " << err;
+    // throw an exception here
   }
 
   info_ = stb_vorbis_get_info(vorbis_file_);
@@ -41,73 +46,39 @@ AudioBufferOgg::AudioBufferOgg(int capacity, const std::string& filename) : Audi
 
 int AudioBufferOgg::WriteFromFile(int n) {
   if (vorbis_file_ == nullptr) {
-
-    return -1;
+    OpenFile();
   }
 
   // attempt to write 0 bytes -- let's just bounce it back.
   if (n == 0) {
     return 0;
   }
-  uint64_t write_head = bytes_written_.load(std::memory_order_acquire);
-  if (write_head + n >= last_read_polled_ + capacity_) {
-    last_read_polled_ = bytes_read_.load(std::memory_order_acquire);
-  }
 
-  float* buffers_[2] = {&buffer_l_[write_head % capacity_], &buffer_r_[write_head % capacity_]};
-  // if we're splitting our buffer: we need to do a pair of writes, instead of just one!
-  n = std::min(n, static_cast<int>(last_read_polled_ + capacity_ - write_head));
-  int samples_written = 0;
-  if ((write_head % capacity_) + n > capacity_) {
-    int first_write_size = (capacity_ - (write_head % capacity_));
-    samples_written = stb_vorbis_get_samples_float(vorbis_file_,
-                                                   2,
-                                                   buffers_,
-                                                   first_write_size);
-    
-    // todo: factor this out lol
+  int readsize = n;
+  while (readsize > 0) {
+    // how do we tell the thing that we don't want all that space?
+    // figure it out later lol
+    AudioBufferPacket packet = GetBufferSpace(readsize);
+    float* buffers_[2] = {packet.left, packet.right};
+    int samples_written = stb_vorbis_get_samples_float(vorbis_file_,
+                                                       2,
+                                                       buffers_,
+                                                       static_cast<int>(packet.capacity));
     if (samples_written == 0) {
       eof_.store(true);
-      bytes_written_.fetch_add(samples_written, std::memory_order_release);
-      return samples_written;
+      return n - readsize;
     }
 
     if (info_.channels == 1) {
-      // copy data over if in mono
-      for (int i = 0; i < first_write_size; i++) {
+      for (int i = 0; i < samples_written; i++) {
         buffers_[1][i] = buffers_[0][i];
       }
     }
 
-    // point back to start of buffers
-    buffers_[0] = buffer_l_;
-    buffers_[1] = buffer_r_;
-
-    // decrement the samples we've already written
-    n -= samples_written;
+    readsize -= samples_written;
   }
 
-  samples_written += stb_vorbis_get_samples_float(vorbis_file_,
-                                                     2,
-                                                     buffers_,
-                                                     n);
-  if (samples_written == 0) {
-    // our file buffer is exhausted!
-    // how can we communicate this to the reader?
-    // use an EOF flag
-    // if true: file is exhausted
-    eof_.store(true);
-  }
-
-  if (info_.channels == 1) {
-    // copy data over if in mono
-    for (int i = 0; i < n; i++) {
-      buffers_[1][i] = buffers_[0][i];
-    }
-  }
-
-  bytes_written_.fetch_add(samples_written, std::memory_order_release);
-  return samples_written;
+  return n;
 }
 
 bool AudioBufferOgg::EndOfFile() {
@@ -122,7 +93,7 @@ void AudioBufferOgg::SeekFileToWriteHead() {
     // is this necessary?
     eof_ = true;
   } else {
-    int seek_res = stb_vorbis_seek(vorbis_file_, bytes_written_.load(std::memory_order_acquire));
+    int seek_res = stb_vorbis_seek(vorbis_file_, static_cast<unsigned int>(bytes_written_.load(std::memory_order_acquire)));
     if (seek_res == 0) {
       // some other error occured!
       BOOST_LOG_TRIVIAL(error) << "Seek on vorbis file failed with error " << stb_vorbis_get_error(vorbis_file_);

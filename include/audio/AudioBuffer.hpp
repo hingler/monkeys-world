@@ -1,11 +1,16 @@
 #ifndef AUDIO_BUFFER_H_
 #define AUDIO_BUFFER_H_
 
+#include <audio/AudioBufferPacket.hpp>
+
 #include <atomic>
 #include <condition_variable>
 #include <mutex>
 #include <thread>
 
+// pulled from an implementation i saw a long ass time ago.
+// source is probably cited on that music visualizer i made a couple years ago.
+// prevents cache collisions.
 #define CACHE_LINE 64
 
 namespace monkeysworld {
@@ -113,17 +118,25 @@ class AudioBuffer {
 
   
  protected:
+
+  /**
+   *  @param request - the number of frames requested.
+   *  @returns an audiobufferpacket containing (at most) the number of bytes requested.
+   */ 
+  AudioBufferPacket GetBufferSpace(uint64_t request);
+
   int capacity_;
   float* buffer_l_;                     // left buffer
   float* buffer_r_;                     // right buffer
 
-  char CACHE_BREAK_R_[CACHE_LINE];      // separates read from buffer
-  std::atomic<uint64_t> bytes_read_;    // read header
-  uint64_t last_write_polled_;          // last write value polled
+  char CACHE_BREAK_R_[CACHE_LINE];        // separates read from buffer
+  std::atomic<uint64_t> bytes_read_;      // read header
+  uint64_t last_write_polled_;            // last write value polled
 
-  char CACHE_BREAK_W_[CACHE_LINE];      // separates write from read
-  std::atomic<uint64_t> bytes_written_; // write header
-  uint64_t last_read_polled_;           // last read value polled
+  char CACHE_BREAK_W_[CACHE_LINE];        // separates write from read
+  std::atomic<uint64_t> bytes_written_;   // write header
+  std::atomic<uint64_t> bytes_allocated_; // number of bytes allocated to packets thus far.
+  uint64_t last_read_polled_;             // last read value polled
 
   std::condition_variable write_cv_;    // cv used to signal write thread
   std::thread write_thread_;            // write thread 

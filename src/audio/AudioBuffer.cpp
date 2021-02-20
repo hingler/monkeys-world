@@ -9,6 +9,7 @@ AudioBuffer::AudioBuffer(int capacity) : capacity_(capacity) {
   buffer_r_ = new float[capacity];
   bytes_read_ = 0;
   bytes_written_ = 0;
+  bytes_allocated_ = 0;
   last_write_polled_ = 0;
   last_read_polled_ = 0;
   running_ = false;
@@ -106,6 +107,7 @@ int AudioBuffer::Write(int n, float* input_left, float* input_right) {
 
   bytes_written_.store(write_head, std::memory_order_release);
   SeekFileToWriteHead();
+
   return n;
 }
 
@@ -135,11 +137,32 @@ void AudioBuffer::WriteThreadFunc() {
     // once we get here: we definitely have capacity -- if WriteFromFile returns <= 0, then the file is exhausted.
     uint64_t w_len = capacity_ - (bw_local - last_read_polled_);
     // only one thread will write at a time!
-    if (this->WriteFromFile(w_len) <= 0) {
+    if (this->WriteFromFile(static_cast<int>(w_len)) <= 0) {
       // we obviously have capacity, so the file is exhausted or broken.
       break;
     }
   }
+}
+
+AudioBufferPacket AudioBuffer::GetBufferSpace(uint64_t n) {
+  uint64_t write_head = bytes_written_.load(std::memory_order_acquire);
+  if (write_head + n >= last_read_polled_ + capacity_) {
+    last_read_polled_ = bytes_read_.load(std::memory_order_acquire);
+  }
+
+  uint64_t read_size = static_cast<uint64_t>(last_read_polled_ + capacity_ - write_head);
+
+  read_size = std::min(n, read_size);
+
+  if ((write_head % capacity_) + read_size > capacity_) {
+    read_size = capacity_ - (write_head % capacity_);
+  }
+
+  float* l_offset = &buffer_l_[write_head % capacity_];
+  float* r_offset = &buffer_r_[write_head % capacity_];
+
+  bytes_written_.store(write_head + read_size, std::memory_order_release);
+  return {l_offset, r_offset, read_size};
 }
 
 /**
