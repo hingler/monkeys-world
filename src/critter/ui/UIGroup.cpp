@@ -79,6 +79,8 @@ void UIGroup::DrawUI(glm::vec2 min, glm::vec2 max, shader::Canvas canvas) {
   GLuint textures[4];
   for (int i = 0; i < children_.size(); i += TEXTURES_PER_CALL) {
     mesh_.Clear();
+    // todo: implement some system so that items which fall outside the bounds
+    // of the group are not drawn.
     for (int j = 0; j < TEXTURES_PER_CALL && (i + j) < children_.size(); j++) {
       child = children_[i + j];
       
