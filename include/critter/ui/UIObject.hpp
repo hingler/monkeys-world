@@ -99,6 +99,17 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
    */ 
   void SetDimensions(glm::vec2 size);
 
+  /**
+   *  Sets the current opacity of this UIObject.
+   *  @param opac - the new opacity of the UIObject, clipped to the range [0.0f, 1.0f].
+   */ 
+  void SetOpacity(float opac);
+
+  /**
+   *  @returns the current opacity of this object.
+   */ 
+  float GetOpacity();
+
   // nop on this (deprecated)
   void PrepareAttributes() override {}
 
@@ -178,6 +189,7 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
   glm::vec2 pos_;                                       // offset of this component relative to parent
   glm::vec2 size_;                                      // size of ui object, pixels wide/tall
   std::atomic_bool valid_;                              // whether or not the view has been invalidated.
+  float opacity_;
 
   std::shared_ptr<shader::Framebuffer> fb_;
 

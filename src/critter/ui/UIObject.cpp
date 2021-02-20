@@ -17,6 +17,7 @@ UIObject::UIObject(engine::Context* ctx) : Object(ctx) {
   pos_ = glm::vec2(0, 0);
   size_ = glm::vec2(1, 1);
   fb_ = std::make_shared<Framebuffer>();
+  opacity_ = 1.0f;
 
   valid_ = true;
   parent_ = std::weak_ptr<UIObject>();
@@ -92,6 +93,22 @@ void UIObject::SetDimensions(glm::vec2 size) {
   fb_->SetDimensions(static_cast<glm::ivec2>(size));
   // new size requires a redraw
   Invalidate();
+}
+
+void UIObject::SetOpacity(float opac) {
+  if (opac < 0.0f) {
+    opacity_ = 0.0f;
+  } else if (opac > 1.0f) {
+    opacity_ = 1.0f;
+  } else {
+    opacity_ = opac;
+  }
+
+  Invalidate();
+}
+
+float UIObject::GetOpacity() {
+  return opacity_;
 }
 
 void UIObject::Invalidate() {
@@ -175,6 +192,7 @@ void UIObject::DrawToScreen() {
 
   xfer_mesh_.PointToVertexAttribs();
   xfer_mat_->SetTexture(GetFramebufferColor());
+  xfer_mat_->SetOpacity(opacity_);
   xfer_mat_->UseMaterial();
   glDrawElements(GL_TRIANGLES, static_cast<uint32_t>(xfer_mesh_.GetIndexCount()), GL_UNSIGNED_INT, (void*)0);
 }

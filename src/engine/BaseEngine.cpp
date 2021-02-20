@@ -157,11 +157,11 @@ void GameLoop(std::shared_ptr<engine::EngineContext> ctx, GLFWwindow* window) {
     
     // render UI
     if (scene->GetUIObjectRoot()) {
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       RenderUI(scene->GetUIObjectRoot(), rc);
       glViewport(0, 0, w, h);
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       auto ui_root = std::dynamic_pointer_cast<UIObject>(scene->GetUIObjectRoot());
       if (ui_root) {
         ui_root->DrawToScreen();

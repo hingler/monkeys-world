@@ -408,6 +408,8 @@ class DebugText : public UITextObject {
 
       last_fps_polled = 144 / g;
     }
+    
+    SetOpacity(a);
 
     debug_text << std::to_string(last_fps_polled) << " FPS\n";
 
@@ -500,6 +502,8 @@ class TestScene : public Scene {
     tui->SetTextSize(32.0f);
     tui->SetTextColor(glm::vec4(1.0, 0.0, 0.0, 1.0));
     tui->SetText("hello\nspongebob\ncleveland brown\ncomedy show");
+    tui->SetOpacity(0.8f);
+    BOOST_LOG_TRIVIAL(trace) << "new opac: " << tui->GetOpacity();
 
     auto but = std::make_shared<UIButton>(ctx, "resources/8bitoperator_jve.ttf");
     but->SetPosition(glm::vec2(300, 300));

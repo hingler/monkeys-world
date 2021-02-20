@@ -27,12 +27,19 @@ class UIGroupMaterial : public Material {
   void SetTextures(GLuint textures[TEXTURES_PER_CALL]);
 
   /**
+   *  Sets the opacity of each UI group represented in the material.
+   *  @param opacities - array of opacities sent to material.
+   */ 
+  void SetOpacity(float opacities[TEXTURES_PER_CALL]);
+
+  /**
    *  Uses the underlying program.
    */ 
   void UseMaterial() override;
  private:
   ShaderProgram prog_;
   GLuint textures_[TEXTURES_PER_CALL];
+  float opacities_[TEXTURES_PER_CALL];
 };
 
 }

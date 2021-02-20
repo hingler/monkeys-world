@@ -5,6 +5,7 @@
 precision mediump float;
 
 layout(location = 0) uniform sampler2D textures[4];
+layout(location = 4) uniform float opacities[4];
 
 layout(location = 0) in vec2 v_tex;
 layout(location = 1) in float v_ind;
@@ -17,6 +18,7 @@ void main() {
   for (int i = 0; i < TEXTURES_PER_CALL; i++) {
     tex_content = texture(textures[i], v_tex);
     if (int(v_ind) == i) {
+      tex_content.a = tex_content.a * opacities[i];
       result += tex_content;
     }
   }

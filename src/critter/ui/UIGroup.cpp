@@ -77,6 +77,7 @@ void UIGroup::DrawUI(glm::vec2 min, glm::vec2 max, shader::Canvas canvas) {
   UIGroupPacket p;
   std::shared_ptr<UIObject> child;
   GLuint textures[4];
+  float opacities[4];
   for (int i = 0; i < children_.size(); i += TEXTURES_PER_CALL) {
     mesh_.Clear();
     // todo: implement some system so that items which fall outside the bounds
@@ -85,6 +86,7 @@ void UIGroup::DrawUI(glm::vec2 min, glm::vec2 max, shader::Canvas canvas) {
       child = children_[i + j];
       
       textures[j] = child->GetFramebufferColor();
+      opacities[j] = child->GetOpacity();
       p.index = static_cast<float>(j);
 
       auto pos = child->GetPosition();
@@ -124,6 +126,7 @@ void UIGroup::DrawUI(glm::vec2 min, glm::vec2 max, shader::Canvas canvas) {
     }
 
     mat_.SetTextures(textures);
+    mat_.SetOpacity(opacities);
 
     // point attribs
     mesh_.PointToVertexAttribs();

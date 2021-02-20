@@ -12,16 +12,29 @@ TextureXferMaterial::TextureXferMaterial(engine::Context* context) {
                  .WithVertexShader("resources/glsl/texture-xfer/texture-xfer.vert")
                  .WithFragmentShader("resources/glsl/texture-xfer/texture-xfer.frag")
                  .Build();
+  opac_ = 1.0f;
 }
 
 void TextureXferMaterial::UseMaterial() {
   glUseProgram(xfer_prog_.GetProgramDescriptor());
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, tex_);
+  glUniform1i(0, 0);
+  glUniform1f(1, opac_);
 }
 
 void TextureXferMaterial::SetTexture(GLuint tex) {
   tex_ = tex;
+}
+
+void TextureXferMaterial::SetOpacity(float opac) {
+  if (opac < 0.0f) {
+    opac_ = 0.0f;
+  } else if (opac > 1.0f) {
+    opac_ = 1.0f;
+  } else {
+    opac_ = opac;
+  }
 }
 
 }
