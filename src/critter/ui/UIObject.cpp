@@ -96,15 +96,20 @@ void UIObject::SetDimensions(glm::vec2 size) {
 }
 
 void UIObject::SetOpacity(float opac) {
+  float opacity;
+
   if (opac < 0.0f) {
-    opacity_ = 0.0f;
+    opacity = 0.0f;
   } else if (opac > 1.0f) {
-    opacity_ = 1.0f;
+    opacity = 1.0f;
   } else {
-    opacity_ = opac;
+    opacity = opac;
   }
 
-  Invalidate();
+  if (opacity != opacity_) {
+    opacity_ = opacity;
+    Invalidate();
+  }
 }
 
 float UIObject::GetOpacity() {
