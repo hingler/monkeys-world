@@ -7,6 +7,8 @@ namespace ui {
 
 using engine::Context;
 
+typedef std::shared_ptr<UIObject> child_ptr;
+
 UIGroup::UIGroup(Context* ctx) : UIObject(ctx), mat_(ctx) { 
   max_textures_ = -1;
 }
@@ -82,6 +84,12 @@ void UIGroup::DrawUI(glm::vec2 min, glm::vec2 max, shader::Canvas canvas) {
   int current_child = 0;
   int index = 0;
   mesh_.Clear();
+  
+  // maintain sorted z-index order for children+
+  std::sort(children_.begin(), children_.end(), [&](child_ptr a, child_ptr b) {
+    return (a->z_index < b->z_index);
+  });
+  
   while (current_child < children_.size()) {
     // add shit to our mesh as we go
     // once we hit 4: draw it

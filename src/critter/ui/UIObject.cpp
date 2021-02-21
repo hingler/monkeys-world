@@ -21,6 +21,7 @@ UIObject::UIObject(engine::Context* ctx) : Object(ctx) {
 
   valid_ = true;
   parent_ = std::weak_ptr<UIObject>();
+  z_index = 0;
 }
 
 void UIObject::Accept(Visitor& v) {

@@ -177,6 +177,12 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
   UIObject& operator=(UIObject&& other);
   ~UIObject();
 
+  /**
+   *  The Z-index of this layer.
+   *  Z-indices are used within groups to deterimine the order in which layers should be drawn atop one another.
+   */ 
+  uint64_t z_index;
+
  protected:
 
   /**
