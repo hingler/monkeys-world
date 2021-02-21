@@ -159,6 +159,7 @@ void GameLoop(std::shared_ptr<engine::EngineContext> ctx, GLFWwindow* window) {
     if (scene->GetUIObjectRoot()) {
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glDisable(GL_DEPTH_TEST);
       RenderUI(scene->GetUIObjectRoot(), rc);
       glViewport(0, 0, w, h);
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -166,6 +167,8 @@ void GameLoop(std::shared_ptr<engine::EngineContext> ctx, GLFWwindow* window) {
       if (ui_root) {
         ui_root->DrawToScreen();
       }
+
+      glEnable(GL_DEPTH_TEST);
     }
 
     glfwSwapBuffers(window);
