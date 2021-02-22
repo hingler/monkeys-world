@@ -87,7 +87,7 @@ void UIGroup::DrawUI(glm::vec2 min, glm::vec2 max, shader::Canvas canvas) {
   
   // maintain sorted z-index order for children+
   std::sort(children_.begin(), children_.end(), [&](child_ptr a, child_ptr b) {
-    return (a->z_index < b->z_index);
+    return (a->z_index > b->z_index);
   });
   
   while (current_child < children_.size()) {
