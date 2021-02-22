@@ -11,7 +11,7 @@ set(INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(TST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)
 
-set(compile_tests OFF)
+set(compile_tests ON)
 
 add_executable(monkeys-world main.cpp)
 
@@ -65,6 +65,7 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/engine/BaseEngine.cpp
                                     ${SRC_DIR}/engine/RenderContext.cpp
                                     ${SRC_DIR}/engine/SceneSwap.cpp
+                                    ${SRC_DIR}/engine/EngineExecutor.cpp
 
                                     ${SRC_DIR}/shader/light/SpotLight.cpp
                                     ${SRC_DIR}/shader/light/Light.cpp
@@ -161,13 +162,6 @@ if(compile_tests)
   add_test(NAME shader-compile-test COMMAND shader-compile-test
               WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
 
-  add_executable(mat-test test/demos/SimpleMatTest.cpp)
-  target_include_directories(mat-test PRIVATE ${INC_DIR})
-  target_link_libraries(mat-test glad::glad glm monkeys-world-components)
-
-  add_executable(model-test test/demos/SimpleModelTest.cpp)
-  target_link_libraries(model-test monkeys-world-components )
-
   add_executable(font-test test/demos/FontDoubleFeature.cpp)
   target_link_libraries(font-test monkeys-world-components )
 
@@ -243,6 +237,11 @@ if(compile_tests)
   add_executable(texture-loader-test test/TextureLoaderTest.cpp)
   target_link_libraries(texture-loader-test GTest::gtest_main monkeys-world-components)
   add_test(NAME texture-loader-test COMMAND texture-loader-test
+            WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
+
+  add_executable(executor-test test/EngineExecutorTest.cpp)
+  target_link_libraries(executor-test GTest::gtest_main monkeys-world-components)
+  add_test(NAME executor-test COMMAND executor-test
             WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
 
 endif()
