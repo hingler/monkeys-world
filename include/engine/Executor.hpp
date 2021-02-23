@@ -20,16 +20,21 @@ template <typename Derived = EngineExecutor>
 class Executor {
  public:
   /**
-   *  Runs a particular function on the main thread.
+   *  Runs a particular function on the main thread, and returns the value that function returns.
    *  @param func - the function which will be run.
    *  @param Callable - a callable argument.
    *  @returns - a future which will resolve to the result of the function call.
    */ 
   template <typename Callable>
-  auto RunOnMainThread(Callable func) -> std::future<decltype(func())> {
-    Derived& that = dynamic_cast<Derived&>(*this);
-    return that.RunOnMainThread(func);
-}
+  auto ReturnOnMainThread(Callable func) -> std::future<decltype(func())> {
+    Derived* that = static_cast<Derived*>(this);
+    return that->ReturnOnMainThread(func);
+  }
+
+  std::future<void> ScheduleOnMainThread(std::function<void()> func) {
+    Derived* that = static_cast<Derived*>(this);
+    return that->ScheduleOnMainThread(func);
+  }
 
 };
 

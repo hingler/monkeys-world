@@ -103,7 +103,7 @@ class EngineContext : public Context {
   std::shared_ptr<file::CachedFileLoader> file_loader_;
   std::shared_ptr<input::WindowEventManager> event_mgr_;
   std::shared_ptr<audio::AudioManager> audio_mgr_;
-  std::shared_ptr<Executor<EngineExecutor>> executor_;
+  std::shared_ptr<EngineExecutor> executor_;
   Scene* scene_;
   GLFWwindow* window_;
   // the current scene

@@ -14,7 +14,7 @@ TEST(EngineExecutorTests, CreateExecutor) {
     return true;
   };
 
-  std::future<bool> res = exec.RunOnMainThread(sample_lambda);
+  std::future<bool> res = exec.ReturnOnMainThread(sample_lambda);
   exec.RunTasks(1);
   ASSERT_TRUE(res.get());
 }
@@ -33,8 +33,8 @@ TEST(EngineExecutorTests, VerifyMainThreadRunsImmediately) {
 
   // on a separate thread, only long_res will return, as the alloted time will expire befor
   // short_task can run
-  auto long_res = exec.RunOnMainThread(long_task);
-  auto short_res = exec.RunOnMainThread(short_task);
+  auto long_res = exec.ReturnOnMainThread(long_task);
+  auto short_res = exec.ReturnOnMainThread(short_task);
 
   exec.RunTasks(0.01);
   ASSERT_EQ(long_res.wait_for(std::chrono::milliseconds(1)), std::future_status::ready);
@@ -45,7 +45,7 @@ TEST(EngineExecutorTests, VerifyMainThreadRunsImmediately) {
 }
 
 void queue_tests(std::function<int()> t1, EngineExecutor* exec, std::future<int>* ret) {
-  *ret = exec->RunOnMainThread(t1);
+  *ret = exec->ReturnOnMainThread(t1);
 }
 
 TEST(EngineExecutorTests, RunTestsFromOtherThread) {

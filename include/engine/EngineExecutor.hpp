@@ -18,10 +18,10 @@ class EngineExecutor : public Executor<EngineExecutor> {
   EngineExecutor();
 
   /**
-   *  Implementation for Executor::RunOnMainThread.
+   *  Implementation for Executor::ReturnOnMainThread.
    */ 
   template <typename Callable>
-  auto RunOnMainThread(Callable func) -> std::future<decltype(func())> {
+  auto ReturnOnMainThread(Callable func) -> std::future<decltype(func())> {
     using ret_type = decltype(func());
     
     std::shared_ptr<std::promise<ret_type>> p = std::make_shared<std::promise<ret_type>>();
@@ -40,6 +40,26 @@ class EngineExecutor : public Executor<EngineExecutor> {
     
     return std::move(p->get_future());
   }
+
+  std::future<void> ScheduleOnMainThread(std::function<void()> func) {
+    std::shared_ptr<std::promise<void>> p = std::make_shared<std::promise<void>>();
+    if (std::this_thread::get_id() == main_thread_id_) {
+      func();
+      p->set_value();
+    } else {
+      std::function<void()> lambda = [=] {
+        func();
+        p->set_value();
+      };
+
+      std::unique_lock<std::mutex> lock(queue_mutex_);
+      func_queue_.push(lambda);
+    }
+
+    return std::move(p->get_future());
+  }
+
+  // todo: create a version which does not have to return a value :)
 
   /**
    *  Grabs tasks from the task queue and runs them continuously, until

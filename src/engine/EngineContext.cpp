@@ -13,7 +13,7 @@ EngineContext::EngineContext(GLFWwindow* window, Scene* scene) {
   file_loader_ = std::make_shared<CachedFileLoader>(scene->GetSceneIdentifier());
   event_mgr_ = std::make_shared<WindowEventManager>(window, this);
   audio_mgr_ = std::make_shared<AudioManager>();
-  executor_ = std::make_shared<Executor<>>();
+  executor_ = std::make_shared<EngineExecutor>();
 
   window_ = window;
 
@@ -95,6 +95,8 @@ void EngineContext::UpdateContext() {
   frame_delta_.store(dur_.count());
   start_ = finish_;
   event_mgr_->ProcessWaitingEvents();
+  // ~10ms
+  executor_->RunTasks(0.010);
 }
 
 EngineContext::~EngineContext() {
