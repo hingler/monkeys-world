@@ -66,6 +66,9 @@ int AudioBufferOgg::WriteFromFile(int n) {
                                                        static_cast<int>(packet.capacity));
     if (samples_written == 0) {
       eof_.store(true);
+    }
+    
+    if (samples_written < packet.capacity) {
       for (int i = samples_written; i < packet.capacity; i++) {
         // if we EOF, ensure the rest of the packet is given 0's, to avoid audio glitches
         // due to playing back old samples.
