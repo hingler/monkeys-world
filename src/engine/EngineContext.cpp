@@ -13,6 +13,8 @@ EngineContext::EngineContext(GLFWwindow* window, Scene* scene) {
   file_loader_ = std::make_shared<CachedFileLoader>(scene->GetSceneIdentifier());
   event_mgr_ = std::make_shared<WindowEventManager>(window, this);
   audio_mgr_ = std::make_shared<AudioManager>();
+  executor_ = std::make_shared<Executor<>>();
+
   window_ = window;
 
   start_ = std::chrono::high_resolution_clock::now();
@@ -47,6 +49,10 @@ std::shared_ptr<WindowEventManager> EngineContext::GetEventManager() {
 
 std::shared_ptr<AudioManager> EngineContext::GetAudioManager() {
   return audio_mgr_;
+}
+
+std::shared_ptr<Executor<>> EngineContext::GetExecutor() {
+  return executor_;
 }
 
 Scene* EngineContext::GetScene() {

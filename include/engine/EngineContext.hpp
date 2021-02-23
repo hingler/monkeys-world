@@ -72,6 +72,8 @@ class EngineContext : public Context {
   std::shared_ptr<input::WindowEventManager> GetEventManager() override;
 
   std::shared_ptr<audio::AudioManager> GetAudioManager() override;
+
+  std::shared_ptr<Executor<EngineExecutor>> GetExecutor() override;
   
   void GetFramebufferSize(int* width, int* height) override;
 
@@ -101,6 +103,7 @@ class EngineContext : public Context {
   std::shared_ptr<file::CachedFileLoader> file_loader_;
   std::shared_ptr<input::WindowEventManager> event_mgr_;
   std::shared_ptr<audio::AudioManager> audio_mgr_;
+  std::shared_ptr<Executor<EngineExecutor>> executor_;
   Scene* scene_;
   GLFWwindow* window_;
   // the current scene
