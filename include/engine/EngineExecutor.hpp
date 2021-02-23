@@ -25,16 +25,19 @@ class EngineExecutor : public Executor<EngineExecutor> {
     using ret_type = decltype(func());
     
     std::shared_ptr<std::promise<ret_type>> p = std::make_shared<std::promise<ret_type>>();
-    auto lambda = [=] {
-      ret_type res = func();
-      p->set_value(res);
-    };
+    if (std::this_thread::get_id() == main_thread_id_) {
+      // currently on main thread -- don't schedule, just call it.
+      p->set_value(func());
+    } else {
+      std::function<void()> lambda = [=] {
+        ret_type res = func();
+        p->set_value(res);
+      };
 
-    {
-      std::unique_lock<std::mutex>(queue_mutex_);
+      std::unique_lock<std::mutex> lock(queue_mutex_);
       func_queue_.push(lambda);
     }
-
+    
     return std::move(p->get_future());
   }
 
@@ -53,7 +56,7 @@ class EngineExecutor : public Executor<EngineExecutor> {
  private:
   std::mutex queue_mutex_;
   std::queue<std::function<void()>> func_queue_; // queue of functions which will be executed
-
+  std::thread::id main_thread_id_;
 };
 
 }

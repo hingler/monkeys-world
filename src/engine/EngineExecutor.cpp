@@ -5,27 +5,24 @@
 namespace monkeysworld {
 namespace engine {
 
-EngineExecutor::EngineExecutor() {}
+EngineExecutor::EngineExecutor() {
+  main_thread_id_ = std::this_thread::get_id();
+}
 
 void EngineExecutor::RunTasks(double time) {
   auto start = std::chrono::high_resolution_clock::now();
   auto end = start;
-  std::chrono::duration<double, std::milli> dur = end - start;
+  std::chrono::duration<double, std::ratio<1L, 1L>> dur = end - start;
   
   bool read;
-  {
-    std::unique_lock<std::mutex> lock(queue_mutex_);
-    read = !func_queue_.empty();
-  }
+  std::unique_lock<std::mutex> lock(queue_mutex_);
+  read = !func_queue_.empty();
 
   while (read && dur.count() < time) {
     std::function<void()> func;
-    {
-      std::unique_lock<std::mutex> lock(queue_mutex_);
-      func = func_queue_.front();
-      func_queue_.pop();
-      read = !func_queue_.empty();
-    }
+    func = func_queue_.front();
+    func_queue_.pop();
+    read = !func_queue_.empty();
 
     func();
     end = std::chrono::high_resolution_clock::now();

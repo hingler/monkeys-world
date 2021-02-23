@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <future>
+#include <thread>
 
 namespace monkeysworld {
 namespace engine {
