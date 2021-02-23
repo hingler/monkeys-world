@@ -12,11 +12,16 @@ namespace materials {
 using engine::Context;
 
 ShadowMapMaterial::ShadowMapMaterial(Context* ctx) {
-  shadow_prog_ = ShaderProgramBuilder(ctx->GetCachedFileLoader())
-                   .WithVertexShader("resources/glsl/shadow-map/shadow-map.vert")
-                   .WithFragmentShader("resources/glsl/shadow-map/shadow-map.frag")
-                   .Build();
-  
+  auto exec_func = [&] {
+    shadow_prog_ = ShaderProgramBuilder(ctx->GetCachedFileLoader())
+                    .WithVertexShader("resources/glsl/shadow-map/shadow-map.vert")
+                    .WithFragmentShader("resources/glsl/shadow-map/shadow-map.frag")
+                    .Build();
+    
+  };
+
+  auto f = ctx->GetExecutor()->ScheduleOnMainThread(exec_func);
+  f.wait();
 }
 
 void ShadowMapMaterial::UseMaterial() {

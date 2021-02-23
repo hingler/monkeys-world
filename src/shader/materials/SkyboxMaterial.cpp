@@ -10,10 +10,16 @@ namespace materials {
 
 SkyboxMaterial::SkyboxMaterial(engine::Context* context) {
   auto loader = context->GetCachedFileLoader();
-  skybox_prog_ = ShaderProgramBuilder(loader)
-                  .WithVertexShader("resources/glsl/skybox-material/skybox-material.vert")
-                  .WithFragmentShader("resources/glsl/skybox-material/skybox-material.frag")
-                  .Build();
+
+  auto exec_func = [&] {
+    skybox_prog_ = ShaderProgramBuilder(loader)
+                    .WithVertexShader("resources/glsl/skybox-material/skybox-material.vert")
+                    .WithFragmentShader("resources/glsl/skybox-material/skybox-material.frag")
+                    .Build();
+  };
+
+  auto f = context->GetExecutor()->ScheduleOnMainThread(exec_func);
+  f.wait();
 }
 
 void SkyboxMaterial::UseMaterial() {

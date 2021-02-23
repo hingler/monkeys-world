@@ -8,10 +8,16 @@ namespace materials {
 
 TextureXferMaterial::TextureXferMaterial(engine::Context* context) {
   auto loader = context->GetCachedFileLoader();
-  xfer_prog_ = ShaderProgramBuilder(loader)
-                 .WithVertexShader("resources/glsl/texture-xfer/texture-xfer.vert")
-                 .WithFragmentShader("resources/glsl/texture-xfer/texture-xfer.frag")
-                 .Build();
+  auto exec_func = [&] {
+    xfer_prog_ = ShaderProgramBuilder(loader)
+                  .WithVertexShader("resources/glsl/texture-xfer/texture-xfer.vert")
+                  .WithFragmentShader("resources/glsl/texture-xfer/texture-xfer.frag")
+                  .Build();
+  };
+
+  auto f = context->GetExecutor()->ScheduleOnMainThread(exec_func);
+  f.wait();
+
   opac_ = 1.0f;
 }
 

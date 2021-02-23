@@ -11,15 +11,20 @@ using engine::Context;
 
 ButtonMaterial::ButtonMaterial(Context* ctx) {
   auto loader = ctx->GetCachedFileLoader();
-  prog_ = ShaderProgramBuilder(loader)
-            .WithVertexShader("resources/glsl/button-material/button-material.vert")
-            .WithFragmentShader("resources/glsl/button-material/button-material.frag")
-            .Build();
+  auto exec_func = [&]() {
+    prog_ = ShaderProgramBuilder(loader)
+              .WithVertexShader("resources/glsl/button-material/button-material.vert")
+              .WithFragmentShader("resources/glsl/button-material/button-material.frag")
+              .Build();
+  };
 
-  border_width = 1.0;
-  border_radius = 0.0;
-  button_color = glm::vec4(glm::vec3(0.8), 1.0);
-  border_color = glm::vec4(glm::vec3(0.4), 1.0);
+  border_width = 1.0f;
+  border_radius = 0.0f;
+  button_color = glm::vec4(glm::vec3(0.8f), 1.0f);
+  border_color = glm::vec4(glm::vec3(0.4f), 1.0f);
+
+  auto f = ctx->GetExecutor()->ScheduleOnMainThread(exec_func);
+  f.wait();
 }
 
 void ButtonMaterial::UseMaterial() {

@@ -14,10 +14,16 @@ using engine::Context;
 
 TextMaterial::TextMaterial(Context* context) {
   std::shared_ptr<CachedFileLoader> loader = std::static_pointer_cast<CachedFileLoader>(context->GetCachedFileLoader());
-  text_prog_ = ShaderProgramBuilder(loader)
-                 .WithVertexShader("resources/glsl/text-material/text-material.vert")
-                 .WithFragmentShader("resources/glsl/text-material/text-material.frag")
-                 .Build();
+
+  auto exec_func = [&] {
+    text_prog_ = ShaderProgramBuilder(loader)
+                  .WithVertexShader("resources/glsl/text-material/text-material.vert")
+                  .WithFragmentShader("resources/glsl/text-material/text-material.frag")
+                  .Build();
+  };
+
+  auto f = context->GetExecutor()->ScheduleOnMainThread(exec_func);
+  f.wait();
 }
 
 void TextMaterial::UseMaterial() {

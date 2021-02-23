@@ -9,14 +9,19 @@ namespace materials {
 
 UIGroupMaterial::UIGroupMaterial(engine::Context* ctx) {
   auto loader = ctx->GetCachedFileLoader();
-  prog_ = ShaderProgramBuilder(loader)
-            .WithVertexShader("resources/glsl/ui-group-mat/ui-group-mat.vert")
-            .WithFragmentShader("resources/glsl/ui-group-mat/ui-group-mat.frag")
-            .Build();
+  auto exec_func = [&] {
+    prog_ = ShaderProgramBuilder(loader)
+              .WithVertexShader("resources/glsl/ui-group-mat/ui-group-mat.vert")
+              .WithFragmentShader("resources/glsl/ui-group-mat/ui-group-mat.frag")
+              .Build();
+  };
+
+  auto f = ctx->GetExecutor()->ScheduleOnMainThread(exec_func);
+  f.wait();
+
   for (int i = 0; i < TEXTURES_PER_CALL; i++) {
     opacities_[i] = 1.0f;
   }
-  
 }
 
 void UIGroupMaterial::SetTextures(GLuint textures[TEXTURES_PER_CALL]) {

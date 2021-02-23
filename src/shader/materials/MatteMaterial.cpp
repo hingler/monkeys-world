@@ -20,10 +20,15 @@ using shader::light::spotlight_info;
 
 MatteMaterial::MatteMaterial(Context* context) {
   std::shared_ptr<CachedFileLoader> loader = std::static_pointer_cast<CachedFileLoader>(context->GetCachedFileLoader());
-  matte_prog_ = ShaderProgramBuilder(loader)
-                .WithVertexShader("resources/glsl/matte-material/matte-material.vert")
-                .WithFragmentShader("resources/glsl/matte-material/matte-material.frag")
-                .Build();
+  auto exec_func = [&] {
+    matte_prog_ = ShaderProgramBuilder(loader)
+                  .WithVertexShader("resources/glsl/matte-material/matte-material.vert")
+                  .WithFragmentShader("resources/glsl/matte-material/matte-material.frag")
+                  .Build();
+  };
+
+  auto f = context->GetExecutor()->ScheduleOnMainThread(exec_func);
+  f.wait();
 }
 
 // GL 4.1 provides glProgramUniform which allows us to bind uniforms
