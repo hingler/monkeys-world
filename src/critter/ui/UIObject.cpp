@@ -9,6 +9,7 @@ using shader::Framebuffer;
 using shader::FramebufferTarget;
 using shader::Canvas;
 
+model::FullscreenQuad UIObject::fullscreen_quad_;
 std::weak_ptr<shader::materials::TextureXferMaterial> UIObject::xfer_mat_singleton_;
 std::mutex UIObject::xfer_lock_;
 model::Mesh<storage::VertexPacket2D> UIObject::xfer_mesh_;
