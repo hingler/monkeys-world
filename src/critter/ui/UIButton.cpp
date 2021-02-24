@@ -52,9 +52,7 @@ void UIButton::DrawUI(glm::vec2 xyMin, glm::vec2 xyMax, shader::Canvas canvas) {
   mat_.UseMaterial();
   mesh_local_->PointToVertexAttribs();
   glDrawElements(GL_TRIANGLES, static_cast<int>(mesh_local_->GetIndexCount()), GL_UNSIGNED_INT, (void*)0);
-  glDisable(GL_DEPTH_TEST);
   UITextObject::DrawUI(xyMin, xyMax, canvas);
-  glEnable(GL_DEPTH_TEST);
 }
 
 bool UIButton::OnClick(const input::MouseEvent& e) {
