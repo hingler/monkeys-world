@@ -150,6 +150,10 @@ void UIObject::RenderMaterial(const engine::RenderContext& rc) {
   }
 }
 
+void UIObject::DrawFullscreenQuad() {
+  fullscreen_quad_.PointAndDraw();
+}
+
 void UIObject::DrawToScreen() {
   // create a mesh
   std::unique_lock<std::mutex> lock(xfer_lock_);

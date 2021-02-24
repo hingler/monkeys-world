@@ -30,6 +30,8 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/shader/materials/UIGroupMaterial.cpp
                                     ${SRC_DIR}/shader/materials/TextureXferMaterial.cpp
 
+                                    ${SRC_DIR}/model/FullscreenQuad.cpp
+
                                     ${SRC_DIR}/file/CacheStreambuf.cpp
                                     ${SRC_DIR}/file/CachedFileLoader.cpp
                                     ${SRC_DIR}/file/LoaderThreadPool.cpp

@@ -11,6 +11,7 @@
 #include <shader/materials/TextureXferMaterial.hpp>
 #include <input/MouseEvent.hpp>
 #include <model/Mesh.hpp>
+#include <model/FullscreenQuad.hpp>
 
 #include <atomic>
 #include <mutex>
@@ -190,6 +191,12 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
    */ 
   bool IsValid();
 
+  /**
+   *  Draws the UI object, as a fullscreen quadrilateral, to the screen.
+   *  Useful for transferring (for instance) a texture directly to the UIObject's framebuffer.
+   */ 
+  void DrawFullscreenQuad();
+
  private:
   std::weak_ptr<UIObject> parent_;                      // parent object if valid
   glm::vec2 pos_;                                       // offset of this component relative to parent
@@ -204,6 +211,7 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
   static std::weak_ptr<shader::materials::TextureXferMaterial> xfer_mat_singleton_; 
   static std::mutex xfer_lock_;
   static model::Mesh<storage::VertexPacket2D> xfer_mesh_;
+  static model::FullscreenQuad fullscreen_quad_;
 
   std::shared_ptr<shader::materials::TextureXferMaterial> xfer_mat_;
 
