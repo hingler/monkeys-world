@@ -4,7 +4,7 @@ namespace monkeysworld {
 namespace utils {
 
 IDGenerator::IDGenerator() {
-  id_min_.store(0, std::memory_order_release);
+  id_min_.store(1, std::memory_order_release);
 }
 
 uint64_t IDGenerator::GetUniqueId() {

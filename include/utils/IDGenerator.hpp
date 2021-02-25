@@ -10,7 +10,11 @@ namespace monkeysworld {
 namespace utils {
 
 /**
- *  (typically) singleton class which manages identifiers.
+ *  singleton class which manages ids within a scope.
+ * 
+ *  reserved IDs:
+ *    - 0, representing nothing.
+ *    - 1, representing the window. 
  */ 
 class IDGenerator {
   // default ctor for id generator
