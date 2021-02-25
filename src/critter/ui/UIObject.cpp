@@ -29,6 +29,16 @@ void UIObject::Accept(Visitor& v) {
   // nop for now -- need to write the actual visitor :)
 }
 
+void UIObject::PreLayout() {
+  if (fb_->GetDimensions() != static_cast<glm::ivec2>(GetDimensions())) {
+    Layout(GetDimensions());
+  }
+
+  for (auto child : GetChildren()) {
+    std::dynamic_pointer_cast<UIObject>(child)->PreLayout();
+  }
+}
+
 std::shared_ptr<Object> UIObject::GetChild(uint64_t id) {
   return std::shared_ptr<Object>(nullptr);
 }
