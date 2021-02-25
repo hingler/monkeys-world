@@ -117,6 +117,14 @@ float UIObject::GetOpacity() {
   return opacity_;
 }
 
+layout::UILayoutParams UIObject::GetLayoutParams() const {
+  return layout_;
+}
+
+void UIObject::SetLayoutParams(const layout::UILayoutParams& params) {
+  layout_ = params;
+}
+
 void UIObject::Invalidate() {
   valid_.store(false);
 }

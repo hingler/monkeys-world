@@ -119,6 +119,16 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
   void SetDimensions(glm::vec2 size);
 
   /**
+   *  @returns the layout parameters currently associated with this object.
+   */ 
+  layout::UILayoutParams GetLayoutParams() const;
+
+  /**
+   *  @param params - the new layout params for this object.
+   */ 
+  void SetLayoutParams(const layout::UILayoutParams& params);
+
+  /**
    *  Sets the current opacity of this UIObject.
    *  @param opac - the new opacity of the UIObject, clipped to the range [0.0f, 1.0f].
    */ 
