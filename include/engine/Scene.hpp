@@ -5,6 +5,8 @@
 #include <critter/GameObject.hpp>
 #include <critter/ui/UIObject.hpp>
 
+#include <engine/EngineWindow.hpp>
+
 namespace monkeysworld {
 namespace engine {
 
@@ -23,6 +25,14 @@ class Context;
 class Scene {
  public:
 
+  Scene();
+
+  /**
+   *  Called to set up scenes.
+   *  Calls Initialize, passing the context to it.
+   */ 
+  void CreateScene(Context* ctx);
+
   /**
    *  Used by the scene to set up all objects.
    */ 
@@ -38,8 +48,11 @@ class Scene {
    *  Our engine only really needs to know that it's an object,
    *  and our components will know better. So this should be OK.
    */ 
-  virtual std::shared_ptr<critter::GameObject> GetGameObjectRoot() = 0;
-  virtual std::shared_ptr<critter::ui::UIObject> GetUIObjectRoot() = 0;
+  std::shared_ptr<critter::GameObject> GetGameObjectRoot();
+  std::shared_ptr<critter::ui::Window> GetWindow();
+ private:
+  std::shared_ptr<critter::GameObject> game_root_;
+  std::shared_ptr<EngineWindow> ui_window_;
 };
 
 }

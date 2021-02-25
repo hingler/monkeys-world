@@ -29,7 +29,7 @@ EngineContext::EngineContext(GLFWwindow* window, Scene* scene) {
 
 void EngineContext::InitializeScene() {
   if (!initialized_) {
-    scene_->Initialize(this);
+    scene_->CreateScene(this);
   }
 
   initialized_ = true;
