@@ -13,6 +13,8 @@
 #include <model/Mesh.hpp>
 #include <model/FullscreenQuad.hpp>
 
+#include <critter/ui/layout/UILayoutParams.hpp>
+
 #include <atomic>
 #include <mutex>
 
@@ -35,6 +37,22 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
   
   UIObject(engine::Context* ctx);
   void Accept(Visitor& v) override;
+
+  /**
+   *  Called prior to Layout.
+   */ 
+  void PreLayout();
+
+  /**
+   *  Called whenever the size of a UIObject changes, as a hint to recalculate its layout.
+   *  This function is overridden by UIGroups to provide proper margin layout
+   *  for components -- implementors of custom UIGroups should override this,
+   *  as should users who wish to be informed when their objects change size.
+   * 
+   *  @param size - the new size of this component. This should be used
+   *                in place of GetDimensions.
+   */ 
+  virtual void Layout(glm::vec2 size) {};
 
   /**
    *  Returns a nullptr in all cases.
@@ -214,6 +232,8 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
   static model::FullscreenQuad fullscreen_quad_;
 
   std::shared_ptr<shader::materials::TextureXferMaterial> xfer_mat_;
+
+  layout::UILayoutParams layout_; // layout params for this layer
 
   /**
    *  Calculates the minimal bounding box which needs to be updated.
