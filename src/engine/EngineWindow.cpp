@@ -6,7 +6,8 @@ namespace engine {
 EngineWindow::EngineWindow(Context* ctx) {
   root_ui_ = std::make_shared<critter::ui::UIGroup>(ctx);
   root_ui_->SetId(ID);
-  ctx->GetFramebufferSize(&win_size_.x, &win_size_.y);
+  root_ui_->SetPosition(glm::vec2(0, 0));
+  
 }
 
 void EngineWindow::AddChild(std::shared_ptr<critter::ui::UIObject> obj) {
@@ -31,12 +32,25 @@ std::vector<std::shared_ptr<critter::Object>> EngineWindow::GetChildren() {
   return std::move(root_ui_->GetChildren());
 }
 
+bool EngineWindow::HandleClickEvent(input::MouseEvent& e) {
+  return root_ui_->HandleClickEvent(e);
+}
+
+glm::vec2 EngineWindow::GetDimensions() const {
+  return root_ui_->GetDimensions();
+}
+
+void EngineWindow::RenderMaterial(const engine::RenderContext& rc) {
+  root_ui_->RenderMaterial(rc);
+}
+
 void EngineWindow::Layout() {
   glm::ivec2 dims;
   auto ctx = root_ui_->GetContext();
   ctx->GetFramebufferSize(&dims.x, &dims.y);
   if (dims != win_size_) {
     root_ui_->SetDimensions(static_cast<glm::vec2>(dims));
+    win_size_ = dims;
   }
 
   root_ui_->PreLayout();

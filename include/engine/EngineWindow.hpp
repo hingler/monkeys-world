@@ -17,6 +17,9 @@ class EngineWindow : public critter::ui::Window {
   void RemoveChild(uint64_t id) override;
   std::shared_ptr<critter::Object> GetChild(uint64_t id) override;
   std::vector<std::shared_ptr<critter::Object>> GetChildren() override;
+  bool HandleClickEvent(input::MouseEvent& e) override;
+  glm::vec2 GetDimensions() const override;
+  void RenderMaterial(const engine::RenderContext& rc) override;
 
   /**
    *  Equivalent to calling PreLayout on the underlying ui group.

@@ -31,6 +31,9 @@ class Window {
   virtual void RemoveChild(uint64_t id) = 0;
   virtual std::shared_ptr<Object> GetChild(uint64_t id) = 0;
   virtual std::vector<std::shared_ptr<Object>> GetChildren() = 0;
+  virtual bool HandleClickEvent(input::MouseEvent& e) = 0;
+  virtual glm::vec2 GetDimensions() const = 0;
+  virtual void RenderMaterial(const engine::RenderContext& rc) = 0;
 };
 
 }
