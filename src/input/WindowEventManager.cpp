@@ -80,15 +80,13 @@ void WindowEventManager::ProcessWaitingEvents() {
       }
 
       e.local_pos = e.absolute_pos;
-      auto ui_root = ctx_->GetScene()->GetUIObjectRoot();
-      if (ui_root) {
-        e.local_pos -= ui_root->GetPosition();
-        auto ui_dims = ui_root->GetDimensions();
-        if (e.local_pos.x >= 0 && e.local_pos.y >= 0
+      auto window = ctx_->GetScene()->GetWindow();
+      auto ui_dims = window->GetDimensions();
+      // if this was guaranteed to be the window, we could save some time
+      if (e.local_pos.x >= 0 && e.local_pos.y >= 0
          && e.local_pos.x < ui_dims.x && e.local_pos.y < ui_dims.y
          && !cursor_->IsCursorLocked()) {
-          ui_root->HandleClickEvent(e);
-        }
+           window->HandleClickEvent(e);
       }
     } else {
       // key event

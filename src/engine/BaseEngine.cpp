@@ -81,13 +81,8 @@ void GameLoop(std::shared_ptr<engine::EngineContext> ctx, GLFWwindow* window) {
 
   ctx->InitializeScene();
 
-  if (ctx->GetScene()->GetGameObjectRoot()) {
-    CreateObjects(ctx->GetScene()->GetGameObjectRoot());
-  }
-
-  if (ctx->GetScene()->GetUIObjectRoot()) {
-    CreateObjects(ctx->GetScene()->GetUIObjectRoot());
-  }
+  CreateObjects(ctx->GetScene()->GetGameObjectRoot());
+  CreateObjects(std::dynamic_pointer_cast<EngineWindow>(ctx->GetScene()->GetWindow())->GetRootObject());
 
   while(!glfwWindowShouldClose(window)) {
     // reset any visitors which store info
@@ -97,17 +92,15 @@ void GameLoop(std::shared_ptr<engine::EngineContext> ctx, GLFWwindow* window) {
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+    auto win = std::dynamic_pointer_cast<EngineWindow>(ctx->GetScene()->GetWindow());
+
     // swap to the new context if it's ready :)
     if (auto ctx_new = ctx->GetNewContext()) {
       ctx = ctx_new;
       auto scene = ctx->GetScene();
-      if (scene->GetGameObjectRoot()) {
-        CreateObjects(scene->GetGameObjectRoot());
-      }
+      CreateObjects(scene->GetGameObjectRoot());
 
-      if (scene->GetUIObjectRoot()) {
-        CreateObjects(scene->GetUIObjectRoot());
-      }
+      CreateObjects(win->GetRootObject());
     }
 
     auto scene = ctx->GetScene();
@@ -117,9 +110,7 @@ void GameLoop(std::shared_ptr<engine::EngineContext> ctx, GLFWwindow* window) {
       scene->GetGameObjectRoot()->Accept(cam_visitor);
     }
 
-    if (scene->GetUIObjectRoot()) {
-      UpdateObjects(scene->GetUIObjectRoot());
-    }
+    UpdateObjects(win->GetRootObject());
     // for each light:
     //   - do a depth render from the perspective of our lights
 
@@ -154,22 +145,23 @@ void GameLoop(std::shared_ptr<engine::EngineContext> ctx, GLFWwindow* window) {
     ctx->GetFramebufferSize(&w, &h);
     glViewport(0, 0, w, h);
     RenderObjects(scene->GetGameObjectRoot(), rc);
+
+    
     
     // render UI
-    if (scene->GetUIObjectRoot()) {
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      glDisable(GL_DEPTH_TEST);
-      RenderUI(scene->GetUIObjectRoot(), rc);
-      glViewport(0, 0, w, h);
-      glBindFramebuffer(GL_FRAMEBUFFER, 0);
-      auto ui_root = std::dynamic_pointer_cast<UIObject>(scene->GetUIObjectRoot());
-      if (ui_root) {
-        ui_root->DrawToScreen();
-      }
-
-      glEnable(GL_DEPTH_TEST);
+    win->Layout();
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_DEPTH_TEST);
+    RenderUI(win->GetRootObject(), rc);
+    glViewport(0, 0, w, h);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    auto ui_root = std::dynamic_pointer_cast<UIObject>(win->GetRootObject());
+    if (ui_root) {
+      ui_root->DrawToScreen();
     }
+
+    glEnable(GL_DEPTH_TEST);
 
     glfwSwapBuffers(window);
     
