@@ -54,19 +54,22 @@ int AudioBufferOgg::WriteFromFile(int n) {
     return 0;
   }
 
+  if (eof_.load()) {
+    return 0;
+  }
+
   int readsize = n;
-  while (readsize > 0) {
+  do {
     // how do we tell the thing that we don't want all that space?
     // figure it out later lol
     AudioBufferPacket packet = GetBufferSpace(readsize);
     float* buffers_[2] = {packet.left, packet.right};
+    // as far as i can tell: samples_written != packet.capacity only if we are at EOF.
+    // if not: we can invent some way to keep the packet around until it is exhausted.
     int samples_written = stb_vorbis_get_samples_float(vorbis_file_,
                                                        2,
                                                        buffers_,
                                                        static_cast<int>(packet.capacity));
-    if (samples_written == 0) {
-      eof_.store(true);
-    }
     
     if (samples_written < packet.capacity) {
       for (int i = samples_written; i < packet.capacity; i++) {
@@ -75,6 +78,7 @@ int AudioBufferOgg::WriteFromFile(int n) {
         buffers_[0][i] = buffers_[1][i] = 0.0f;
       }
 
+      eof_.store(true);
       return n - readsize;
     }
 
@@ -85,7 +89,8 @@ int AudioBufferOgg::WriteFromFile(int n) {
     }
 
     readsize -= samples_written;
-  }
+  } while (readsize > 0);
+
 
   return n;
 }
