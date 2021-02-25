@@ -68,6 +68,8 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/engine/RenderContext.cpp
                                     ${SRC_DIR}/engine/SceneSwap.cpp
                                     ${SRC_DIR}/engine/EngineExecutor.cpp
+                                    ${SRC_DIR}/engine/EngineWindow.cpp
+                                    ${SRC_DIR}/engine/Scene.cpp
 
                                     ${SRC_DIR}/shader/light/SpotLight.cpp
                                     ${SRC_DIR}/shader/light/Light.cpp

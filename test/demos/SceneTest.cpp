@@ -458,21 +458,20 @@ class TestScene : public Scene {
 
   void Initialize(Context* ctx) override {
     // USE THE RAT! https://sketchfab.com/3d-models/rat-847629266c0f442da74fb132f46f3baf
-    game_object_root_ = std::make_shared<Empty>(ctx);
     auto cam = std::make_shared<MovingCamera>(ctx);
-    game_object_root_->AddChild(cam);
+    GetGameObjectRoot()->AddChild(cam);
     cam->SetPosition(glm::vec3(0, 0, -5));
     cam->SetRotation(glm::vec3(0, 3.14, 0));
     cam->SetFov(60.0f);
     cam->SetActive(true);
     auto rat = std::make_shared<RatModel>(ctx);
     rat->SetPosition(glm::vec3(0, 0, 3));
-    game_object_root_->AddChild(rat);
+    GetGameObjectRoot()->AddChild(rat);
 
     auto light = std::make_shared<SpotLight>(ctx);
     light->SetPosition(glm::vec3(1, 4, -2));
     light->SetDiffuseIntensity(1.0);
-    game_object_root_->AddChild(light);
+    GetGameObjectRoot()->AddChild(light);
 
     auto rat_two = std::make_shared<RatModel2>(ctx);
     rat_two->SetScale(glm::vec3(0.5, 0.5, 0.5));
@@ -488,7 +487,7 @@ class TestScene : public Scene {
     std::string s = "resources/test/texturetest.png";
     auto res = ctx->GetCachedFileLoader()->LoadCubeMap(s, s, s, s, s, s);
     w->SetCubeMap(res);
-    game_object_root_->AddChild(w);
+    GetGameObjectRoot()->AddChild(w);
     t->AddChild(rat_two);
 
     auto tui_twoey = std::make_shared<DebugText>(ctx, "resources/8bitoperator_jve.ttf");
@@ -528,50 +527,41 @@ class TestScene : public Scene {
     group->AddChild(tui_twoey);
     group->AddChild(but);
     group->AddChild(counter);
-    ui_object_root_ = group;
-  }
-
-  std::shared_ptr<GameObject> GetGameObjectRoot() {
-    return game_object_root_;
-  }
-
-  std::shared_ptr<UIObject> GetUIObjectRoot() {
-    return ui_object_root_;
+    GetWindow()->AddChild(group);
   }
  private:
   Context* ctx;
-  std::shared_ptr<GameObject> game_object_root_;  // game object root lol
-  std::shared_ptr<UIObject> ui_object_root_;
 };
 
 int main(int argc, char** argv) {
   GLFWwindow* main_win = InitializeGLFW(1280, 720, "and he never stoped playing, he always was keep beliving");
   // give the context ownership of the scene!
   auto scene = new TestScene();
-  auto ctx = std::make_shared<EngineContext>(main_win, scene);
-  #ifdef DEBUG
-  ctx->GetEventManager()->RegisterKeyListener(GLFW_KEY_Z, [&](int k, int a, int m) {
-    if (a == GLFW_PRESS) {
-      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  {
+    auto ctx = std::make_shared<EngineContext>(main_win, scene);
+    #ifdef DEBUG
+    ctx->GetEventManager()->RegisterKeyListener(GLFW_KEY_Z, [&](int k, int a, int m) {
+      if (a == GLFW_PRESS) {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+      }
+
+      if (a == GLFW_RELEASE) {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+      }
+    });
+    #endif
+    while (true) {
+      auto prog = ctx->GetCachedFileLoader()->GetLoaderProgress();
+      BOOST_LOG_TRIVIAL(trace) << "loading progress: " << (((float)prog.bytes_read * 100.0f) / prog.bytes_sum);
+      if (prog.bytes_read == prog.bytes_sum) {
+        break;
+      }
+      
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
-    if (a == GLFW_RELEASE) {
-      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    }
-  });
-  #endif
-  while (true) {
-    auto prog = ctx->GetCachedFileLoader()->GetLoaderProgress();
-    BOOST_LOG_TRIVIAL(trace) << "loading progress: " << (((float)prog.bytes_read * 100.0f) / prog.bytes_sum);
-    if (prog.bytes_read == prog.bytes_sum) {
-      break;
-    }
-    
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    GameLoop(ctx, main_win);
   }
-
-  GameLoop(ctx, main_win);
-
   glfwDestroyWindow(main_win);
   glfwTerminate();
   return 0;
