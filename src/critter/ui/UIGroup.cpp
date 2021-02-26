@@ -1,11 +1,15 @@
 #include <critter/ui/UIGroup.hpp>
 
+#include <utils/ObjectGraph.hpp>
+#include <critter/ui/layout/BoundingBox.hpp>
 
 namespace monkeysworld {
 namespace critter {
 namespace ui {
 
 using engine::Context;
+using utils::ObjectGraph;
+using layout::Face;
 
 typedef std::shared_ptr<UIObject> child_ptr;
 
@@ -14,6 +18,10 @@ UIGroup::UIGroup(Context* ctx) : UIObject(ctx), mat_(ctx) {
 }
 
 std::shared_ptr<Object> UIGroup::GetChild(uint64_t id) {
+  if (id == GetId()) {
+    return shared_from_this();
+  }
+
   for (auto child : children_) {
     if (id == child->GetId()) {
       return child;
@@ -72,6 +80,142 @@ void UIGroup::RemoveChild(uint64_t id) {
   }
 }
 
+void UIGroup::Layout(glm::vec2 size) {
+  BOOST_LOG_TRIVIAL(trace) << "group layout called";
+  ObjectGraph o;
+  
+  for (auto child : children_) {
+    layout::UILayoutParams param = child->GetLayoutParams();
+
+    int i = 0;
+    for (layout::Margin* m = reinterpret_cast<layout::Margin*>(&param); i < 4; i++, m++) {
+      if (m->anchor_id != 0) {
+        // if we encounter a vertex which is not a child, break out.
+        o.AddEdge(m->anchor_id, child->GetId());
+      }
+    }
+  }
+
+  std::vector<uint64_t> sort = o.TopoSort();
+
+  std::unordered_map<uint64_t, layout::BoundingBox> bounding_boxes;
+  glm::vec2 dims_local = GetDimensions();
+  // working box
+  layout::BoundingBox b;
+  // represents the containing group
+  b.left = 0;
+  b.right = dims_local.x;
+  b.top = 0;
+  b.bottom = dims_local.y;
+  bounding_boxes.insert(std::make_pair(GetId(), b));
+  // handle invalid orderings below
+  //  - if we encounter a node in our topo sort which is not a child, or not the group,
+  //    then break run some fallback method which just reads positions + dimensions.
+  //  - only once we have a bounding box for every node will we adjust positions + dimensions.
+  for (auto id : sort) {
+    auto child = std::dynamic_pointer_cast<UIObject>(GetChild(id));
+    if (!child) {
+      BOOST_LOG_TRIVIAL(error) << "current layout invalid -- child with ID " << id << " not found in UIObject ID " << GetId() << "!";
+      return;
+    }
+
+    auto params = child->GetLayoutParams();
+
+    glm::vec2 child_dims = child->GetDimensions();
+    glm::vec2 child_pos = child->GetPosition();
+
+    // insert default values
+    b.top = child_pos.y;
+    b.left = child_pos.x;
+    b.bottom = b.top + child_dims.y;
+    b.right = b.left + child_dims.x;
+    
+    // top/bottom
+    if (params.top.anchor_id != 0) {
+      const layout::BoundingBox& box = bounding_boxes.at(params.top.anchor_id);
+      switch (params.top.anchor_face) {
+        case Face::BOTTOM:
+          b.top = box.bottom + params.top.dist;
+          break;
+        case Face::TOP:
+          b.top = box.top + params.top.dist;
+          break;
+        default:
+          BOOST_LOG_TRIVIAL(error) << "Invalid face provided for ID " << id << "'s top margin -- ignoring...";
+        // all others are invalid
+      }
+
+      if (params.bottom.anchor_id == 0) {
+        b.bottom = b.top + child_dims.y;
+      }
+    }
+
+    if (params.bottom.anchor_id != 0) {
+      const layout::BoundingBox& box = bounding_boxes.at(params.bottom.anchor_id);
+      switch (params.bottom.anchor_face) {
+        case Face::BOTTOM:
+          b.bottom = box.bottom - params.bottom.dist;
+          break;
+        case Face::TOP:
+          b.bottom = box.top - params.bottom.dist;
+          break;
+        default:
+          BOOST_LOG_TRIVIAL(error) << "Invalid face provided for ID " << id << "'s bottom margin -- ignoring...";
+      }
+
+      if (params.top.anchor_id == 0) {
+        b.top = b.bottom - child_dims.y;
+      }
+    }
+
+    // left/right
+    if (params.left.anchor_id != 0) {
+      const layout::BoundingBox& box = bounding_boxes.at(params.left.anchor_id);
+      switch (params.left.anchor_face) {
+        case Face::LEFT:
+          b.left = box.left + params.left.dist;
+          break;
+        case Face::RIGHT:
+          b.left = box.right + params.left.dist;
+          break;
+        default:
+          BOOST_LOG_TRIVIAL(error) << "Invalid face provided for ID " << id << "'s left margin -- ignoring...";
+      }
+
+      if (params.right.anchor_id == 0) {
+        b.right = b.left + child_dims.x;
+      }
+    }
+
+    if (params.right.anchor_id != 0) {
+      const layout::BoundingBox& box = bounding_boxes.at(params.right.anchor_id);
+      switch (params.right.anchor_face) {
+        case Face::LEFT:
+          b.right = box.left - params.right.dist;
+          break;
+        case Face::RIGHT:
+          b.right = box.right - params.right.dist;
+          break;
+        default:
+          BOOST_LOG_TRIVIAL(error) << "Invalid face provided for ID " << id << "'s right margin -- ignoring...";
+      }
+
+      if (params.left.anchor_id == 0) {
+        b.left = b.right - child_dims.x;
+      }
+    }
+  }
+
+  // once this has run for all components, our bounding boxes are defined for every component.
+  // now we can lay them out!
+  for (auto e : bounding_boxes) {
+    auto child = std::dynamic_pointer_cast<UIObject>(GetChild(e.first));
+    auto bb = e.second;
+    child->SetPosition(glm::vec2(bb.right, bb.top));
+    child->SetDimensions(glm::vec2(bb.left - bb.right, bb.bottom - bb.top));
+  }
+}
+
 void UIGroup::DrawUI(glm::vec2 min, glm::vec2 max, shader::Canvas canvas) {
   // note: framebuffer is bound if this is being called
   // plus, all of its children have already been drawn
@@ -106,8 +250,8 @@ void UIGroup::DrawUI(glm::vec2 min, glm::vec2 max, shader::Canvas canvas) {
     opacities[index] = child->GetOpacity();
     p.index = static_cast<float>(index);
 
-    auto pos = child->GetPosition();
-    auto dims = GetDimensions();
+    glm::vec2 pos = child->GetPosition();
+    glm::vec2 dims = GetDimensions();
 
     auto dims_child = child->GetDimensions();
 

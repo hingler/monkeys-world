@@ -423,7 +423,7 @@ class DebugText : public UITextObject {
     auto cur = GetContext()->GetEventManager()->GetCursor()->GetCursorPosition();
     debug_text << "looking at -- X:" << cur.x << " Y:" << cur.y << "\n";
     SetText(debug_text.str());
-    Invalidate();
+    // Invalidate();
   }
 
   void RenderMaterial(const RenderContext& rc) {

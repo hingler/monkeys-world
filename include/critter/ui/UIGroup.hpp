@@ -34,6 +34,11 @@ class UIGroup : public UIObject {
   void RemoveChild(uint64_t id);
 
   /**
+   *  Override for layout.
+   */ 
+  void Layout(glm::vec2 size) override;
+
+  /**
    *  Uses DrawUI to draw all children to the screen.
    */ 
   void DrawUI(glm::vec2 min, glm::vec2 max, shader::Canvas canvas) override;

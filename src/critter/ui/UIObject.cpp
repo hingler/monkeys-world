@@ -23,6 +23,11 @@ UIObject::UIObject(engine::Context* ctx) : Object(ctx) {
   valid_ = true;
   parent_ = std::weak_ptr<UIObject>();
   z_index = 0;
+
+  layout_.bottom.anchor_id =
+  layout_.top.anchor_id =
+  layout_.left.anchor_id =
+  layout_.right.anchor_id = 0;
 }
 
 void UIObject::Accept(Visitor& v) {
@@ -165,6 +170,7 @@ void UIObject::RenderMaterial(const engine::RenderContext& rc) {
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     DrawUI(min, max, Canvas(fb_));
+    BOOST_LOG_TRIVIAL(trace) << "drawing id " << GetId();
     valid_.store(true);
   }
 }

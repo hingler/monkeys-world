@@ -43,6 +43,7 @@ add_library(monkeys-world-components
 
                                     ${SRC_DIR}/utils/FileUtils.cpp
                                     ${SRC_DIR}/utils/IDGenerator.cpp
+                                    ${SRC_DIR}/utils/ObjectGraph.cpp
 
                                     ${SRC_DIR}/input/WindowEventManager.cpp
                                     ${SRC_DIR}/input/ClickListener.cpp
@@ -246,6 +247,11 @@ if(compile_tests)
   add_executable(executor-test test/EngineExecutorTest.cpp)
   target_link_libraries(executor-test GTest::gtest_main monkeys-world-components)
   add_test(NAME executor-test COMMAND executor-test
+            WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
+
+  add_executable(graph-test test/ObjectGraphTest.cpp)
+  target_link_libraries(graph-test GTest::gtest_main monkeys-world-components)
+  add_test(NAME graph-test COMMAND graph-test
             WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world>)
 
 endif()
