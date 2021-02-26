@@ -30,7 +30,7 @@ void UIObject::Accept(Visitor& v) {
 }
 
 void UIObject::PreLayout() {
-  if (fb_->GetDimensions() != static_cast<glm::ivec2>(GetDimensions())) {
+  if (!IsValid()) {
     Layout(GetDimensions());
   }
 
