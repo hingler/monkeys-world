@@ -7,8 +7,6 @@ namespace visitor {
 ActiveCameraFindVisitor::ActiveCameraFindVisitor() : active_camera_(nullptr), cam_found_(false) {}
 
 void ActiveCameraFindVisitor::Visit(std::shared_ptr<Object> o) {
-  // only visits if the active cam still needs to be found
-  // TODO: factor out redundancy between visit funcs
   if (!cam_found_.load()) {
     auto children = o->GetChildren();
     ActiveCameraVisitChildren(children);

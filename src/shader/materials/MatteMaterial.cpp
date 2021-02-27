@@ -76,7 +76,6 @@ void MatteMaterial::SetSpotlights(const std::vector<spotlight_info>& lights) {
   if (lights.size() > 0) {
     spotlight_info info = lights[0];
     GLuint prog = matte_prog_.GetProgramDescriptor();
-    // TODO: add ambient to spotlight_info (and probably others :)
     glm::vec4 ambient(0);
     glProgramUniform4fv(prog, 4, 1, glm::value_ptr(info.position));
     glProgramUniform1f(prog, 5, info.intensity_diff);
