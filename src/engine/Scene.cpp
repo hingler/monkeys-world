@@ -4,13 +4,14 @@
 namespace monkeysworld {
 namespace engine {
 
-Scene::Scene() {}
+Scene::Scene() : initialized_(false) {}
 
 void Scene::CreateScene(Context* ctx) {
   game_root_ = std::make_shared<critter::Empty>(ctx);
   ui_window_ = std::make_shared<EngineWindow>(ctx);
   ui_window_->GetRootObject()->Invalidate();
   Initialize(ctx);
+  initialized_ = true;
 }
 
 std::shared_ptr<critter::GameObject> Scene::GetGameObjectRoot() {

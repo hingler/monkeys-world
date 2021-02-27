@@ -7,6 +7,8 @@
 
 #include <engine/EngineWindow.hpp>
 
+#include <atomic>
+
 namespace monkeysworld {
 namespace engine {
 
@@ -49,9 +51,20 @@ class Scene {
    */ 
   std::shared_ptr<critter::GameObject> GetGameObjectRoot();
   std::shared_ptr<critter::ui::Window> GetWindow();
+
+  /**
+   *  @returns true if the scene has been completely initialized.
+   */ 
+  bool IsInitialized() { return initialized_; }
+
+  /**
+   *  Virtual destructor for all scenes.
+   */ 
+  virtual ~Scene() {}
  private:
   std::shared_ptr<critter::GameObject> game_root_;
   std::shared_ptr<EngineWindow> ui_window_;
+  std::atomic_bool initialized_;
 };
 
 }
