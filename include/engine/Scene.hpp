@@ -10,7 +10,6 @@
 namespace monkeysworld {
 namespace engine {
 
-// TODO: create includes which forward decl all members of a folder
 class Context;
 
 /**

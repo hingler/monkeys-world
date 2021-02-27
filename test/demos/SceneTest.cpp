@@ -124,7 +124,6 @@ class RatModel : public Model {
     glm::mat4 tf_matrix = GetTransformationMatrix();
     camera_info cam = rc.GetActiveCamera();
     // matte material doesn't accept spotlights!
-    // TODO: modify material to accept different types of lights
     m.SetSpotlights(rc.GetSpotlights());
     spotlight_info i = rc.GetSpotlights()[0];
     m.SetModelTransforms(tf_matrix);

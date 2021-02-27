@@ -42,12 +42,6 @@ class Skybox : public GameObject {
    */ 
   void SetCubeMap(std::shared_ptr<const shader::CubeMap> c);
 
-  // TODO: if we add a tag indicating which render pass we're running,
-  //       then we don't need to separate out all of these steps, except for convenience.
-
-  //       we could have a single "Render" method which handles things appropriately
-
-  //       i might just leave them here because they're nice to have :)
   void PrepareAttributes() override;
   void RenderMaterial(const engine::RenderContext& rc) override;
   void Draw() override;

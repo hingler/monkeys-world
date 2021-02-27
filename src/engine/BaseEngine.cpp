@@ -63,7 +63,6 @@ void GameLoop(std::shared_ptr<engine::EngineContext> ctx, GLFWwindow* window) {
   #ifdef DEBUG
   if (GLAD_GL_ARB_debug_output) {
     BOOST_LOG_TRIVIAL(debug) << "GL debug output supported!";
-    // TODO: switch debug setup over to extension jargon
     ::monkeysworld::shader::gldebug::SetupGLDebug();
   }
   #endif
@@ -138,7 +137,6 @@ void GameLoop(std::shared_ptr<engine::EngineContext> ctx, GLFWwindow* window) {
       spotlights.push_back(light->GetSpotLightInfo());
     }
     rc.SetSpotlights(spotlights);
-    // TODO: handle null case with a default camera :(
     rc.SetActiveCamera(std::static_pointer_cast<Camera>(cam_visitor.GetActiveCamera()));
     glBindFramebuffer(GL_FRAMEBUFFER, NULL);
     int w, h;
@@ -182,7 +180,6 @@ void UpdateObjects(std::shared_ptr<critter::Object> obj) {
   obj->Update();
   for (auto child : obj->GetChildren()) {
     // if child exists, visit it and queue up its children
-    // TODO: write a visitor, only to factor out optimizations, like making this multithread
     UpdateObjects(child);
   }
 }

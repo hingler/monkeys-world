@@ -98,10 +98,6 @@ void FileLoader::LoadFileToCache(cache_record& record) {
       return;
     }
 
-    // TODO: once we've swapped this out for the old loader,
-    // use a char ptr and a size instead of a vector.
-    // writing directly to data doesn't seem to work as one might hope :(
-
     // instead of ctor with a vector, ctor with a pointer and a size.
     // then we can avoid calling resize() and having to manually set all of that memory
     auto res = std::make_shared<std::vector<char>>();

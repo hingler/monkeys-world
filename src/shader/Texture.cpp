@@ -21,6 +21,12 @@ Texture::Texture(const std::string& path) {
   tex_ = 0;
 }
 
+Texture::Texture(int width, int height, int channels) : width_(width),
+                                                        height_(height),
+                                                        channels_(channels),
+                                                        tex_(0),
+                                                        tex_cache_(nullptr) {}
+
 // find some way to pass the data type in on load
 GLuint Texture::GetTextureDescriptor() const {
   if (tex_ == 0) {
@@ -42,9 +48,14 @@ GLuint Texture::GetTextureDescriptor() const {
         break;
     }
 
-    // tba: if it becomes necessary, preserve the texture cache, and use it to copy ctor.
-    // in that case: make it a shared ptr and a RAII class.
-    stbi_image_free(tex_cache_);
+    // TODO: the best solution would seemingly be to have the loader load all these textures into its own cache,
+    // then our textures will read them from bytes to a texture object.
+
+    // I AM NOT GOING TO DO THIS RIGHT NOW. but i'll do it later :)
+    if (tex_cache_) {
+      stbi_image_free(tex_cache_);
+    }
+    
     glBindTexture(GL_TEXTURE_2D, 0);
   }
 

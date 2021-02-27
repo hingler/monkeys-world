@@ -4,9 +4,6 @@ project(monkeys-world VERSION 0.0.1)
 include(CTest)
 enable_testing()
 
-# TODO: Need to reorganize so that this whole thing can be imported as
-#       a library into the actual project
-
 set(INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(TST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)

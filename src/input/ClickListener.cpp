@@ -4,8 +4,6 @@
 namespace monkeysworld {
 namespace input {
 
-// TODO: ClickListener needs to implement move/copy, because otherwise we'll lose these.
-
 ClickListener::ClickListener(WindowEventManager* mgr, uint64_t new_id) : id(new_id) {
   mgr_ = mgr;
 }

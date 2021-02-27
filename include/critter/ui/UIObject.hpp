@@ -182,8 +182,6 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
    */ 
   virtual void DrawUI(glm::vec2 minXY, glm::vec2 maxXY, shader::Canvas canvas) = 0;
 
-  // TODO: add opacity to here
-
   /**
    *  Invalidates the framebuffer, notifying the UIObject
    *  to redraw the UI component on the next render pass.
@@ -210,7 +208,7 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
    *  The Z-index of this layer.
    *  Z-indices are used within groups to deterimine the order in which layers should be drawn atop one another.
    */ 
-  uint64_t z_index;
+  int64_t z_index;
 
  protected:
 
@@ -222,6 +220,8 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
   /**
    *  Draws the UI object, as a fullscreen quadrilateral, to the screen.
    *  Useful for transferring (for instance) a texture directly to the UIObject's framebuffer.
+   *  The quadrilateral itself provides texture coordinates ([0, 1] originating from bottom left)
+   *  as well as position ([-1, 1] with origin in the center of the screen).
    */ 
   void DrawFullscreenQuad();
 

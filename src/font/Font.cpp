@@ -167,11 +167,6 @@ Font::Font(const std::string& font_path) {
     FT_Done_Face(face);
   }
   
-  // TODO: add ifdef for extension funcs
-  // or if i'm feeling devilish
-  // kick everyone out who doesn't support them
-  // NOTE: dsa extension provides state during modification. nothing is bound to texture_2D afaik,
-  // but we ARE telling the functions that this non-specific texture identifier is a texture 2d.
 }
 
 // advance is stored in 1/64 pixels
