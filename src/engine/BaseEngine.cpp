@@ -163,10 +163,10 @@ void GameLoop(std::shared_ptr<engine::EngineContext> ctx, GLFWwindow* window) {
 
     glEnable(GL_DEPTH_TEST);
 
+    ctx->UpdateContext();
     glfwSwapBuffers(window);
     
     glfwPollEvents();
-    ctx->UpdateContext();
   }
 }
 

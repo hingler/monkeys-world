@@ -23,6 +23,8 @@ EngineContext::EngineContext(GLFWwindow* window, Scene* scene) {
   swap_cv_ = std::make_shared<std::condition_variable>();
   swap_mutex_ = std::make_shared<std::mutex>();
 
+  fb_ = std::make_shared<shader::Framebuffer>();
+
   scene_ = scene;
   initialized_ = false;
 }
@@ -35,6 +37,7 @@ void EngineContext::InitializeScene() {
   initialized_ = true;
 }
 
+// deprecated
 void EngineContext::GetFramebufferSize(int* width, int* height) {
   glfwGetFramebufferSize(window_, width, height);
 }
@@ -53,6 +56,10 @@ std::shared_ptr<AudioManager> EngineContext::GetAudioManager() {
 
 std::shared_ptr<Executor<>> EngineContext::GetExecutor() {
   return executor_;
+}
+
+std::shared_ptr<shader::Framebuffer> EngineContext::GetFramebuffer() {
+  return fb_;
 }
 
 Scene* EngineContext::GetScene() {
@@ -97,6 +104,15 @@ void EngineContext::UpdateContext() {
   event_mgr_->ProcessWaitingEvents();
   // ~10ms
   executor_->RunTasks(0.010);
+  glm::ivec2 dims;
+  GetFramebufferSize(&dims.x, &dims.y);
+  fb_->SetDimensions(dims);
+
+  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fb_->GetFramebuffer());
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, GL_BACK);
+
+  // copy GL_BACK to our framebuffer.
+  glBlitFramebuffer(0, 0, dims.x, dims.y, 0, 0, dims.x, dims.y, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
 }
 
 EngineContext::~EngineContext() {
@@ -108,6 +124,10 @@ EngineContext::EngineContext(const EngineContext& other, Scene* scene) {
   event_mgr_ = other.event_mgr_;
   audio_mgr_ = other.audio_mgr_;
   window_ = other.window_;
+  executor_ = other.executor_;
+
+  fb_ = std::make_shared<shader::Framebuffer>();
+  fb_->SetDimensions(other.fb_->GetDimensions());
 
   start_ = std::chrono::high_resolution_clock::now();
 
