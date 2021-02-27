@@ -81,7 +81,6 @@ void UIGroup::RemoveChild(uint64_t id) {
 }
 
 void UIGroup::Layout(glm::vec2 size) {
-  BOOST_LOG_TRIVIAL(trace) << "group layout called";
   ObjectGraph o;
   
   for (auto child : children_) {
@@ -113,6 +112,10 @@ void UIGroup::Layout(glm::vec2 size) {
   //    then break run some fallback method which just reads positions + dimensions.
   //  - only once we have a bounding box for every node will we adjust positions + dimensions.
   for (auto id : sort) {
+    if (id == GetId()) {
+      // avoid laying out myself
+      continue;
+    }
     auto child = std::dynamic_pointer_cast<UIObject>(GetChild(id));
     if (!child) {
       BOOST_LOG_TRIVIAL(error) << "current layout invalid -- child with ID " << id << " not found in UIObject ID " << GetId() << "!";
@@ -204,15 +207,17 @@ void UIGroup::Layout(glm::vec2 size) {
         b.left = b.right - child_dims.x;
       }
     }
+
+    bounding_boxes.insert(std::make_pair(id, b));
   }
 
   // once this has run for all components, our bounding boxes are defined for every component.
   // now we can lay them out!
-  for (auto e : bounding_boxes) {
+  for (const auto& e : bounding_boxes) {
     auto child = std::dynamic_pointer_cast<UIObject>(GetChild(e.first));
     auto bb = e.second;
-    child->SetPosition(glm::vec2(bb.right, bb.top));
-    child->SetDimensions(glm::vec2(bb.left - bb.right, bb.bottom - bb.top));
+    child->SetPosition(glm::vec2(bb.left, bb.top));
+    child->SetDimensions(glm::vec2(bb.right - bb.left, bb.bottom - bb.top));
   }
 }
 

@@ -107,9 +107,11 @@ glm::vec2 UIObject::GetDimensions() const {
 
 void UIObject::SetDimensions(glm::vec2 size) {
   size_ = size;
-  fb_->SetDimensions(static_cast<glm::ivec2>(size));
-  // new size requires a redraw
-  Invalidate();
+  if (fb_->GetDimensions() != static_cast<glm::ivec2>(size_)) {
+    fb_->SetDimensions(static_cast<glm::ivec2>(size));
+    // new size requires a redraw
+    Invalidate();
+  }
 }
 
 void UIObject::SetOpacity(float opac) {
@@ -170,7 +172,6 @@ void UIObject::RenderMaterial(const engine::RenderContext& rc) {
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     DrawUI(min, max, Canvas(fb_));
-    BOOST_LOG_TRIVIAL(trace) << "drawing id " << GetId();
     valid_.store(true);
   }
 }

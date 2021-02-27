@@ -82,6 +82,8 @@ using ::monkeysworld::font::TextObject;
 
 using ::monkeysworld::input::MouseEvent;
 
+using ::monkeysworld::critter::ui::layout::Face;
+
 class RatModel2 : public Model {
  public:
   RatModel2(Context* ctx) : Model(ctx), m(ctx) {
@@ -497,7 +499,7 @@ class TestScene : public Scene {
 
     auto tui = std::make_shared<UITextObject>(ctx, "resources/8bitoperator_jve.ttf");
     tui->SetPosition(glm::vec2(600, 600));
-    tui->SetDimensions(glm::vec2(800, 400));
+    tui->SetDimensions(glm::vec2(100, 100));
     tui->SetTextSize(32.0f);
     tui->SetTextColor(glm::vec4(1.0, 0.0, 0.0, 1.0));
     tui->SetText("hello\nspongebob\ncleveland brown\ncomedy show");
@@ -513,15 +515,55 @@ class TestScene : public Scene {
     but->SetTextSize(64.0f);
     but->SetHorizontalAlign(CENTER);
     but->SetVerticalAlign(MIDDLE);
+    auto group = std::make_shared<UIGroup>(ctx);
+
+    auto margins = but->GetLayoutParams();
+    margins.bottom.anchor_id = group->GetId();
+    margins.bottom.anchor_face = Face::BOTTOM;
+    margins.bottom.dist = 16;
+
+    margins.right.anchor_id = group->GetId();
+    margins.right.anchor_face = Face::RIGHT;
+    margins.right.dist = 16;
+
+    but->SetLayoutParams(margins);
+
+    margins = tui->GetLayoutParams();
+    margins.bottom.anchor_id = group->GetId();
+    margins.bottom.anchor_face = Face::BOTTOM;
+    margins.bottom.dist = 16;
+
+    margins.right.anchor_id = but->GetId();
+    margins.right.anchor_face = Face::LEFT;
+    margins.right.dist = 16;
+
+    tui->SetLayoutParams(margins);
 
     auto counter = std::make_shared<FPSCounter>(ctx, "resources/8bitoperator_jve.ttf");
     counter->SetPosition(glm::vec2(5));
     counter->SetDimensions(glm::vec2(300, 60));
     counter->SetTextSize(48.0f);
 
-    auto group = std::make_shared<UIGroup>(ctx);
     group->SetPosition(glm::vec2(0, 0));
     group->SetDimensions(glm::vec2(1600, 900));
+
+    margins = group->GetLayoutParams();
+
+    margins.bottom.anchor_id = GetWindow()->GetId();
+    margins.bottom.anchor_face = Face::BOTTOM;
+    margins.bottom.dist = 0;
+    margins.top.anchor_id = GetWindow()->GetId();
+    margins.top.anchor_face = Face::TOP;
+    margins.top.dist = 0;
+    margins.left.anchor_id = GetWindow()->GetId();
+    margins.left.anchor_face = Face::LEFT;
+    margins.left.dist = 0;
+    margins.right.anchor_id = GetWindow()->GetId();
+    margins.right.anchor_face = Face::RIGHT;
+    margins.right.dist = 0;
+
+    group->SetLayoutParams(margins);
+
     // create a group and add the text to that
     group->AddChild(tui);
     group->AddChild(tui_twoey);
