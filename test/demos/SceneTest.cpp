@@ -228,7 +228,7 @@ class MovingCamera : public GameCamera {
     initial = rotation * initial;
     initial_x = rotation * initial_x;
     glm::dvec2 cur_new = GetContext()->GetEventManager()->GetCursor()->GetCursorPosition();
-    SetPosition(w + glm::vec3(initial * static_cast<float>(motion_z * delta)) + glm::vec3(initial_x * static_cast<float>(motion_x * delta)));
+    SetPosition(w + glm::vec3(initial * static_cast<float>(motion_z * 0.001)) + glm::vec3(initial_x * static_cast<float>(motion_x * 0.001)));
 
     if (!GetContext()->GetEventManager()->GetCursor()->IsCursorLocked()) {
       cursor_cache_ = cur_new;
