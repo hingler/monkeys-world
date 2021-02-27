@@ -25,7 +25,6 @@ SkyboxMaterial::SkyboxMaterial(engine::Context* context) {
 void SkyboxMaterial::UseMaterial() {
   auto prog = skybox_prog_.GetProgramDescriptor();
   glUseProgram(prog);
-  // TODO: we could do some shit in the setters like checking if the current context is bound
   glProgramUniformMatrix4fv(prog, 0, 1, GL_FALSE, glm::value_ptr(view_mat_));
   glProgramUniformMatrix4fv(prog, 1, 1, GL_FALSE, glm::value_ptr(model_mat_));
 

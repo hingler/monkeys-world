@@ -8,8 +8,6 @@
 namespace monkeysworld {
 namespace shader {
 
-// TODO: How would we load an image, and then write onto that image?
-
 /**
  *  Represents a texture.
  *  Textures do nothing to manage state -- the client should expect that
@@ -28,8 +26,9 @@ class Texture {
    *  Creates a new empty texture object with given dimensions.
    *  @param width - width of the new texture.
    *  @param height - height of the new texture.
+   *  @param channels - number of channels in the new texture.
    */ 
-  Texture(int width, int height);
+  Texture(int width, int height, int channels);
 
   /**
    *  @returns the descriptor associated with this texture.
@@ -38,6 +37,7 @@ class Texture {
 
   /**
    *  Returns the size of this texture, in bytes.
+   *  Returns 0 if the size is unknown.
    */ 
   uint64_t GetTextureSize() const;
 

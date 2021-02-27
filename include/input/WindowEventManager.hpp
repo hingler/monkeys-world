@@ -49,13 +49,6 @@ struct event_info {
   int mods;
 };
 
-
-// TODO: expand the `event_info` param to account for a multitude of data types
-// TODO: Add a function which polls for character events, instead of keys.
-//       ALT: character events are undeniably associated with being focus...
-//            we could have getting focus require a character callback,
-//            and then call that callback each time
-
 // TODO: Add a "Focus(obj)" method to get focus, and a "GetFocused()" method to see who's focused.
 
 /**
