@@ -7,6 +7,7 @@
 #include <engine/SceneSwap.hpp>
 #include <engine/Executor.hpp>
 #include <engine/EngineExecutor.hpp>
+#include <shader/Framebuffer.hpp>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -22,6 +23,11 @@ class Context {
   virtual std::shared_ptr<input::WindowEventManager> GetEventManager() = 0;
   virtual std::shared_ptr<audio::AudioManager> GetAudioManager() = 0;
   virtual std::shared_ptr<Executor<EngineExecutor>> GetExecutor() = 0;
+
+  /**
+   *  @returns the last rendered frame, as a framebuffer object.
+   */ 
+  virtual std::shared_ptr<shader::Framebuffer> GetFramebuffer() = 0;
 
   /**
    *  Returns the size of the framebuffer.
