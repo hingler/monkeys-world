@@ -95,14 +95,15 @@ void WindowEventManager::ProcessWaitingEvents() {
       if (callbacks != callbacks_.end()) {
         // store ptr so that all methods run before dealloc
         auto ptr = callbacks->second;
-        std::unique_lock<std::recursive_mutex> lock(ptr->set_lock);
+        std::lock<std::recursive_mutex, std::recursive_mutex>(ptr->set_lock, del_mutex_);
+        std::lock_guard<std::recursive_mutex> l1(ptr->set_lock, std::adopt_lock);
+        std::lock_guard<std::recursive_mutex> l2(del_mutex_, std::adopt_lock);
         for (auto callback : ptr->callbacks) {
-          std::unique_lock<std::recursive_mutex> del_lock(del_mutex_);
           if (callback_delete_queue_.find(callback.first) == callback_delete_queue_.end()) {
-            del_lock.unlock();
             callback.second(event.key, event.action, event.mods);
           }
         }
+
       }
     }
   }
@@ -112,14 +113,15 @@ void WindowEventManager::ProcessWaitingEvents() {
 }
 
 void WindowEventManager::FlushDeleteQueue() {
-  std::unique_lock<std::recursive_mutex> lock(del_mutex_);
+  std::unique_lock<std::recursive_mutex> lock_queue(del_mutex_);
+  std::unique_lock<std::shared_timed_mutex> lock_callback(callback_mutex_);
   // one pass for keys...
+
   {
     int key;
     auto itr = callback_delete_queue_.begin();
     while (itr != callback_delete_queue_.end()) {
       BOOST_LOG_TRIVIAL(trace) << "removing event " << *itr;
-      std::unique_lock<std::shared_timed_mutex> lock(callback_mutex_);
       auto entry = callback_to_key_.find(*itr);
       if (entry == callback_to_key_.end()) {
         itr++;
@@ -131,8 +133,6 @@ void WindowEventManager::FlushDeleteQueue() {
       if (info_entry == callbacks_.end()) {
         BOOST_LOG_TRIVIAL(error) << "BAD CALLBACK STATE!";
       }
-
-      lock.unlock();
 
       auto callback_info = info_entry->second;
       std::unique_lock<std::recursive_mutex> callback_lock(callback_info->set_lock);
@@ -150,7 +150,6 @@ void WindowEventManager::FlushDeleteQueue() {
   {
     auto itr = callback_delete_queue_.begin();
     while (itr != callback_delete_queue_.end()) {
-      std::unique_lock<std::shared_timed_mutex>(callback_mutex_);
       auto entry = mouse_callbacks_.find(*itr);
       if (entry != mouse_callbacks_.end()) {
         mouse_callbacks_.erase(entry);
