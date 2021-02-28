@@ -1,11 +1,15 @@
 #include <shader/Texture.hpp>
 #include <shader/exception/InvalidTexturePathException.hpp>
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+
+#include <engine/Context.hpp>
 
 #include <boost/log/trivial.hpp>
 
+
 #include <GLFW/glfw3.h>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 namespace monkeysworld {
 namespace shader {
@@ -26,6 +30,26 @@ Texture::Texture(int width, int height, int channels) : width_(width),
                                                         channels_(channels),
                                                         tex_(0),
                                                         tex_cache_(nullptr) {}
+
+Texture::Texture(engine::Context* ctx, std::shared_ptr<Framebuffer> fb) {
+  auto dims = fb->GetDimensions();
+  width_ = dims.x;
+  height_ = dims.y;
+  channels_ = 4;
+
+  auto exec_prog = [&, fb] {
+    glGenTextures(1, &tex_);
+    glBindTexture(GL_TEXTURE_2D, tex_);
+    glTexStorage2D(GL_TEXTURE_2D, 0, GL_RGBA, width_, height_);
+    // fb->BindFramebuffer(FramebufferTarget::READ);
+    // glReadBuffer(GL_COLOR_ATTACHMENT0);
+    glCopyImageSubData(fb->GetColorAttachment(), GL_TEXTURE_2D, 0, 0, 0, 0, tex_, GL_TEXTURE_2D, 0, 0, 0, 0, width_, height_, 1);
+    tex_cache_ = nullptr;
+  };
+
+  auto f = ctx->GetExecutor()->ScheduleOnMainThread(exec_prog);
+  f.wait();
+}
 
 // find some way to pass the data type in on load
 GLuint Texture::GetTextureDescriptor() const {

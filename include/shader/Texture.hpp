@@ -2,10 +2,17 @@
 #define TEXTURE_H_
 
 #include <glad/glad.h>
+#include <shader/Framebuffer.hpp>
 
+#include <memory>
 #include <string>
 
 namespace monkeysworld {
+
+namespace engine {
+class Context;
+}
+
 namespace shader {
 
 /**
@@ -31,6 +38,13 @@ class Texture {
    *  @param channels - number of channels in the new texture.
    */ 
   Texture(int width, int height, int channels);
+
+  /**
+   *  Creates a new texture from the contents of a framebuffer.
+   *  @param ctx - the currently active context.
+   *  @param fb - the framebuffer being copied. Always grabs GL_COLOR_ATTACHMENT0.
+   */ 
+  Texture(engine::Context* ctx, std::shared_ptr<Framebuffer> fb);
 
   /**
    *  @returns the descriptor associated with this texture.
