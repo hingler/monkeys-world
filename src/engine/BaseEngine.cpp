@@ -138,7 +138,7 @@ void GameLoop(std::shared_ptr<engine::EngineContext> ctx, GLFWwindow* window) {
     }
     rc.SetSpotlights(spotlights);
     rc.SetActiveCamera(std::static_pointer_cast<Camera>(cam_visitor.GetActiveCamera()));
-    glBindFramebuffer(GL_FRAMEBUFFER, NULL);
+    ctx->GetCurrentFrame()->BindFramebuffer(shader::FramebufferTarget::DEFAULT);
     int w, h;
     ctx->GetFramebufferSize(&w, &h);
     glViewport(0, 0, w, h);
@@ -153,7 +153,7 @@ void GameLoop(std::shared_ptr<engine::EngineContext> ctx, GLFWwindow* window) {
     glDisable(GL_DEPTH_TEST);
     RenderUI(win->GetRootObject(), rc);
     glViewport(0, 0, w, h);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    ctx->GetCurrentFrame()->BindFramebuffer(shader::FramebufferTarget::DEFAULT);
     auto ui_root = std::dynamic_pointer_cast<UIObject>(win->GetRootObject());
     if (ui_root) {
       ui_root->DrawToScreen();
@@ -161,10 +161,14 @@ void GameLoop(std::shared_ptr<engine::EngineContext> ctx, GLFWwindow* window) {
 
     glEnable(GL_DEPTH_TEST);
 
-    ctx->UpdateContext();
+    // blit last frame to current
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    ctx->GetCurrentFrame()->BindFramebuffer(shader::FramebufferTarget::READ);
+    glBlitFramebuffer(0, 0, w, h, 0, 0, w, h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
     glfwSwapBuffers(window);
-    
     glfwPollEvents();
+    ctx->UpdateContext();
+    ctx->GetCurrentFrame()->BindFramebuffer(shader::FramebufferTarget::DEFAULT);
   }
 }
 

@@ -26,8 +26,10 @@ EngineContext::EngineContext(GLFWwindow* window, Scene* scene) {
   scene_ = scene;
   initialized_ = false;
 
-  glfwGetFramebufferSize(window_, &last_frame_dims_.x, &last_frame_dims_.y);
-  last_frame_ = std::make_shared<shader::Texture>(last_frame_dims_.x, last_frame_dims_.y, 4);
+  fb_a_ = std::make_shared<shader::Framebuffer>();
+  fb_b_ = std::make_shared<shader::Framebuffer>();
+
+  a_front_ = false;
 }
 
 void EngineContext::InitializeScene() {
@@ -59,8 +61,20 @@ std::shared_ptr<Executor<>> EngineContext::GetExecutor() {
   return executor_;
 }
 
-std::shared_ptr<shader::Texture> EngineContext::GetLastFrame() {
-  return last_frame_;
+std::shared_ptr<shader::Framebuffer> EngineContext::GetLastFrame() {
+  if (a_front_) {
+    return fb_a_;
+  } else {
+    return fb_b_;
+  }
+}
+
+std::shared_ptr<shader::Framebuffer> EngineContext::GetCurrentFrame() {
+  if (a_front_) {
+    return fb_b_;
+  } else {
+    return fb_a_;
+  }
 }
 
 Scene* EngineContext::GetScene() {
@@ -108,23 +122,9 @@ void EngineContext::UpdateContext() {
   glm::ivec2 dims;
   GetFramebufferSize(&dims.x, &dims.y);
 
-  // if dimensions change, use a texture.
-  if (dims != last_frame_dims_) {
-    last_frame_dims_ = dims;
-    last_frame_ = std::make_shared<shader::Texture>(last_frame_dims_.x, last_frame_dims_.y, 4);
-  }
-
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  glReadBuffer(GL_BACK);
-  glBindTexture(GL_TEXTURE_2D, last_frame_->GetTextureDescriptor());
-  glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, dims.x, dims.y, 0);
-
-  // fb_->SetDimensions(dims);
-  // fb_->BindFramebuffer(shader::FramebufferTarget::DRAW);
-  // glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-
-  // // copy GL_BACK to our framebuffer.
-  // glBlitFramebuffer(0, 0, dims.x, dims.y, 0, 0, dims.x, dims.y, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+  a_front_ = !a_front_;
+  auto fb_front = GetCurrentFrame();
+  fb_front->SetDimensions(dims);
 }
 
 EngineContext::~EngineContext() {

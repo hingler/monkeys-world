@@ -76,7 +76,12 @@ class EngineContext : public Context {
 
   std::shared_ptr<Executor<EngineExecutor>> GetExecutor() override;
 
-  std::shared_ptr<shader::Texture> GetLastFrame() override;
+  std::shared_ptr<shader::Framebuffer> GetLastFrame() override;
+
+  /**
+   *  @returns the framebuffer which is currently being drawn to.
+   */ 
+  std::shared_ptr<shader::Framebuffer> GetCurrentFrame();
   
   void GetFramebufferSize(int* width, int* height) override;
 
@@ -125,10 +130,9 @@ class EngineContext : public Context {
   std::shared_ptr<std::mutex> swap_mutex_;
 
   // stores the result of the last frame
-  std::shared_ptr<shader::Texture> last_frame_;
-  glm::ivec2 last_frame_dims_;
-
-  
+  std::shared_ptr<shader::Framebuffer> fb_a_;
+  std::shared_ptr<shader::Framebuffer> fb_b_;
+  bool a_front_;
 
   bool initialized_;
   
