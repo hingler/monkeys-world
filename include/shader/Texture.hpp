@@ -13,6 +13,8 @@ namespace shader {
  *  Textures do nothing to manage state -- the client should expect that
  *  texture state is not saved between calls, and that someone else might modify
  *  this texture object.
+ * 
+ *  TODO: as soon as i can, fix the texture thingy.
  */ 
 class Texture {
  public:
