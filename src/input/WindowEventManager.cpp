@@ -9,6 +9,7 @@
 #include <engine/Scene.hpp>
 
 #include <shared_mutex>
+#include <mutex>
 
 namespace monkeysworld {
 namespace input {
@@ -92,11 +93,70 @@ void WindowEventManager::ProcessWaitingEvents() {
       // key event
       auto callbacks = callbacks_.find(event.key);
       if (callbacks != callbacks_.end()) {
-        std::shared_lock<std::shared_timed_mutex>(callbacks->second->set_lock);
-        for (auto callback : callbacks->second->callbacks) {
-          callback.second(event.key, event.action, event.mods);
+        // store ptr so that all methods run before dealloc
+        auto ptr = callbacks->second;
+        std::unique_lock<std::recursive_mutex> lock(ptr->set_lock);
+        for (auto callback : ptr->callbacks) {
+          std::unique_lock<std::recursive_mutex> del_lock(del_mutex_);
+          if (callback_delete_queue_.find(callback.first) == callback_delete_queue_.end()) {
+            del_lock.unlock();
+            callback.second(event.key, event.action, event.mods);
+          }
         }
       }
+    }
+  }
+
+  // run through and do any deletions we might need
+  FlushDeleteQueue();
+}
+
+void WindowEventManager::FlushDeleteQueue() {
+  std::unique_lock<std::recursive_mutex> lock(del_mutex_);
+  // one pass for keys...
+  {
+    int key;
+    auto itr = callback_delete_queue_.begin();
+    while (itr != callback_delete_queue_.end()) {
+      BOOST_LOG_TRIVIAL(trace) << "removing event " << *itr;
+      std::unique_lock<std::shared_timed_mutex> lock(callback_mutex_);
+      auto entry = callback_to_key_.find(*itr);
+      if (entry == callback_to_key_.end()) {
+        itr++;
+        continue;
+      }
+      
+      key = entry->second;
+      auto info_entry = callbacks_.find(key);
+      if (info_entry == callbacks_.end()) {
+        BOOST_LOG_TRIVIAL(error) << "BAD CALLBACK STATE!";
+      }
+
+      lock.unlock();
+
+      auto callback_info = info_entry->second;
+      std::unique_lock<std::recursive_mutex> callback_lock(callback_info->set_lock);
+      callback_info->callbacks.erase(*itr);
+      if (callback_info->callbacks.size() == 0) {
+        BOOST_LOG_TRIVIAL(info) << "No more callbacks associated with key " << key << ". Erasing...";
+        callbacks_.erase(key);
+      }
+
+      itr = callback_delete_queue_.erase(itr);
+    }
+  }
+
+  // one pass for clicks...
+  {
+    auto itr = callback_delete_queue_.begin();
+    while (itr != callback_delete_queue_.end()) {
+      std::unique_lock<std::shared_timed_mutex>(callback_mutex_);
+      auto entry = mouse_callbacks_.find(*itr);
+      if (entry != mouse_callbacks_.end()) {
+        mouse_callbacks_.erase(entry);
+      }
+
+      itr = callback_delete_queue_.erase(itr);
     }
   }
 }
@@ -114,13 +174,16 @@ uint64_t WindowEventManager::RegisterKeyListener(int key, std::function<void(int
 
   uint64_t listener_id = event_desc_generator_.GetUniqueId();
   callback_to_key_.insert(std::make_pair(listener_id, key));
-  std::unique_lock<std::shared_timed_mutex>(info_ptr->set_lock);
-  info_ptr->callbacks.insert(std::make_pair(listener_id, callback));
+  {
+    std::lock_guard<std::recursive_mutex>(info_ptr->set_lock);
+    info_ptr->callbacks.insert(std::make_pair(listener_id, callback));
+  }
   return listener_id;
 }
 
 KeyListener WindowEventManager::CreateKeyListener(int key, std::function<void(int, int, int)> callback) {
   uint64_t id = RegisterKeyListener(key, callback);
+  BOOST_LOG_TRIVIAL(trace) << "new listener: " << id;
   return KeyListener(this, id);
 }
 
@@ -138,27 +201,8 @@ ClickListener WindowEventManager::CreateClickListener(std::function<void(MouseEv
 }
 
 bool WindowEventManager::RemoveKeyListener(uint64_t event_id) {
-  std::unique_lock<std::shared_timed_mutex>(callback_mutex_);
-  auto entry = callback_to_key_.find(event_id);
-  if (entry == callback_to_key_.end()) {
-    return false;
-  }
-
-  int key = entry->second;
-  auto info_entry = callbacks_.find(key);
-  if (info_entry == callbacks_.end()) {
-    // assert?
-    BOOST_LOG_TRIVIAL(error) << "Invalid state reached in WindowEventManager: info not found for callback";
-    return false;
-  }
-
-  std::unique_lock<std::shared_timed_mutex>(info_entry->second->set_lock);
-  info_entry->second->callbacks.erase(event_id);
-  if (info_entry->second->callbacks.size() == 0) {
-    BOOST_LOG_TRIVIAL(info) << "No more callbacks associated with key " << key << ". Erasing...";
-    callbacks_.erase(key);
-  }
-
+  std::lock_guard<std::recursive_mutex> lock(del_mutex_);
+  callback_delete_queue_.insert(event_id);
   return true;
 }
 
@@ -172,15 +216,9 @@ void WindowEventManager::RemoveClickListener(ClickListener& c) {
 }
 
 bool WindowEventManager::RemoveClickListener(uint64_t event_id) {
-  // remove from mouse_callbacks
-  std::unique_lock<std::shared_timed_mutex>(callback_mutex_);
-  auto entry = mouse_callbacks_.find(event_id);
-  if (entry != mouse_callbacks_.end()) {
-    mouse_callbacks_.erase(entry);
-    return true;
-  }
-
-  return false;
+  std::lock_guard<std::recursive_mutex> lock(del_mutex_);
+  callback_delete_queue_.insert(event_id);
+  return true;
 }
 
 } // namespace input

@@ -56,6 +56,8 @@ GLuint Texture::GetTextureDescriptor() const {
       stbi_image_free(tex_cache_);
     }
     
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D, 0);
   }
 

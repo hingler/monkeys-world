@@ -7,9 +7,11 @@
 #include <cinttypes>
 #include <functional>
 #include <unordered_map>
+#include <unordered_set>
 
 #include <shared_mutex>
 #include <memory>
+#include <mutex>
 
 #include <utils/IDGenerator.hpp>
 
@@ -34,7 +36,7 @@ namespace input {
  */ 
 struct key_callback_info {
   std::unordered_map<uint64_t, std::function<void(int, int, int)>> callbacks;    // maps descriptors to functions
-  std::shared_timed_mutex set_lock;                                              // lock associated with struct scope
+  std::recursive_mutex set_lock;                                              // lock associated with struct scope
 };
 
 /**
@@ -128,6 +130,9 @@ class WindowEventManager {
  private:
   // generates a click event
   void GenerateClickEvent(GLFWwindow* window, int click, int action, int mods);
+  
+  // processes deleted events after all have processed
+  void FlushDeleteQueue();
 
   // maps keycodes to callback sets
   std::unordered_map<int, std::shared_ptr<key_callback_info>> callbacks_;
@@ -136,6 +141,10 @@ class WindowEventManager {
   std::unordered_map<uint64_t, int> callback_to_key_;
 
   std::unordered_map<uint64_t, std::function<void(MouseEvent)>> mouse_callbacks_;
+
+
+  std::unordered_set<uint64_t> callback_delete_queue_;
+  std::recursive_mutex del_mutex_;
 
   // TODO: add functions for requesting focus from the event manager
 
