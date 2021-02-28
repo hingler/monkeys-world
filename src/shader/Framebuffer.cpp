@@ -11,8 +11,8 @@ namespace shader {
 
 Framebuffer::Framebuffer() {
   fb_ = color_ = depth_stencil_ = 0;
-  fb_size_ = glm::ivec2(0);
-  fb_size_old_ = glm::ivec2(1);
+  fb_size_ = glm::ivec2(1);
+  fb_size_old_ = glm::ivec2(0);
 }
 
 void Framebuffer::SetDimensions(glm::ivec2 size) {
@@ -85,6 +85,7 @@ void Framebuffer::GenerateFramebuffer(GLenum target) {
 
   if (glCheckFramebufferStatus(target) != GL_FRAMEBUFFER_COMPLETE) {
     BOOST_LOG_TRIVIAL(error) << "incomplete framebuffer :(";
+    BOOST_LOG_TRIVIAL(error) << GetDimensions().x << ", " << GetDimensions().y;
   } 
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
