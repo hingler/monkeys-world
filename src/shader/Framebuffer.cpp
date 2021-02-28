@@ -44,35 +44,9 @@ void Framebuffer::BindFramebuffer(FramebufferTarget target) {
       targ = GL_READ_FRAMEBUFFER;
       break;
   }
+
   if (fb_size_ != fb_size_old_) {
-    glDeleteFramebuffers(1, &fb_);
-    glDeleteTextures(1, &color_);
-    glDeleteTextures(1, &depth_stencil_);
-
-    glGenTextures(1, &color_);
-    glGenTextures(1, &depth_stencil_);
-    glBindTexture(GL_TEXTURE_2D, depth_stencil_);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8,
-                  static_cast<uint32_t>(fb_size_.x), static_cast<uint32_t>(fb_size_.y),
-                  0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
-    glBindTexture(GL_TEXTURE_2D, color_);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
-                  static_cast<uint32_t>(fb_size_.x), static_cast<uint32_t>(fb_size_.y),
-                  0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-
-    glGenFramebuffers(1, &fb_);
-    glBindFramebuffer(targ, fb_);
-    glFramebufferTexture2D(targ, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color_, 0);
-    glFramebufferTexture2D(targ, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depth_stencil_, 0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-    if (glCheckFramebufferStatus(targ) != GL_FRAMEBUFFER_COMPLETE) {
-      BOOST_LOG_TRIVIAL(error) << "incomplete framebuffer :(";
-    } 
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    fb_size_old_ = fb_size_;
+    GenerateFramebuffer(targ);
   }
 
   glBindFramebuffer(targ, fb_);
@@ -82,8 +56,40 @@ GLuint Framebuffer::GetColorAttachment() {
   return color_;
 }
 
+// deprecate soon
 GLuint Framebuffer::GetFramebuffer() {
   return fb_;
+}
+
+void Framebuffer::GenerateFramebuffer(GLenum target) {
+  glDeleteFramebuffers(1, &fb_);
+  glDeleteTextures(1, &color_);
+  glDeleteTextures(1, &depth_stencil_);
+
+  glGenTextures(1, &color_);
+  glGenTextures(1, &depth_stencil_);
+  glBindTexture(GL_TEXTURE_2D, depth_stencil_);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8,
+                static_cast<uint32_t>(fb_size_.x), static_cast<uint32_t>(fb_size_.y),
+                0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+  glBindTexture(GL_TEXTURE_2D, color_);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
+                static_cast<uint32_t>(fb_size_.x), static_cast<uint32_t>(fb_size_.y),
+                0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+  glGenFramebuffers(1, &fb_);
+  glBindFramebuffer(target, fb_);
+  glFramebufferTexture2D(target, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color_, 0);
+  glFramebufferTexture2D(target, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depth_stencil_, 0);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+  if (glCheckFramebufferStatus(target) != GL_FRAMEBUFFER_COMPLETE) {
+    BOOST_LOG_TRIVIAL(error) << "incomplete framebuffer :(";
+  } 
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  fb_size_old_ = fb_size_;
 }
 
 Framebuffer::~Framebuffer() {

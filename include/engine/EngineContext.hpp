@@ -10,7 +10,7 @@
 #include <engine/SceneSwap.hpp>
 #include <input/WindowEventManager.hpp>
 #include <audio/AudioManager.hpp>
-#include <shader/Framebuffer.hpp>
+#include <shader/Texture.hpp>
 
 #include <atomic>
 #include <chrono>
@@ -76,7 +76,7 @@ class EngineContext : public Context {
 
   std::shared_ptr<Executor<EngineExecutor>> GetExecutor() override;
 
-  std::shared_ptr<shader::Framebuffer> GetFramebuffer() override;
+  std::shared_ptr<shader::Texture> GetLastFrame() override;
   
   void GetFramebufferSize(int* width, int* height) override;
 
@@ -125,7 +125,8 @@ class EngineContext : public Context {
   std::shared_ptr<std::mutex> swap_mutex_;
 
   // stores the result of the last frame
-  std::shared_ptr<shader::Framebuffer> fb_;
+  std::shared_ptr<shader::Texture> last_frame_;
+  glm::ivec2 last_frame_dims_;
 
   
 

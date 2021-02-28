@@ -27,7 +27,7 @@ class Context {
   /**
    *  @returns the last rendered frame, as a framebuffer object.
    */ 
-  virtual std::shared_ptr<shader::Framebuffer> GetFramebuffer() = 0;
+  virtual std::shared_ptr<shader::Texture> GetLastFrame() = 0;
 
   /**
    *  Returns the size of the framebuffer.

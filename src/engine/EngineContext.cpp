@@ -23,10 +23,11 @@ EngineContext::EngineContext(GLFWwindow* window, Scene* scene) {
   swap_cv_ = std::make_shared<std::condition_variable>();
   swap_mutex_ = std::make_shared<std::mutex>();
 
-  fb_ = std::make_shared<shader::Framebuffer>();
-
   scene_ = scene;
   initialized_ = false;
+
+  glfwGetFramebufferSize(window_, &last_frame_dims_.x, &last_frame_dims_.y);
+  last_frame_ = std::make_shared<shader::Texture>(last_frame_dims_.x, last_frame_dims_.y, 4);
 }
 
 void EngineContext::InitializeScene() {
@@ -58,8 +59,8 @@ std::shared_ptr<Executor<>> EngineContext::GetExecutor() {
   return executor_;
 }
 
-std::shared_ptr<shader::Framebuffer> EngineContext::GetFramebuffer() {
-  return fb_;
+std::shared_ptr<shader::Texture> EngineContext::GetLastFrame() {
+  return last_frame_;
 }
 
 Scene* EngineContext::GetScene() {
@@ -106,13 +107,24 @@ void EngineContext::UpdateContext() {
   executor_->RunTasks(0.010);
   glm::ivec2 dims;
   GetFramebufferSize(&dims.x, &dims.y);
-  fb_->SetDimensions(dims);
 
-  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fb_->GetFramebuffer());
-  glBindFramebuffer(GL_READ_FRAMEBUFFER, GL_BACK);
+  // if dimensions change, use a texture.
+  if (dims != last_frame_dims_) {
+    last_frame_dims_ = dims;
+    last_frame_ = std::make_shared<shader::Texture>(last_frame_dims_.x, last_frame_dims_.y, 4);
+  }
 
-  // copy GL_BACK to our framebuffer.
-  glBlitFramebuffer(0, 0, dims.x, dims.y, 0, 0, dims.x, dims.y, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glReadBuffer(GL_BACK);
+  glBindTexture(GL_TEXTURE_2D, last_frame_->GetTextureDescriptor());
+  glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, dims.x, dims.y, 0);
+
+  // fb_->SetDimensions(dims);
+  // fb_->BindFramebuffer(shader::FramebufferTarget::DRAW);
+  // glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+
+  // // copy GL_BACK to our framebuffer.
+  // glBlitFramebuffer(0, 0, dims.x, dims.y, 0, 0, dims.x, dims.y, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
 }
 
 EngineContext::~EngineContext() {
@@ -125,9 +137,6 @@ EngineContext::EngineContext(const EngineContext& other, Scene* scene) {
   audio_mgr_ = other.audio_mgr_;
   window_ = other.window_;
   executor_ = other.executor_;
-
-  fb_ = std::make_shared<shader::Framebuffer>();
-  fb_->SetDimensions(other.fb_->GetDimensions());
 
   start_ = std::chrono::high_resolution_clock::now();
 

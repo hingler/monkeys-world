@@ -71,6 +71,8 @@ class Framebuffer {
   Framebuffer& operator=(Framebuffer&& other);
 
  private:
+  void GenerateFramebuffer(GLenum target);
+
   GLuint fb_;
   GLuint color_;
   GLuint depth_stencil_;
