@@ -1,6 +1,8 @@
 #include <engine/SceneSwap.hpp>
 #include <engine/Context.hpp>
 
+#include <engine/Scene.hpp>
+
 namespace monkeysworld {
 namespace engine {
 
@@ -21,10 +23,9 @@ file::loader_progress SceneSwap::GetLoaderProgress() {
 void SceneSwap::Swap() {
   std::unique_lock<std::mutex> lock(*mutex_);
   load_cv_->wait(lock, [&] {
-    auto prog = ctx_->GetCachedFileLoader()->GetLoaderProgress();
-    // wait on scene instead?
-    return (prog.bytes_read == prog.bytes_sum);
+    return ctx_->GetScene()->IsInitialized();
   });
+
   swap_ready_ = true;
 }
 

@@ -88,6 +88,7 @@ std::shared_ptr<SceneSwap> EngineContext::SwapScene(Scene* scene) {
   swap_obj_ = std::make_shared<SceneSwap>(swap_ctx_, swap_mutex_, swap_cv_);
   swap_thread_ = std::thread([&] {
     swap_ctx_->InitializeScene();
+    swap_cv_->notify_all();
   });
   return swap_obj_;
 }
@@ -99,8 +100,6 @@ std::shared_ptr<EngineContext> EngineContext::GetNewContext() {
 
   auto prog = swap_ctx_->GetCachedFileLoader()->GetLoaderProgress();
   if (prog.bytes_read == prog.bytes_sum) {
-    // notify scene swap object if we're ready
-    swap_cv_->notify_all();
     if (swap_obj_->IsSwapReady()) {
       // if it's ready, then return the new ctx
       swap_thread_.join();
@@ -142,11 +141,17 @@ EngineContext::EngineContext(const EngineContext& other, Scene* scene) {
   window_ = other.window_;
   executor_ = other.executor_;
 
+  initialized_ = false;
+
   start_ = std::chrono::high_resolution_clock::now();
 
   swap_ctx_ = nullptr;
   swap_cv_ = std::make_shared<std::condition_variable>();
   swap_mutex_ = std::make_shared<std::mutex>();
+
+  a_front_ = other.a_front_;
+  fb_a_ = other.fb_a_;
+  fb_b_ = other.fb_b_;
 
   scene_ = scene;
 }

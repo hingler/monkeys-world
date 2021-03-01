@@ -96,9 +96,9 @@ void GameLoop(std::shared_ptr<engine::EngineContext> ctx, GLFWwindow* window) {
     // swap to the new context if it's ready :)
     if (auto ctx_new = ctx->GetNewContext()) {
       ctx = ctx_new;
-      auto scene = ctx->GetScene();
+      auto scene = ctx_new->GetScene();
       CreateObjects(scene->GetGameObjectRoot());
-
+      win = std::dynamic_pointer_cast<EngineWindow>(scene->GetWindow());
       CreateObjects(win->GetRootObject());
     }
 
