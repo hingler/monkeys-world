@@ -79,6 +79,7 @@ GLuint Texture::GetTextureDescriptor() const {
     // I AM NOT GOING TO DO THIS RIGHT NOW. but i'll do it later :)
     if (tex_cache_) {
       stbi_image_free(tex_cache_);
+      const_cast<unsigned char*>(tex_cache_) = nullptr;
     }
     
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -90,7 +91,7 @@ GLuint Texture::GetTextureDescriptor() const {
 }
 
 uint64_t Texture::GetTextureSize() const {
-  return width_ * height_ * channels_;
+  return static_cast<uint64_t>(width_) * height_ * channels_;
 }
 
 // risky if this isn't done on the main thread -- i dont think this'll be a problem but

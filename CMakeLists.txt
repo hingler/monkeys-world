@@ -54,6 +54,7 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/critter/Skybox.cpp
 
                                     ${SRC_DIR}/critter/ui/UIObject.cpp
+                                    ${SRC_DIR}/critter/ui/UIImage.cpp
                                     ${SRC_DIR}/critter/ui/UIGroup.cpp
                                     ${SRC_DIR}/critter/ui/UIButton.cpp
                                     ${SRC_DIR}/critter/ui/FPSCounter.cpp

@@ -82,6 +82,10 @@ std::shared_ptr<const shader::CubeMap> CachedFileLoader::LoadCubeMap(const std::
   return cubemap_loader_->LoadFile(path.str());
 }
 
+std::shared_ptr<const shader::Texture> CachedFileLoader::LoadTexture(const std::string& image_path) {
+  return texture_loader_->LoadFile(image_path);
+}
+
 std::vector<cache_record> CachedFileLoader::ReadCacheFileToVector(const std::string& cache_path) {
   std::vector<cache_record> record;
   std::ifstream cache(cache_path, std::ios_base::in | std::ios_base::binary);
