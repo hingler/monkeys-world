@@ -103,6 +103,8 @@ std::shared_ptr<EngineContext> EngineContext::GetNewContext() {
     if (swap_obj_->IsSwapReady()) {
       // if it's ready, then return the new ctx
       swap_thread_.join();
+      // one last bit of code -- ensure we're exposing the right FB!
+      swap_ctx_->a_front_ = a_front_;
       return swap_ctx_;
     }
   }

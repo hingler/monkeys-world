@@ -37,13 +37,14 @@ Texture::Texture(engine::Context* ctx, std::shared_ptr<Framebuffer> fb) {
   height_ = dims.y;
   channels_ = 4;
 
-  auto exec_prog = [&, fb] {
+
+  auto exec_prog = [&, fb, width = width_, height = height_] {
     glGenTextures(1, &tex_);
     glBindTexture(GL_TEXTURE_2D, tex_);
-    glTexStorage2D(GL_TEXTURE_2D, 0, GL_RGBA, width_, height_);
+    glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, width, height);
     // fb->BindFramebuffer(FramebufferTarget::READ);
     // glReadBuffer(GL_COLOR_ATTACHMENT0);
-    glCopyImageSubData(fb->GetColorAttachment(), GL_TEXTURE_2D, 0, 0, 0, 0, tex_, GL_TEXTURE_2D, 0, 0, 0, 0, width_, height_, 1);
+    glCopyImageSubData(fb->GetColorAttachment(), GL_TEXTURE_2D, 0, 0, 0, 0, tex_, GL_TEXTURE_2D, 0, 0, 0, 0, width, height, 1);
     tex_cache_ = nullptr;
   };
 
