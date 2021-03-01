@@ -65,6 +65,7 @@ class Scene {
   std::shared_ptr<critter::GameObject> game_root_;
   std::shared_ptr<EngineWindow> ui_window_;
   std::atomic_bool initialized_;
+  std::thread initialization_thread_;
 };
 
 }

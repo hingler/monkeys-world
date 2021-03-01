@@ -22,6 +22,7 @@ void SceneSwap::Swap() {
   std::unique_lock<std::mutex> lock(*mutex_);
   load_cv_->wait(lock, [&] {
     auto prog = ctx_->GetCachedFileLoader()->GetLoaderProgress();
+    // wait on scene instead?
     return (prog.bytes_read == prog.bytes_sum);
   });
   swap_ready_ = true;

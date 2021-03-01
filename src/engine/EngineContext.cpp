@@ -86,6 +86,9 @@ std::shared_ptr<SceneSwap> EngineContext::SwapScene(Scene* scene) {
   
   swap_ctx_ = std::make_shared<EngineContext>(*this, scene);
   swap_obj_ = std::make_shared<SceneSwap>(swap_ctx_, swap_mutex_, swap_cv_);
+  swap_thread_ = std::thread([&] {
+    swap_ctx_->InitializeScene();
+  });
   return swap_obj_;
 }
 
@@ -100,6 +103,7 @@ std::shared_ptr<EngineContext> EngineContext::GetNewContext() {
     swap_cv_->notify_all();
     if (swap_obj_->IsSwapReady()) {
       // if it's ready, then return the new ctx
+      swap_thread_.join();
       return swap_ctx_;
     }
   }

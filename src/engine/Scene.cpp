@@ -11,7 +11,7 @@ void Scene::CreateScene(Context* ctx) {
   ui_window_ = std::make_shared<EngineWindow>(ctx);
   ui_window_->GetRootObject()->Invalidate();
   Initialize(ctx);
-  initialized_ = true;
+  initialized_.store(true);
 }
 
 std::shared_ptr<critter::GameObject> Scene::GetGameObjectRoot() {
