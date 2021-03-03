@@ -2,6 +2,7 @@
 #include <model/Mesh.hpp>
 
 #include <shader/materials/FillMaterial.hpp>
+#include <shader/materials/ImageFilterMaterial.hpp>
 
 #include <mutex>
 
@@ -10,11 +11,12 @@ namespace shader {
 
 using model::Mesh;
 using storage::VertexPacket2D;
-using materials::FillMaterial;
+using namespace materials;
 
 namespace {
   // shaders used by canvas
   std::shared_ptr<FillMaterial> fill_mat;
+  std::shared_ptr<ImageFilterMaterial> filter_mat;
 
   std::mutex build_shaders_mtx;
   std::atomic_bool shaders_built = false;
@@ -31,6 +33,7 @@ Canvas::Canvas(std::shared_ptr<Framebuffer> framebuffer) {
     std::unique_lock<std::mutex> lock(build_shaders_mtx);
     if (!shaders_built) {
       fill_mat = std::make_shared<FillMaterial>();
+      filter_mat = std::make_shared<ImageFilterMaterial>();
     }
 
     shaders_built = true;

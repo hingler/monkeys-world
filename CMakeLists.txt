@@ -18,7 +18,10 @@ add_library(monkeys-world-components
 
                                     ${SRC_DIR}/shader/ShaderProgramBuilder.cpp
                                     ${SRC_DIR}/shader/ShaderProgram.cpp
+                                    ${SRC_DIR}/shader/FilterSequence.cpp
+
                                     ${SRC_DIR}/shader/materials/ButtonMaterial.cpp
+                                    ${SRC_DIR}/shader/materials/ImageFilterMaterial.cpp
                                     ${SRC_DIR}/shader/materials/FillMaterial.cpp
                                     ${SRC_DIR}/shader/materials/MatteMaterial.cpp
                                     ${SRC_DIR}/shader/materials/ShadowMapMaterial.cpp
