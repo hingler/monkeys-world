@@ -22,7 +22,7 @@ std::shared_ptr<const filter_data> FilterSequence::operator[](int index) const {
 }
 
 int FilterSequence::GetFilterCount() const {
-  return filters_.size();
+  return static_cast<int>(filters_.size());
 }
 
 }
