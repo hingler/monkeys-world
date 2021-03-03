@@ -519,22 +519,22 @@ class TestScene : public Scene {
     auto margins = but->GetLayoutParams();
     margins.bottom.anchor_id = group->GetId();
     margins.bottom.anchor_face = Face::BOTTOM;
-    margins.bottom.dist = 16;
+    margins.bottom.margin = 16;
 
     margins.right.anchor_id = group->GetId();
     margins.right.anchor_face = Face::RIGHT;
-    margins.right.dist = 16;
+    margins.right.margin = 16;
 
     but->SetLayoutParams(margins);
 
     margins = tui->GetLayoutParams();
     margins.bottom.anchor_id = group->GetId();
     margins.bottom.anchor_face = Face::BOTTOM;
-    margins.bottom.dist = 16;
+    margins.bottom.margin = 16;
 
     margins.right.anchor_id = but->GetId();
     margins.right.anchor_face = Face::LEFT;
-    margins.right.dist = 16;
+    margins.right.margin = 16;
 
     tui->SetLayoutParams(margins);
 
@@ -550,16 +550,16 @@ class TestScene : public Scene {
 
     margins.bottom.anchor_id = GetWindow()->GetId();
     margins.bottom.anchor_face = Face::BOTTOM;
-    margins.bottom.dist = 0;
+    margins.bottom.margin = 0;
     margins.top.anchor_id = GetWindow()->GetId();
     margins.top.anchor_face = Face::TOP;
-    margins.top.dist = 0;
+    margins.top.margin = 0;
     margins.left.anchor_id = GetWindow()->GetId();
     margins.left.anchor_face = Face::LEFT;
-    margins.left.dist = 0;
+    margins.left.margin = 0;
     margins.right.anchor_id = GetWindow()->GetId();
     margins.right.anchor_face = Face::RIGHT;
-    margins.right.dist = 0;
+    margins.right.margin = 0;
 
     group->SetLayoutParams(margins);
 

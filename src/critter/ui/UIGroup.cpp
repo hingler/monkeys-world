@@ -9,7 +9,7 @@ namespace ui {
 
 using engine::Context;
 using utils::ObjectGraph;
-using layout::Face;
+using namespace layout;
 
 typedef std::shared_ptr<UIObject> child_ptr;
 
@@ -138,10 +138,10 @@ void UIGroup::Layout(glm::vec2 size) {
       const layout::BoundingBox& box = bounding_boxes.at(params.top.anchor_id);
       switch (params.top.anchor_face) {
         case Face::BOTTOM:
-          b.top = box.bottom + params.top.dist;
+          b.top = box.bottom;
           break;
         case Face::TOP:
-          b.top = box.top + params.top.dist;
+          b.top = box.top;
           break;
         default:
           BOOST_LOG_TRIVIAL(error) << "Invalid face provided for ID " << id << "'s top margin -- ignoring...";
@@ -157,10 +157,10 @@ void UIGroup::Layout(glm::vec2 size) {
       const layout::BoundingBox& box = bounding_boxes.at(params.bottom.anchor_id);
       switch (params.bottom.anchor_face) {
         case Face::BOTTOM:
-          b.bottom = box.bottom - params.bottom.dist;
+          b.bottom = box.bottom;
           break;
         case Face::TOP:
-          b.bottom = box.top - params.bottom.dist;
+          b.bottom = box.top;
           break;
         default:
           BOOST_LOG_TRIVIAL(error) << "Invalid face provided for ID " << id << "'s bottom margin -- ignoring...";
@@ -176,10 +176,10 @@ void UIGroup::Layout(glm::vec2 size) {
       const layout::BoundingBox& box = bounding_boxes.at(params.left.anchor_id);
       switch (params.left.anchor_face) {
         case Face::LEFT:
-          b.left = box.left + params.left.dist;
+          b.left = box.left;
           break;
         case Face::RIGHT:
-          b.left = box.right + params.left.dist;
+          b.left = box.right;
           break;
         default:
           BOOST_LOG_TRIVIAL(error) << "Invalid face provided for ID " << id << "'s left margin -- ignoring...";
@@ -194,10 +194,10 @@ void UIGroup::Layout(glm::vec2 size) {
       const layout::BoundingBox& box = bounding_boxes.at(params.right.anchor_id);
       switch (params.right.anchor_face) {
         case Face::LEFT:
-          b.right = box.left - params.right.dist;
+          b.right = box.left;
           break;
         case Face::RIGHT:
-          b.right = box.right - params.right.dist;
+          b.right = box.right;
           break;
         default:
           BOOST_LOG_TRIVIAL(error) << "Invalid face provided for ID " << id << "'s right margin -- ignoring...";
@@ -205,6 +205,39 @@ void UIGroup::Layout(glm::vec2 size) {
 
       if (params.left.anchor_id == 0) {
         b.left = b.right - child_dims.x;
+      }
+    }
+
+    // handle autos
+    if (params.top.margin.type == MarginType::AUTO || params.bottom.margin.type == MarginType::AUTO) {
+      // total range
+      float y_range = b.bottom - b.top;
+      // margin shrink on both sides
+      float y_squeeze = (y_range - child_dims.y) / 2;
+      b.top += y_squeeze;
+      b.bottom -= y_squeeze;
+    } else {
+      if (params.top.anchor_id != 0) {
+        b.top += params.top.margin.dist;
+      }
+
+      if (params.bottom.anchor_id != 0) {
+        b.bottom -= params.bottom.margin.dist;
+      }
+    }
+
+    if (params.left.margin.type == MarginType::AUTO || params.right.margin.type == MarginType::AUTO) {
+      float x_range = b.right - b.left;
+      float x_squeeze = (x_range - child_dims.x) / 2;
+      b.left += x_squeeze;
+      b.right -= x_squeeze;
+    } else {
+      if (params.left.anchor_id != 0) {
+        b.left += params.left.margin.dist;
+      }
+
+      if (params.right.anchor_id != 0) {
+        b.right -= params.right.margin.dist;
       }
     }
 

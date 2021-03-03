@@ -2,6 +2,7 @@
 #define MARGIN_H_
 
 #include <cinttypes>
+#include <critter/ui/layout/MarginSize.hpp>
 
 namespace monkeysworld {
 namespace critter {
@@ -29,7 +30,7 @@ struct Margin {
   Face anchor_face;
 
   // the distance, in px, between this object and the anchor.
-  float dist;
+  MarginSize margin;
 };
 
 }
