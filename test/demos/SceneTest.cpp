@@ -63,6 +63,8 @@ using ::monkeysworld::critter::Object;
 using ::monkeysworld::critter::Model;
 using ::monkeysworld::critter::Skybox;
 
+using ::monkeysworld::critter::ui::layout::MarginType;
+
 using ::monkeysworld::critter::ui::UIGroup;
 using ::monkeysworld::critter::ui::UIObject;
 using ::monkeysworld::critter::ui::UIButton;
@@ -517,24 +519,31 @@ class TestScene : public Scene {
     auto group = std::make_shared<UIGroup>(ctx);
 
     auto margins = but->GetLayoutParams();
+  
     margins.bottom.anchor_id = group->GetId();
     margins.bottom.anchor_face = Face::BOTTOM;
-    margins.bottom.margin = 16;
+    margins.bottom.margin = MarginType::AUTO;
+
+    margins.top.anchor_id = group->GetId();
+    margins.top.anchor_face = Face::TOP;
+    margins.top.margin = MarginType::AUTO;
 
     margins.right.anchor_id = group->GetId();
     margins.right.anchor_face = Face::RIGHT;
-    margins.right.margin = 16;
+    margins.right.margin = MarginType::AUTO;
+
+    margins.left.anchor_id = group->GetId();
+    margins.left.anchor_face = Face::LEFT;
+    margins.left.margin = MarginType::AUTO;
 
     but->SetLayoutParams(margins);
+
 
     margins = tui->GetLayoutParams();
     margins.bottom.anchor_id = group->GetId();
     margins.bottom.anchor_face = Face::BOTTOM;
     margins.bottom.margin = 16;
 
-    margins.right.anchor_id = but->GetId();
-    margins.right.anchor_face = Face::LEFT;
-    margins.right.margin = 16;
 
     tui->SetLayoutParams(margins);
 
