@@ -83,5 +83,66 @@ void Canvas::DrawLine(glm::vec2 start, glm::vec2 end, float thickness, glm::vec4
   }
 }
 
+void Canvas::DrawImage(std::shared_ptr<const Texture> tex, glm::vec2 origin, glm::vec2 dims) {
+  std::lock_guard<std::mutex> lock(geom_lock);
+  SetupImageMesh(tex, origin, dims);
+
+  filter_mat->ClearFilters();
+  filter_mat->SetTexture(tex->GetTextureDescriptor());
+  filter_mat->UseMaterial();
+  geom_cache.PointToVertexAttribs();
+  glDrawElements(GL_TRIANGLES, static_cast<int>(geom_cache.GetIndexCount()), GL_UNSIGNED_INT, reinterpret_cast<void*>(0));
+}
+
+void Canvas::DrawImage(std::shared_ptr<const Texture> tex, glm::vec2 origin, glm::vec2 dims, const FilterSequence& filter) {
+  std::lock_guard<std::mutex> lock(geom_lock);
+  SetupImageMesh(tex, origin, dims);
+
+  filter_mat->ClearFilters();
+  for (int i = 0; i < filter.GetFilterCount(); i++){
+    switch (filter[i]->type) {
+      case FilterName::HSL:
+        filter_mat->AddHSLFilter(static_cast<const filter_hsl&>(*filter[i]));
+        break;
+    }
+  }
+
+  filter_mat->SetTexture(tex->GetTextureDescriptor());
+  filter_mat->UseMaterial();
+  geom_cache.PointToVertexAttribs();
+  
+  glDrawElements(GL_TRIANGLES, static_cast<int>(geom_cache.GetIndexCount()), GL_UNSIGNED_INT, reinterpret_cast<void*>(0));
+}
+
+void Canvas::SetupImageMesh(std::shared_ptr<const Texture>& tex, glm::vec2 origin, glm::vec2 dims) {
+  geom_cache.Clear();
+  VertexPacket2D temp;
+
+  auto fb_dims = static_cast<glm::vec2>(fb_->GetDimensions()) / 2.0f;
+
+  auto tex_ss = dims / fb_dims;
+  glm::vec2 origin_ss = (origin / fb_dims) - glm::vec2(1, -1);
+
+  {
+    temp.position = origin_ss;
+    temp.texcoords = glm::vec2(0, 1);
+    geom_cache.AddVertex(temp);
+
+    temp.position.y -= tex_ss.y;
+    temp.texcoords = glm::vec2(0);
+    geom_cache.AddVertex(temp);
+
+    temp.position.x += tex_ss.x;
+    temp.texcoords = glm::vec2(1, 0);
+    geom_cache.AddVertex(temp);
+
+    temp.position.y += tex_ss.y;
+    temp.texcoords = glm::vec2(1);
+    geom_cache.AddVertex(temp);
+    geom_cache.AddPolygon(0, 1, 2);
+    geom_cache.AddPolygon(2, 3, 0);
+  }
+}
+
 }
 }

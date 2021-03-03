@@ -24,7 +24,7 @@ struct filter_data {
 /**
  *  HSL filter.
  */ 
-struct filter_hsl : filter_data {
+struct filter_hsl : public filter_data {
   float hue;
   float sat;
   float light;
@@ -52,12 +52,12 @@ class FilterSequence {
   /**
    *  Returns the filter associated with a given index of our filter sequence.
    */ 
-  std::shared_ptr<const filter_data> operator[](int index);
+  std::shared_ptr<const filter_data> operator[](int index) const;
 
   /**
    *  @returns number of filters currently contained in this filter sequence.
    */ 
-  int GetFilterCount();
+  int GetFilterCount() const;
  private:
 
   // stores ordered list of filters

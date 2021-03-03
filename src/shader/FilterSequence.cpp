@@ -17,8 +17,12 @@ void FilterSequence::AddHSLFilter(float hue, float sat, float light) {
   filters_.push_back(filter);
 }
 
-std::shared_ptr<const filter_data> FilterSequence::operator[](int index) {
+std::shared_ptr<const filter_data> FilterSequence::operator[](int index) const {
   return filters_[index];
+}
+
+int FilterSequence::GetFilterCount() const {
+  return filters_.size();
 }
 
 }

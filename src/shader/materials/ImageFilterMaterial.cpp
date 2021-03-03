@@ -42,7 +42,9 @@ void ImageFilterMaterial::UseMaterial() {
 
   glUniform1iv(18, 16, index_list_);
   glUniform1i(34, filter_count_);
-  glUniform1i(35, tex_);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, tex_);
+  glUniform1i(35, 0);
 }
 
 }

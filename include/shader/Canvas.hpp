@@ -5,6 +5,9 @@
 #include <model/Mesh.hpp>
 #include <storage/VertexPacketTypes.hpp>
 
+#include <shader/Texture.hpp>
+#include <shader/FilterSequence.hpp>
+
 #include <memory>
 
 namespace monkeysworld {
@@ -35,7 +38,24 @@ class Canvas {
    *  @param color -- color of the line.
    */ 
   void DrawLine(glm::vec2 start, glm::vec2 end, float thickness, glm::vec4 color);
+  
+  /**
+   *  Draws an image onto the screen, with no filters.
+   *  @param tex - the texture being drawn onto the screen.
+   *  @param origin - position of top left corner of image.
+   */
+  void DrawImage(std::shared_ptr<const Texture> tex, glm::vec2 origin, glm::vec2 dims);
+
+  /**
+   *  Draws an image onto the screen, with filters.
+   *  @param tex - the texture being drawn onto the screen.
+   *  @param origin - position of top left corner of image.
+   *  @param filter - the sequence of filters used to draw the image.
+   */ 
+  void DrawImage(std::shared_ptr<const Texture> tex, glm::vec2 origin, glm::vec2 dims, const FilterSequence& filter);
  private:
+  // sets up the mesh to render an image. acquire geom lock before using
+  void SetupImageMesh(std::shared_ptr<const Texture>& tex, glm::vec2 origin, glm::vec2 dims);
   std::shared_ptr<Framebuffer> fb_;
   
 };

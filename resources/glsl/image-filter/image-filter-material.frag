@@ -14,7 +14,7 @@ layout(location = 0) uniform filter_hsl hsl_filters[6];
 layout(location = 18) uniform int filters[16];
 
 layout(location = 34) uniform int filter_count;
-layout(location = 35) uniform sampler2D image;
+layout(location = 35) uniform sampler2D tex_image;
 
 vec4 HSL(vec4 color_in, int filter_index) {
   // do an hsl filter here
@@ -81,15 +81,15 @@ void main() {
 
   int hsl_index = 0;
 
-  vec4 color_acc = texture(image, texcoord);
-  for (int i = 0; i < filter_count; i++) {
-    switch(filters[i]) {
-      case 0: // hsl
-        color_acc = HSL(color_acc, hsl_index);
-        hsl_index = hsl_index + 1;
-        break;
-    }
-  }
+  vec4 color_acc = texture(tex_image, texcoord);
+  // for (int i = 0; i < filter_count; i++) {
+  //   switch(filters[i]) {
+  //     case 0: // hsl
+  //       color_acc = HSL(color_acc, hsl_index);
+  //       hsl_index = hsl_index + 1;
+  //       break;
+  //   }
+  // }
 
   fragColor = color_acc;
 }
