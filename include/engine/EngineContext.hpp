@@ -70,7 +70,7 @@ class EngineContext : public Context {
   // (deprecated)
   std::shared_ptr<file::CachedFileLoader> GetCachedFileLoader() override;
 
-  std::shared_ptr<input::WindowEventManager> GetEventManager() override;
+  std::shared_ptr<input::EventManager> GetEventManager() override;
 
   std::shared_ptr<audio::AudioManager> GetAudioManager() override;
 

@@ -20,7 +20,7 @@ class Context {
 
  public:
   virtual std::shared_ptr<file::CachedFileLoader> GetCachedFileLoader() = 0;
-  virtual std::shared_ptr<input::WindowEventManager> GetEventManager() = 0;
+  virtual std::shared_ptr<input::EventManager> GetEventManager() = 0;
   virtual std::shared_ptr<audio::AudioManager> GetAudioManager() = 0;
   virtual std::shared_ptr<Executor<EngineExecutor>> GetExecutor() = 0;
 

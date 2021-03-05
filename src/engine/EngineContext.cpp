@@ -6,12 +6,12 @@ namespace monkeysworld {
 namespace engine {
 
 using file::CachedFileLoader;
-using input::WindowEventManager;
+using input::EventManager;
 using audio::AudioManager;
 
 EngineContext::EngineContext(GLFWwindow* window, Scene* scene) {
   file_loader_ = std::make_shared<CachedFileLoader>(scene->GetSceneIdentifier());
-  event_mgr_ = std::make_shared<WindowEventManager>(window, this);
+  event_mgr_ = std::make_shared<input::WindowEventManager>(window, this);
   audio_mgr_ = std::make_shared<AudioManager>();
   executor_ = std::make_shared<EngineExecutor>();
 
@@ -49,7 +49,7 @@ std::shared_ptr<CachedFileLoader> EngineContext::GetCachedFileLoader() {
   return file_loader_;
 }
 
-std::shared_ptr<WindowEventManager> EngineContext::GetEventManager() {
+std::shared_ptr<EventManager> EngineContext::GetEventManager() {
   return event_mgr_;
 }
 
@@ -105,6 +105,8 @@ std::shared_ptr<EngineContext> EngineContext::GetNewContext() {
       swap_thread_.join();
       // one last bit of code -- ensure we're exposing the right FB!
       swap_ctx_->a_front_ = a_front_;
+      // ensure
+      event_mgr_->ctx_ = swap_ctx_.get();
       return swap_ctx_;
     }
   }

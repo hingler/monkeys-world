@@ -31,6 +31,7 @@ WindowEventManager::WindowEventManager(GLFWwindow* window, engine::Context* ctx)
     that->GenerateClickEvent(window, button, action, mods);
   });
 
+  // ctx is tied here -- does not update
   ctx_ = ctx;
   window_ = window;
 
@@ -81,12 +82,14 @@ void WindowEventManager::ProcessWaitingEvents() {
       }
 
       e.local_pos = e.absolute_pos;
+      // tba: is there a better way to update this?
       auto window = ctx_->GetScene()->GetWindow();
       auto ui_dims = window->GetDimensions();
       // if this was guaranteed to be the window, we could save some time
       if (e.local_pos.x >= 0 && e.local_pos.y >= 0
          && e.local_pos.x < ui_dims.x && e.local_pos.y < ui_dims.y
          && !cursor_->IsCursorLocked()) {
+           // grab old window
            window->HandleClickEvent(e);
       }
     } else {
