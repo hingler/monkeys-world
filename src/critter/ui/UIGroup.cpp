@@ -255,6 +255,10 @@ void UIGroup::Layout(glm::vec2 size) {
       }
     }
 
+    b.top = std::round(b.top);
+    b.bottom = std::round(b.bottom);
+    b.left = std::round(b.left);
+    b.right = std::round(b.right);
     bounding_boxes.insert(std::make_pair(id, b));
     // BOOST_LOG_TRIVIAL(trace) << b.top << ", " << b.bottom << ", " << b.left << ", " << b.right;
   }
