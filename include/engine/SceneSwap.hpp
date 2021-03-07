@@ -3,6 +3,7 @@
 
 #include <file/CachedFileLoader.hpp>
 
+#include <atomic>
 #include <condition_variable>
 #include <memory>
 #include <mutex>
@@ -46,7 +47,7 @@ class SceneSwap {
   std::shared_ptr<Context> ctx_;
   std::shared_ptr<std::mutex> mutex_;
   std::shared_ptr<std::condition_variable> load_cv_;
-  bool swap_ready_;
+  std::atomic_bool swap_ready_;
 
 };
 
