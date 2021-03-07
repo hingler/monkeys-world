@@ -227,8 +227,8 @@ class UIObject : public Object, public std::enable_shared_from_this<UIObject> {
 
  private:
   std::weak_ptr<UIObject> parent_;                      // parent object if valid
-  glm::vec2 pos_;                                       // offset of this component relative to parent
-  glm::vec2 size_;                                      // size of ui object, pixels wide/tall
+  glm::ivec2 pos_;                                       // offset of this component relative to parent
+  glm::ivec2 size_;                                      // size of ui object, pixels wide/tall
   std::atomic_bool valid_;                              // whether or not the view has been invalidated.
   float opacity_;
 

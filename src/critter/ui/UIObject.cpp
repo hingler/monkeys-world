@@ -87,7 +87,7 @@ glm::vec2 UIObject::GetPosition() const {
 }
 
 void UIObject::SetPosition(glm::vec2 pos) {
-  pos_ = pos;
+  pos_ = static_cast<glm::ivec2>(pos);
 }
 
 glm::vec2 UIObject::GetAbsolutePosition() const {
@@ -103,9 +103,9 @@ glm::vec2 UIObject::GetDimensions() const {
 }
 
 void UIObject::SetDimensions(glm::vec2 size) {
-  size_ = size;
-  if (fb_->GetDimensions() != static_cast<glm::ivec2>(size_)) {
-    fb_->SetDimensions(static_cast<glm::ivec2>(size));
+  size_ = static_cast<glm::ivec2>(size);
+  if (fb_->GetDimensions() != size_) {
+    fb_->SetDimensions(size_);
     // new size requires a redraw
     Invalidate();
   }
