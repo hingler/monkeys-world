@@ -99,16 +99,14 @@ std::shared_ptr<EngineContext> EngineContext::GetNewContext() {
   }
 
   auto prog = swap_ctx_->GetCachedFileLoader()->GetLoaderProgress();
-  if (prog.bytes_read == prog.bytes_sum) {
-    if (swap_obj_->IsSwapReady()) {
-      // if it's ready, then return the new ctx
-      swap_thread_.join();
-      // one last bit of code -- ensure we're exposing the right FB!
-      swap_ctx_->a_front_ = a_front_;
-      // ensure
-      event_mgr_->ctx_ = swap_ctx_.get();
-      return swap_ctx_;
-    }
+  if (swap_obj_->IsSwapReady()) {
+    // if it's ready, then return the new ctx
+    swap_thread_.join();
+    // one last bit of code -- ensure we're exposing the right FB!
+    swap_ctx_->a_front_ = a_front_;
+    // ensure
+    event_mgr_->ctx_ = swap_ctx_.get();
+    return swap_ctx_;
   }
 
   return nullptr;
