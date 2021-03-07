@@ -220,7 +220,7 @@ void UIGroup::Layout(glm::vec2 size) {
       if (params.top.anchor_id != 0) {
         b.top += params.top.margin.dist;
         if (params.bottom.anchor_id == 0) {
-          b.bottom += params.bottom.margin.dist;
+          b.bottom += params.top.margin.dist;
         }
       }
 
