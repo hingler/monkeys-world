@@ -119,8 +119,10 @@ void Canvas::SetupImageMesh(std::shared_ptr<const Texture>& tex, glm::vec2 origi
   VertexPacket2D temp;
 
   auto fb_dims = static_cast<glm::vec2>(fb_->GetDimensions()) / 2.0f;
+  fb_dims.y = fb_dims.y;
 
   auto tex_ss = dims / fb_dims;
+  origin.y = -origin.y;
   glm::vec2 origin_ss = (origin / fb_dims) - glm::vec2(1, -1);
 
   {
