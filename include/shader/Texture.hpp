@@ -51,15 +51,15 @@ class Texture {
    */ 
   GLuint GetTextureDescriptor() const;
 
-  int GetWidth() {
+  int GetWidth() const {
     return width_;
   }
 
-  int GetHeight() {
+  int GetHeight() const {
     return height_;
   }
 
-  int GetChannelCount() {
+  int GetChannelCount() const {
     return channels_;
   }
 
