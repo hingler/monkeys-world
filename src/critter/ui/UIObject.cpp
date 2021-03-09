@@ -87,7 +87,7 @@ glm::vec2 UIObject::GetPosition() const {
 }
 
 void UIObject::SetPosition(glm::vec2 pos) {
-  pos_ = static_cast<glm::ivec2>(pos);
+  pos_ = static_cast<glm::ivec2>(glm::round(pos));
 }
 
 glm::vec2 UIObject::GetAbsolutePosition() const {
