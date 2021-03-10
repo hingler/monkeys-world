@@ -246,6 +246,7 @@ void AudioBuffer::DestroyWriteThread() {
     write_thread_flag_.clear();
     write_cv_.notify_all();
     moved_thread_lock.unlock();
+    // no guarantee that the thread has spun down already
     running_ = false;
   }
 }

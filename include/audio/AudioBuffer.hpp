@@ -95,6 +95,10 @@ class AudioBuffer {
    */ 
   virtual bool EndOfFile() = 0;
 
+  uint64_t GetBytesWritten() {
+    return bytes_written_.load(std::memory_order_acquire);
+  }
+
   /**
    *  Terminates the write thread.
    */ 
@@ -125,6 +129,14 @@ class AudioBuffer {
    */ 
   AudioBufferPacket GetBufferSpace(uint64_t request);
 
+
+  /**
+   *  Seeks the underlying file so that it matches the write head.
+   *  Useful for caching.
+   */ 
+  virtual void SeekFileToWriteHead() = 0;
+
+ private:
   int capacity_;
   float* buffer_l_;                     // left buffer
   float* buffer_r_;                     // right buffer
@@ -143,14 +155,7 @@ class AudioBuffer {
   std::atomic_bool running_;            // true if thread is running
   std::atomic_flag write_thread_flag_;  // flag which signals early termination of write thread
   std::mutex write_lock_;               // lock used by wait func on write thread
-
-  /**
-   *  Seeks the underlying file so that it matches the write head.
-   *  Useful for caching.
-   */ 
-  virtual void SeekFileToWriteHead() = 0;
-
- private:
+  
   /**
    *  Function which writes to the buffer.
    */ 
