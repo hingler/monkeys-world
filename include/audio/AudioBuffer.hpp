@@ -147,7 +147,6 @@ class AudioBuffer {
 
   char CACHE_BREAK_W_[CACHE_LINE];        // separates write from read
   std::atomic<uint64_t> bytes_written_;   // write header
-  std::atomic<uint64_t> bytes_allocated_; // number of bytes allocated to packets thus far.
   uint64_t last_read_polled_;             // last read value polled
 
   std::condition_variable write_cv_;    // cv used to signal write thread

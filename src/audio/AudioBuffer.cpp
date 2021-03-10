@@ -9,7 +9,6 @@ AudioBuffer::AudioBuffer(int capacity) : capacity_(capacity) {
   buffer_r_ = new float[capacity];
   bytes_read_ = 0;
   bytes_written_ = 0;
-  bytes_allocated_ = 0;
   last_write_polled_ = 0;
   last_read_polled_ = 0;
   running_ = false;
