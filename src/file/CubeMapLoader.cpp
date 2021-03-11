@@ -13,8 +13,8 @@ CubeMapLoader::CubeMapLoader(std::shared_ptr<LoaderThreadPool> thread_pool, std:
   loader_.bytes_sum = 0;
   for (auto record : cache) {
     if (record.type == CUBEMAP) {
-      loader_.bytes_sum += record.file_size;
       LoadFileToCache(record);
+      loader_.bytes_sum += record.file_size;
     }
   }
 }
