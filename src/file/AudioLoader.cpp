@@ -85,6 +85,9 @@ std::shared_ptr<audio::AudioBuffer> AudioLoader::LoadFromPath(const std::string&
   } else {
     AudioCache cache;
     int bytes_written = res->WriteFromFile(SAMPLE_COUNT);
+    cache.sample_count = bytes_written;
+    cache.left = new float[bytes_written];
+    cache.right = new float[bytes_written];
     res->Peek(bytes_written, cache.left, cache.right);
     std::unique_lock<std::mutex> lock(cache_mutex_);
     cache_.insert(std::make_pair(path, cache));
