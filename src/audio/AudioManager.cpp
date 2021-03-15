@@ -45,7 +45,7 @@ AudioManager::AudioManager() {
   buffer_creation_thread_ = std::thread(&AudioManager::QueueThreadfunc, this);
 }
 
-int AudioManager::AddFileToBuffer(const std::string& filename, AudioFiletype file_type) {
+AudioStream AudioManager::AddFileToBuffer(const std::string& filename, AudioFiletype file_type) {
   int index = -1;
   buffer_info* info;
   buffer_status desired_value = AVAILABLE;
@@ -62,7 +62,7 @@ int AudioManager::AddFileToBuffer(const std::string& filename, AudioFiletype fil
   }
 
   if (index == -1) {
-    return -1;
+    return { -1 };
     // could not allocate space
   }
 
@@ -72,8 +72,12 @@ int AudioManager::AddFileToBuffer(const std::string& filename, AudioFiletype fil
   }
 
   buffer_thread_cv_.notify_all();
-  return index;
+  return { index };
 }
+
+// int AudioManager::QueueBuffer(std::shared_ptr<AudioBuffer> buffer) {
+
+// }
 
 void AudioManager::QueueThreadfunc() {
   queue_info info_queue;
@@ -115,7 +119,7 @@ void AudioManager::QueueThreadfunc() {
   }
 }
 
-int AudioManager::RemoveFileFromBuffer(int stream) {
+int AudioManager::RemoveFileFromBuffer(AudioStream stream) {
   if (stream > AUDIO_MGR_MAX_BUFFER_COUNT || stream < 0) {
     // invalid marker
     return -1;

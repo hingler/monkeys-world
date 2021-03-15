@@ -22,6 +22,11 @@ enum AudioFiletype {
   OGG
 };
 
+struct AudioStream {
+  const int handle;
+  operator int() const { return handle; };
+};
+
 /**
  *  Manages playback of audio files.
  */ 
@@ -38,14 +43,14 @@ class AudioManager {
    *  @param file_type - the reader to use to open this file.
    *  @returns an integer which can be used to update the state of the file.
    */ 
-  int AddFileToBuffer(const std::string& filename, AudioFiletype file_type);
+  AudioStream AddFileToBuffer(const std::string& filename, AudioFiletype file_type);
 
   /**
    *  Removes a stream which has already been created.
    *  Should only be called by portaudio.
    *  @param stream - Reference to a stream which has already been instantiated. 
    */ 
-  int RemoveFileFromBuffer(int stream);
+  int RemoveFileFromBuffer(AudioStream stream);
 
   ~AudioManager();
   AudioManager& operator=(const AudioManager& other) = delete;
