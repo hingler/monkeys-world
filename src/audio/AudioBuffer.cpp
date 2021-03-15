@@ -7,6 +7,7 @@ namespace audio {
 AudioBuffer::AudioBuffer(int capacity) : capacity_(capacity) {
   buffer_l_ = new float[capacity];
   buffer_r_ = new float[capacity];
+  looped_ = false;
   bytes_read_ = 0;
   bytes_written_ = 0;
   last_write_polled_ = 0;
@@ -110,13 +111,19 @@ int AudioBuffer::Write(int n, float* input_left, float* input_right) {
   return n;
 }
 
+void AudioBuffer::ToggleLoop() {
+  looped_ = !looped_;
+}
 
+bool AudioBuffer::IsLooped() {
+  return looped_;
+}
 
 void AudioBuffer::WriteThreadFunc() {
-  std::unique_lock<std::mutex> threadlock(write_lock_);
   uint64_t bw_local;
   // someone has to clear this to shut it up
   while (write_thread_flag_.test_and_set()) {
+    std::unique_lock<std::mutex> threadlock(write_lock_);
     bw_local = bytes_written_.load(std::memory_order_acquire);
     // buffer is full -- get up to date data
     if (bw_local == (last_read_polled_ + capacity_)) {
@@ -242,11 +249,11 @@ AudioBuffer::AudioBuffer(AudioBuffer&& other) : capacity_(other.capacity_) {
 void AudioBuffer::DestroyWriteThread() {
   if (running_) {
     std::unique_lock<std::mutex> moved_thread_lock(write_lock_);
+    running_ = false;
     write_thread_flag_.clear();
     write_cv_.notify_all();
     moved_thread_lock.unlock();
     // no guarantee that the thread has spun down already
-    running_ = false;
   }
 }
 

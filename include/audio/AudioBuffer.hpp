@@ -78,6 +78,16 @@ class AudioBuffer {
   int Write(int n, float* input_left, float* input_right);
 
   /**
+   *  Tells the buffer to loops its source.
+   */ 
+  void ToggleLoop();
+
+  /**
+   *  @returns true if the audio is looped
+   */ 
+  bool IsLooped();
+
+  /**
    *  Starts up the thread which writes to the buffer from a file.
    */
   bool StartWriteThread(); 
@@ -136,6 +146,7 @@ class AudioBuffer {
    */ 
   virtual void SeekFileToWriteHead() = 0;
 
+
  private:
   int capacity_;
   float* buffer_l_;                     // left buffer
@@ -155,6 +166,8 @@ class AudioBuffer {
   std::atomic_flag write_thread_flag_;  // flag which signals early termination of write thread
   std::mutex write_lock_;               // lock used by wait func on write thread
   
+  bool looped_;
+
   /**
    *  Function which writes to the buffer.
    */ 

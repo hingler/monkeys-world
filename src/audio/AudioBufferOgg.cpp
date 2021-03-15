@@ -71,6 +71,12 @@ int AudioBufferOgg::WriteFromFile(int n) {
                                                        buffers_,
                                                        static_cast<int>(packet.capacity));
     
+    if (packet.capacity == 0) {
+      // we're all out of space!!!
+      // cut our losses and return what we could read
+      return n - readsize;
+    }
+    
     if (samples_written < packet.capacity) {
       for (int i = samples_written; i < packet.capacity; i++) {
         // if we EOF, ensure the rest of the packet is given 0's, to avoid audio glitches
@@ -78,8 +84,15 @@ int AudioBufferOgg::WriteFromFile(int n) {
         buffers_[0][i] = buffers_[1][i] = 0.0f;
       }
 
-      eof_.store(true);
-      return n - readsize;
+      if (IsLooped()) {
+        // reset the file head
+        stb_vorbis_seek(vorbis_file_, 0);
+      } else {
+
+
+        eof_.store(true);
+        return n - readsize;
+      }
     }
 
     if (info_.channels == 1) {
@@ -106,9 +119,16 @@ void AudioBufferOgg::SeekFileToWriteHead() {
   int sample_count = stb_vorbis_stream_length_in_samples(vorbis_file_);
   uint64_t write_head = GetBytesWritten();
   if (write_head >= sample_count) {
-    stb_vorbis_seek(vorbis_file_, sample_count);
-    // is this necessary?
-    eof_ = true;
+    // handle loops
+    if (IsLooped()) {
+      // modulo and seek to offset
+      uint64_t sample_effective = write_head % static_cast<uint64_t>(sample_count);
+      stb_vorbis_seek(vorbis_file_, static_cast<unsigned int>(sample_effective));
+    } else {
+      stb_vorbis_seek(vorbis_file_, sample_count);
+      // is this necessary?
+      eof_ = true;
+    }
   } else {
     int seek_res = stb_vorbis_seek(vorbis_file_, static_cast<unsigned int>(GetBytesWritten()));
     if (seek_res == 0) {
