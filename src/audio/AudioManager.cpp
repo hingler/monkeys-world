@@ -45,8 +45,8 @@ AudioManager::AudioManager() {
   buffer_creation_thread_ = std::thread(&AudioManager::QueueThreadfunc, this);
 }
 
-AudioStream AudioManager::AddFileToBuffer(const std::string& filename, AudioFiletype file_type) {
-  int index = -1;
+AudioManager::buffer_info* AudioManager::GetOpenBufferSpot(int& index) {
+  index = -1;
   buffer_info* info;
   buffer_status desired_value = AVAILABLE;
 
@@ -62,8 +62,17 @@ AudioStream AudioManager::AddFileToBuffer(const std::string& filename, AudioFile
   }
 
   if (index == -1) {
+    return nullptr;
+  }
+
+  return info;
+}
+
+AudioStream AudioManager::AddFileToBuffer(const std::string& filename, AudioFiletype file_type) {
+  int index;
+  buffer_info* info = GetOpenBufferSpot(index);
+  if (info == nullptr) {
     return { -1 };
-    // could not allocate space
   }
 
   {
@@ -75,9 +84,18 @@ AudioStream AudioManager::AddFileToBuffer(const std::string& filename, AudioFile
   return { index };
 }
 
-// int AudioManager::QueueBuffer(std::shared_ptr<AudioBuffer> buffer) {
+AudioStream AudioManager::AddBuffer(std::shared_ptr<AudioBuffer> buffer) {
+  int index;
+  buffer_info* info = GetOpenBufferSpot(index);
+  if (info == nullptr) {
+    return { -1 };
+  }
 
-// }
+  info->buffer = buffer;
+  info->status = USED;
+  info->buffer->StartWriteThread();
+  return { index };
+}
 
 void AudioManager::QueueThreadfunc() {
   queue_info info_queue;
@@ -105,11 +123,7 @@ void AudioManager::QueueThreadfunc() {
 
     switch (info_queue.type) {
       case OGG:
-        if (info_buffer->buffer != nullptr) {
-          delete info_buffer->buffer;
-        }
-
-        info_buffer->buffer = new AudioBufferOgg(4096, info_queue.filename);
+        info_buffer->buffer = std::make_shared<AudioBufferOgg>(4096, info_queue.filename);
         info_buffer->status = USED;
         info_buffer->buffer->StartWriteThread();
         break;
@@ -130,7 +144,6 @@ int AudioManager::RemoveFileFromBuffer(AudioStream stream) {
   switch (info->status) {
     case AVAILABLE:
       if (info->buffer != nullptr) {
-        delete info->buffer;
         info->buffer = nullptr;
       }
       break;
@@ -191,12 +204,6 @@ AudioManager::~AudioManager() {
   buffer_thread_flag_.clear();
   buffer_thread_cv_.notify_all();
   buffer_creation_thread_.join();
-
-  for (int i = 0; i < AUDIO_MGR_MAX_BUFFER_COUNT; i++) {
-    if (buffers_[i].buffer != nullptr) {
-      delete buffers_[i].buffer;
-    }
-  }
 }
 
 }

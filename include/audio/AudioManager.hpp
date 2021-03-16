@@ -46,6 +46,12 @@ class AudioManager {
   AudioStream AddFileToBuffer(const std::string& filename, AudioFiletype file_type);
 
   /**
+   *  Begins playback of a new buffer.
+   *  @param buffer - the buffer to be played.
+   */ 
+  AudioStream AddBuffer(std::shared_ptr<AudioBuffer> buffer);
+
+  /**
    *  Removes a stream which has already been created.
    *  Should only be called by portaudio.
    *  @param stream - Reference to a stream which has already been instantiated. 
@@ -71,7 +77,7 @@ class AudioManager {
   };
 
   struct buffer_info {
-    AudioBuffer* buffer;                  // ptr to buffer, or null if not allocated yet
+    std::shared_ptr<AudioBuffer> buffer;  // ptr to buffer, or null if not allocated yet
     std::atomic<buffer_status> status;    // communicates how the callback is treating the buffer
                                           // if 0: buffer is out of use and/or unallocated
                                           // if 1: buffer is in use
@@ -87,7 +93,12 @@ class AudioManager {
     AudioFiletype type;   // type of file being added
     int index;            // index of new buffer
   };
-  
+
+  /**
+   *  @param index - populated with new index. Set to -1 if spot could not be found.
+   *  @returns a pointer to a valid buffer info spot.
+   */ 
+  buffer_info* GetOpenBufferSpot(int& index);
 
   /**
    *  Function called by portaudio.

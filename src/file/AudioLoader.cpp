@@ -81,6 +81,7 @@ std::shared_ptr<audio::AudioBuffer> AudioLoader::LoadFromPath(const std::string&
   if (IsCached(path)) {
     std::unique_lock<std::mutex> lock(cache_mutex_);
     auto entry = cache_.find(path)->second;
+    BOOST_LOG_TRIVIAL(trace) << "loading " << entry.sample_count << " samples from cache";
     res->Write(entry.sample_count, entry.left, entry.right);
   } else {
     AudioCache cache;
