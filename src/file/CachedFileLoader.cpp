@@ -61,6 +61,10 @@ std::shared_ptr<audio::AudioBuffer> CachedFileLoader::LoadAudio(const std::strin
   return audio_loader_->LoadFile(path);
 }
 
+std::future<std::shared_ptr<audio::AudioBuffer>> CachedFileLoader::LoadAudioAsync(const std::string& path) {
+  return audio_loader_->LoadFileAsync(path);
+}
+
 CacheStreambuf CachedFileLoader::LoadFile(const std::string& path) {
   return file_loader_->LoadFile(path);
 }

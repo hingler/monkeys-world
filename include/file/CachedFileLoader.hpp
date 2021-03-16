@@ -54,6 +54,9 @@ class CachedFileLoader {
 
   std::shared_ptr<audio::AudioBuffer> LoadAudio(const std::string& path);
 
+  
+  std::future<std::shared_ptr<audio::AudioBuffer>> LoadAudioAsync(const std::string& path);
+
   /**
    *  Loads a file from cache.
    *  @param path - path to the desired file.
