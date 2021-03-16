@@ -88,6 +88,12 @@ class AudioBuffer {
   bool IsLooped();
 
   /**
+   *  Sets the gain of this audio buffer, in dB.
+   *  @param db - the updated gain.
+   */ 
+  void SetGain(float db);
+
+  /**
    *  Starts up the thread which writes to the buffer from a file.
    */
   bool StartWriteThread(); 
@@ -155,6 +161,7 @@ class AudioBuffer {
   char CACHE_BREAK_R_[CACHE_LINE];        // separates read from buffer
   std::atomic<uint64_t> bytes_read_;      // read header
   uint64_t last_write_polled_;            // last write value polled
+  std::atomic<float> gain_;               // gain of this buffer, in dB.
 
   char CACHE_BREAK_W_[CACHE_LINE];        // separates write from read
   std::atomic<uint64_t> bytes_written_;   // write header
@@ -172,6 +179,7 @@ class AudioBuffer {
    *  Function which writes to the buffer.
    */ 
   void WriteThreadFunc();
+  float GetGainAsAmplitude();
 
 };
 

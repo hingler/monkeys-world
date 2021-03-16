@@ -16,6 +16,10 @@ AudioBuffer::AudioBuffer(int capacity) : capacity_(capacity) {
   write_thread_flag_.test_and_set();
 }
 
+float AudioBuffer::GetGainAsAmplitude() {
+  return std::pow(10.0f, gain_.load() / 20.0f);
+}
+
 
 
 int AudioBuffer::Read(int n, float* output_left, float* output_right) {
@@ -32,10 +36,12 @@ int AudioBuffer::ReadAddInterleaved(int n, float* output) {
 
   int read_size = static_cast<int>(last_write_polled_ - read_head);
 
+  float gain = GetGainAsAmplitude();
+
   n = std::min(n, read_size);
   for (int i = 0; i < n; i++) {
-    *(output++) += buffer_l_[read_head % capacity_];
-    *(output++) += buffer_r_[read_head++ % capacity_];
+    *(output++) += buffer_l_[read_head % capacity_] * gain;
+    *(output++) += buffer_r_[read_head++ % capacity_] * gain;
   }
 
   if (read_size < (capacity_ / 2)) {
@@ -55,10 +61,12 @@ int AudioBuffer::ReadAdd(int n, float* output_left, float* output_right) {
 
   int read_size = static_cast<int>(last_write_polled_ - read_head);
 
+  float gain = GetGainAsAmplitude();
+
   n = std::min(n, read_size);
   for (int i = 0; i < n; i++) {
-    output_right[i] += buffer_r_[read_head % capacity_];
-    output_left[i] += buffer_l_[read_head++ % capacity_];
+    output_right[i] += buffer_r_[read_head % capacity_] * gain;
+    output_left[i] += buffer_l_[read_head++ % capacity_] * gain;
   }
 
   if (read_size < (capacity_ / 2)) {
@@ -78,10 +86,12 @@ int AudioBuffer::Peek(int n, float* output_left, float* output_right) {
   // number of samples which we can still read
   int read_size = static_cast<int>(last_write_polled_ - read_head);
 
+  float gain = GetGainAsAmplitude();
+
   n = std::min(n, read_size);
   for (int i = 0; i < n; i++) {
-    output_right[i] = buffer_r_[read_head % capacity_];
-    output_left[i] = buffer_l_[read_head++ % capacity_]; 
+    output_right[i] = buffer_r_[read_head % capacity_] * gain;
+    output_left[i] = buffer_l_[read_head++ % capacity_] * gain; 
   }
 
   if (read_size < (capacity_ / 2)) {
@@ -117,6 +127,10 @@ void AudioBuffer::ToggleLoop() {
 
 bool AudioBuffer::IsLooped() {
   return looped_;
+}
+
+void AudioBuffer::SetGain(float db) {
+  gain_.store(db);
 }
 
 void AudioBuffer::WriteThreadFunc() {
