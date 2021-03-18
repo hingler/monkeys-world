@@ -48,7 +48,7 @@ void EngineContext::GetFramebufferSize(int* width, int* height) {
 glm::ivec2 EngineContext::GetFramebufferSize() {
   glm::ivec2 result;
   glfwGetFramebufferSize(window_, &result.x, &result.y);
-
+  return result;
 }
 
 std::shared_ptr<CachedFileLoader> EngineContext::GetCachedFileLoader() {
