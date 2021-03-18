@@ -10,8 +10,6 @@ set(TST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)
 
 set(compile_tests ON)
 
-add_executable(monkeys-world main.cpp)
-
 # separate out a bit better for testing
 add_library(monkeys-world-components 
                                     ${SRC_DIR}/storage/VertexPacketTypes.cpp
@@ -146,17 +144,18 @@ target_link_libraries(monkeys-world-components ${Boost_LIBRARIES} portaudio)
 target_include_directories(monkeys-world-components PUBLIC ${Boost_INCLUDE_DIRS})
 
 
-target_link_libraries(monkeys-world monkeys-world-components)
-
-add_executable(scene-test test/demos/SceneTest.cpp)
-target_link_libraries(scene-test monkeys-world-components )
-
-# tba: fix this command
-add_custom_command(TARGET scene-test POST_BUILD
-COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/resources $<TARGET_FILE_DIR:monkeys-world>/resources)
 
 
 if(compile_tests)
+  target_link_libraries(monkeys-world monkeys-world-components)
+
+  add_executable(scene-test test/demos/SceneTest.cpp)
+  target_link_libraries(scene-test monkeys-world-components )
+
+  # tba: fix this command
+  add_custom_command(TARGET scene-test POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/resources $<TARGET_FILE_DIR:monkeys-world>/resources)
+
   add_executable(mesh-test test/MeshTest.cpp)
   target_include_directories(mesh-test PRIVATE ${INC_DIR})
   target_link_libraries(mesh-test GTest::gtest_main GTest::gmock_main monkeys-world-components)
