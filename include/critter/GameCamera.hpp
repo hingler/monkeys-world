@@ -49,6 +49,8 @@ class GameCamera : public GameObject, public Camera {
    */ 
   void SetFov(float deg) override;
 
+  glm::vec2 ToScreenCoords(glm::vec3 input) const override;
+
   bool IsActive();
  private:
   float fov_deg_;
