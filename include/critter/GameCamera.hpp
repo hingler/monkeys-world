@@ -11,7 +11,8 @@ namespace monkeysworld {
 namespace critter {
   /**
    *  Represents the camera within a scene.
-   *  TODO: Work this into the model test to ensure that it functions properly
+   * 
+   *  GameCameras are initialized facing in the -Z direction.
    */ 
 class GameCamera : public GameObject, public Camera {
  public:
