@@ -8,8 +8,6 @@ set(INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(TST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)
 
-set(compile_tests ON)
-
 # separate out a bit better for testing
 add_library(monkeys-world-components 
                                     ${SRC_DIR}/storage/VertexPacketTypes.cpp
