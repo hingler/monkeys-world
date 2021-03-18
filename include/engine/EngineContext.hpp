@@ -85,6 +85,8 @@ class EngineContext : public Context {
   
   void GetFramebufferSize(int* width, int* height) override;
 
+  glm::ivec2 GetFramebufferSize() override;
+
   std::shared_ptr<SceneSwap> SwapScene(Scene* scene) override;
 
   Scene* GetScene() override;

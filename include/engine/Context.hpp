@@ -37,6 +37,11 @@ class Context {
   virtual void GetFramebufferSize(int* width, int* height) = 0;
 
   /**
+   *  @returns framebuffer size as ivec2.
+   */ 
+  virtual glm::ivec2 GetFramebufferSize() = 0;
+
+  /**
    *  Notifies the context that it should swap to the next scene.
    *  Once this function is called, the context takes ownership of the scene.
    *  @param scene - the scene which is to be created.
