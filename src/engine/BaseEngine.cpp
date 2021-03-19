@@ -97,9 +97,13 @@ void GameLoop(std::shared_ptr<engine::EngineContext> ctx, GLFWwindow* window) {
     if (auto ctx_new = ctx->GetNewContext()) {
       ctx = ctx_new;
       auto scene = ctx_new->GetScene();
+      // omegalul
+      ctx_new->UpdateContext();
+      ctx_new->UpdateContext();
       CreateObjects(scene->GetGameObjectRoot());
       win = std::dynamic_pointer_cast<EngineWindow>(scene->GetWindow());
       CreateObjects(win->GetRootObject());
+      // reset its time
     }
 
     auto scene = ctx->GetScene();
