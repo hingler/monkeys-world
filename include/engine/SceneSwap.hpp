@@ -33,6 +33,11 @@ class SceneSwap {
   file::loader_progress GetLoaderProgress();
 
   /**
+   *  @returns true if the next scene has been initialized, and false otherwise.
+   */ 
+  bool Initialized();
+
+  /**
    *  Swaps scenes if the next context is ready to be used.
    *  Otherwise, waits until the next scene is initialized, then swaps.
    */ 

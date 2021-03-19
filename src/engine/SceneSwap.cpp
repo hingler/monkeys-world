@@ -20,6 +20,10 @@ file::loader_progress SceneSwap::GetLoaderProgress() {
   return ctx_->GetCachedFileLoader()->GetLoaderProgress();
 }
 
+bool SceneSwap::Initialized() {
+  return ctx_->GetScene()->IsInitialized();
+}
+
 void SceneSwap::Swap() {
   if (!swap_ready_) {
     std::unique_lock<std::mutex> lock(*mutex_);
