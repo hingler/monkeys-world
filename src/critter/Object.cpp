@@ -8,6 +8,7 @@ utils::IDGenerator Object::id_generator_;
 Object::Object(engine::Context* ctx) {
   ctx_ = ctx;
   id_ = id_generator_.GetUniqueId();
+  created_ = false;
 }
 
 uint64_t Object::GetId() {
@@ -21,6 +22,15 @@ void Object::SetId(uint64_t new_id) {
 
 engine::Context* Object::GetContext() const {
   return ctx_;
+}
+
+void Object::UpdateFunc() {
+  if (!created_) {
+    Create();
+    created_ = true;
+  }
+  
+  Update();
 }
 
 void Object::Create() {
@@ -38,6 +48,7 @@ void Object::Destroy() {
 Object::Object(const Object& other) {
   id_ = id_generator_.GetUniqueId();
   ctx_ = other.ctx_;
+  created_ = false;
 }
 
 Object& Object::operator=(const Object& other) {
@@ -50,6 +61,7 @@ Object::Object(Object&& other) {
   id_ = other.id_;
   other.id_ = 0;
   ctx_ = other.ctx_;
+  created_ = false;
 }
 
 Object& Object::operator=(Object&& other) {

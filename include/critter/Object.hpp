@@ -97,6 +97,11 @@ class Object {
   // UPDATE FUNCTIONS
 
   /**
+   *  Handles creation and updates.
+   */ 
+  void UpdateFunc();
+
+  /**
    *  Initializing function called when the scene is first displayed on-screen.
    *  Implementors can override this :)
    */ 
@@ -128,6 +133,7 @@ class Object {
   engine::Context* ctx_;
   uint64_t id_;
   static utils::IDGenerator id_generator_;
+  bool created_;
 };
 
 }
