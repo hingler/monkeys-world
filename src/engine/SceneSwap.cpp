@@ -20,17 +20,23 @@ file::loader_progress SceneSwap::GetLoaderProgress() {
   return ctx_->GetCachedFileLoader()->GetLoaderProgress();
 }
 
-void SceneSwap::Swap() {
-  std::unique_lock<std::mutex> lock(*mutex_);
-  load_cv_->wait(lock, [&] {
-    return ctx_->GetScene()->IsInitialized();
-  });
+bool SceneSwap::Initialized() {
+  return ctx_->GetScene()->IsInitialized();
+}
 
-  swap_ready_ = true;
+void SceneSwap::Swap() {
+  if (!swap_ready_) {
+    std::unique_lock<std::mutex> lock(*mutex_);
+    load_cv_->wait(lock, [&] {
+      return ctx_->GetScene()->IsInitialized();
+    });
+
+    swap_ready_.store(true, std::memory_order_seq_cst);
+  }
 }
 
 bool SceneSwap::IsSwapReady() {
-  return swap_ready_;
+  return swap_ready_.load(std::memory_order_seq_cst);
 }
 
 }

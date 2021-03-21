@@ -6,12 +6,12 @@ namespace monkeysworld {
 namespace engine {
 
 using file::CachedFileLoader;
-using input::WindowEventManager;
+using input::EventManager;
 using audio::AudioManager;
 
 EngineContext::EngineContext(GLFWwindow* window, Scene* scene) {
   file_loader_ = std::make_shared<CachedFileLoader>(scene->GetSceneIdentifier());
-  event_mgr_ = std::make_shared<WindowEventManager>(window, this);
+  event_mgr_ = std::make_shared<input::WindowEventManager>(window, this);
   audio_mgr_ = std::make_shared<AudioManager>();
   executor_ = std::make_shared<EngineExecutor>();
 
@@ -45,11 +45,17 @@ void EngineContext::GetFramebufferSize(int* width, int* height) {
   glfwGetFramebufferSize(window_, width, height);
 }
 
+glm::ivec2 EngineContext::GetFramebufferSize() {
+  glm::ivec2 result;
+  glfwGetFramebufferSize(window_, &result.x, &result.y);
+  return result;
+}
+
 std::shared_ptr<CachedFileLoader> EngineContext::GetCachedFileLoader() {
   return file_loader_;
 }
 
-std::shared_ptr<WindowEventManager> EngineContext::GetEventManager() {
+std::shared_ptr<EventManager> EngineContext::GetEventManager() {
   return event_mgr_;
 }
 
@@ -99,14 +105,14 @@ std::shared_ptr<EngineContext> EngineContext::GetNewContext() {
   }
 
   auto prog = swap_ctx_->GetCachedFileLoader()->GetLoaderProgress();
-  if (prog.bytes_read == prog.bytes_sum) {
-    if (swap_obj_->IsSwapReady()) {
-      // if it's ready, then return the new ctx
-      swap_thread_.join();
-      // one last bit of code -- ensure we're exposing the right FB!
-      swap_ctx_->a_front_ = a_front_;
-      return swap_ctx_;
-    }
+  if (swap_obj_->IsSwapReady()) {
+    // if it's ready, then return the new ctx
+    swap_thread_.join();
+    // one last bit of code -- ensure we're exposing the right FB!
+    swap_ctx_->a_front_ = a_front_;
+    // ensure
+    event_mgr_->ctx_ = swap_ctx_.get();
+    return swap_ctx_;
   }
 
   return nullptr;

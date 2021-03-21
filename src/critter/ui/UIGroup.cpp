@@ -212,6 +212,32 @@ void UIGroup::Layout(glm::vec2 size) {
       }
     }
 
+    // handle autos
+    if (params.top.margin.type == MarginType::AUTO || params.bottom.margin.type == MarginType::AUTO) {
+      // total range
+      float y_range = b.bottom - b.top;
+      // margin shrink on both sides
+      float y_squeeze = (y_range - child_dims.y) / 2;
+      b.top += y_squeeze;
+      b.bottom -= y_squeeze;
+    } else {
+      if (params.top.anchor_id != 0) {
+        b.top += params.top.margin.dist;
+        if (params.bottom.anchor_id == 0) {
+          b.bottom += params.top.margin.dist;
+        }
+      }
+
+      if (params.bottom.anchor_id != 0) {
+        b.bottom -= params.bottom.margin.dist;
+        if (params.top.anchor_id == 0) {
+          b.top -= params.bottom.margin.dist;
+        }
+      }
+    }
+
+    // BOOST_LOG_TRIVIAL(trace) << b.top << ", " << b.bottom << ", " << b.left << ", " << b.right;
+
     if (params.left.margin.type == MarginType::AUTO || params.right.margin.type == MarginType::AUTO) {
       float x_range = b.right - b.left;
       float x_squeeze = (x_range - child_dims.x) / 2;
@@ -228,28 +254,15 @@ void UIGroup::Layout(glm::vec2 size) {
       if (params.left.anchor_id != 0) {
         b.left += params.left.margin.dist;
         if (params.right.anchor_id == 0) {
-          b.right = b.left + child_dims.x;
+          b.right += params.left.margin.dist;
         }
       }
     }
 
-    if (params.top.margin.type == MarginType::AUTO || params.bottom.margin.type == MarginType::AUTO) {
-      float y_range = b.bottom - b.top;
-      float y_squeeze = (y_range - child_dims.y) / 2;
-      b.top += y_squeeze;
-      b.bottom -= y_squeeze;
-    } else {
-      if (params.bottom.anchor_id != 0) {
-        b.bottom -= params.bottom.margin.dist;
-        if (params.top.anchor_id == 0) {
-          b.top = b.bottom - child_dims.y;
-        }
-      }
-
-      if (params.top.anchor_id != 0) {
-        b.top += params.top.margin.dist;
-        if (params.bottom.anchor_id == 0) {
-          b.bottom = b.top + child_dims.y;
+      if (params.right.anchor_id != 0) {
+        b.right -= params.right.margin.dist;
+        if (params.left.anchor_id == 0) {
+          b.left -= params.right.margin.dist;
         }
       }
     }
@@ -258,8 +271,8 @@ void UIGroup::Layout(glm::vec2 size) {
     b.bottom = std::round(b.bottom);
     b.left = std::round(b.left);
     b.right = std::round(b.right);
-
     bounding_boxes.insert(std::make_pair(id, b));
+    // BOOST_LOG_TRIVIAL(trace) << b.top << ", " << b.bottom << ", " << b.left << ", " << b.right;
   }
 
 

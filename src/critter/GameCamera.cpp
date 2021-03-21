@@ -55,6 +55,16 @@ camera_info GameCamera::GetCameraInfo() const {
   return res;
 }
 
+glm::vec2 GameCamera::ToScreenCoords(glm::vec3 input) const {
+  camera_info info = GetCameraInfo();
+  glm::vec4 output = info.vp_matrix * glm::vec4(input, 1.0);
+  output = output / output.w;
+  glm::vec2 screen_dims = GetContext()->GetFramebufferSize();
+  output = (output + 1.0f) / 2.0f;
+  output.y = 1.0f - output.y;
+  return glm::vec2(output.x, output.y) * screen_dims;
+}
+
 bool GameCamera::IsActive() {
   return active_;
 }

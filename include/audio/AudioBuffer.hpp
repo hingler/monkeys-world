@@ -78,6 +78,22 @@ class AudioBuffer {
   int Write(int n, float* input_left, float* input_right);
 
   /**
+   *  Tells the buffer to loops its source.
+   */ 
+  void ToggleLoop();
+
+  /**
+   *  @returns true if the audio is looped
+   */ 
+  bool IsLooped();
+
+  /**
+   *  Sets the gain of this audio buffer, in dB.
+   *  @param db - the updated gain.
+   */ 
+  void SetGain(float db);
+
+  /**
    *  Starts up the thread which writes to the buffer from a file.
    */
   bool StartWriteThread(); 
@@ -94,6 +110,10 @@ class AudioBuffer {
    *  returns `true` if the file underlying this buffer has been exhausted.
    */ 
   virtual bool EndOfFile() = 0;
+
+  uint64_t GetBytesWritten() {
+    return bytes_written_.load(std::memory_order_acquire);
+  }
 
   /**
    *  Terminates the write thread.
@@ -125,24 +145,6 @@ class AudioBuffer {
    */ 
   AudioBufferPacket GetBufferSpace(uint64_t request);
 
-  int capacity_;
-  float* buffer_l_;                     // left buffer
-  float* buffer_r_;                     // right buffer
-
-  char CACHE_BREAK_R_[CACHE_LINE];        // separates read from buffer
-  std::atomic<uint64_t> bytes_read_;      // read header
-  uint64_t last_write_polled_;            // last write value polled
-
-  char CACHE_BREAK_W_[CACHE_LINE];        // separates write from read
-  std::atomic<uint64_t> bytes_written_;   // write header
-  std::atomic<uint64_t> bytes_allocated_; // number of bytes allocated to packets thus far.
-  uint64_t last_read_polled_;             // last read value polled
-
-  std::condition_variable write_cv_;    // cv used to signal write thread
-  std::thread write_thread_;            // write thread 
-  std::atomic_bool running_;            // true if thread is running
-  std::atomic_flag write_thread_flag_;  // flag which signals early termination of write thread
-  std::mutex write_lock_;               // lock used by wait func on write thread
 
   /**
    *  Seeks the underlying file so that it matches the write head.
@@ -150,11 +152,34 @@ class AudioBuffer {
    */ 
   virtual void SeekFileToWriteHead() = 0;
 
+
  private:
+  int capacity_;
+  float* buffer_l_;                     // left buffer
+  float* buffer_r_;                     // right buffer
+
+  char CACHE_BREAK_R_[CACHE_LINE];        // separates read from buffer
+  std::atomic<uint64_t> bytes_read_;      // read header
+  uint64_t last_write_polled_;            // last write value polled
+  std::atomic<float> gain_;               // gain of this buffer, in dB.
+
+  char CACHE_BREAK_W_[CACHE_LINE];        // separates write from read
+  std::atomic<uint64_t> bytes_written_;   // write header
+  uint64_t last_read_polled_;             // last read value polled
+
+  std::condition_variable write_cv_;    // cv used to signal write thread
+  std::thread write_thread_;            // write thread 
+  std::atomic_bool running_;            // true if thread is running
+  std::atomic_flag write_thread_flag_;  // flag which signals early termination of write thread
+  std::mutex write_lock_;               // lock used by wait func on write thread
+  
+  bool looped_;
+
   /**
    *  Function which writes to the buffer.
    */ 
   void WriteThreadFunc();
+  float GetGainAsAmplitude();
 
 };
 

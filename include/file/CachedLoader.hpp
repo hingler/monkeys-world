@@ -27,7 +27,8 @@ enum CacheType {
   FONT,
   TEXTURE,
   FILE,
-  CUBEMAP
+  CUBEMAP,
+  AUDIO
 };
 
 // struct representing a file which may be cached by the loader

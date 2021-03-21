@@ -80,8 +80,8 @@ void GameLoop(std::shared_ptr<engine::EngineContext> ctx, GLFWwindow* window) {
 
   ctx->InitializeScene();
 
-  CreateObjects(ctx->GetScene()->GetGameObjectRoot());
-  CreateObjects(std::dynamic_pointer_cast<EngineWindow>(ctx->GetScene()->GetWindow())->GetRootObject());
+  // CreateObjects(ctx->GetScene()->GetGameObjectRoot());
+  // CreateObjects(std::dynamic_pointer_cast<EngineWindow>(ctx->GetScene()->GetWindow())->GetRootObject());
 
   while(!glfwWindowShouldClose(window)) {
     // reset any visitors which store info
@@ -97,9 +97,13 @@ void GameLoop(std::shared_ptr<engine::EngineContext> ctx, GLFWwindow* window) {
     if (auto ctx_new = ctx->GetNewContext()) {
       ctx = ctx_new;
       auto scene = ctx_new->GetScene();
-      CreateObjects(scene->GetGameObjectRoot());
+      // omegalul
+      ctx_new->UpdateContext();
+      ctx_new->UpdateContext();
+      // CreateObjects(scene->GetGameObjectRoot());
       win = std::dynamic_pointer_cast<EngineWindow>(scene->GetWindow());
-      CreateObjects(win->GetRootObject());
+      // CreateObjects(win->GetRootObject());
+      // reset its time
     }
 
     auto scene = ctx->GetScene();
@@ -181,7 +185,7 @@ void CreateObjects(std::shared_ptr<critter::Object> obj) {
 
 void UpdateObjects(std::shared_ptr<critter::Object> obj) {
   // call update func
-  obj->Update();
+  obj->UpdateFunc();
   for (auto child : obj->GetChildren()) {
     // if child exists, visit it and queue up its children
     UpdateObjects(child);

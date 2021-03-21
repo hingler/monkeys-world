@@ -99,7 +99,7 @@ void TextureLoader::LoadTextureToCache(const cache_record& record) {
 
     {
       std::unique_lock<std::mutex>(loader_mutex_);
-      loader_.bytes_read += t->GetTextureSize();
+      loader_.bytes_read += record.file_size;
 
       if (loader_.bytes_read >= loader_.bytes_sum) {
         load_cond_var_.notify_all();

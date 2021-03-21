@@ -11,7 +11,8 @@ namespace monkeysworld {
 namespace critter {
   /**
    *  Represents the camera within a scene.
-   *  TODO: Work this into the model test to ensure that it functions properly
+   * 
+   *  GameCameras are initialized facing in the -Z direction.
    */ 
 class GameCamera : public GameObject, public Camera {
  public:
@@ -48,6 +49,8 @@ class GameCamera : public GameObject, public Camera {
    *  @param deg - the new FOV, in degrees.
    */ 
   void SetFov(float deg) override;
+
+  glm::vec2 ToScreenCoords(glm::vec3 input) const override;
 
   bool IsActive();
  private:

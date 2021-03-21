@@ -7,13 +7,17 @@ namespace audio {
 AudioBuffer::AudioBuffer(int capacity) : capacity_(capacity) {
   buffer_l_ = new float[capacity];
   buffer_r_ = new float[capacity];
+  looped_ = false;
   bytes_read_ = 0;
   bytes_written_ = 0;
-  bytes_allocated_ = 0;
   last_write_polled_ = 0;
   last_read_polled_ = 0;
   running_ = false;
   write_thread_flag_.test_and_set();
+}
+
+float AudioBuffer::GetGainAsAmplitude() {
+  return std::pow(10.0f, gain_.load() / 20.0f);
 }
 
 
@@ -32,10 +36,12 @@ int AudioBuffer::ReadAddInterleaved(int n, float* output) {
 
   int read_size = static_cast<int>(last_write_polled_ - read_head);
 
+  float gain = GetGainAsAmplitude();
+
   n = std::min(n, read_size);
   for (int i = 0; i < n; i++) {
-    *(output++) += buffer_l_[read_head % capacity_];
-    *(output++) += buffer_r_[read_head++ % capacity_];
+    *(output++) += buffer_l_[read_head % capacity_] * gain;
+    *(output++) += buffer_r_[read_head++ % capacity_] * gain;
   }
 
   if (read_size < (capacity_ / 2)) {
@@ -55,10 +61,12 @@ int AudioBuffer::ReadAdd(int n, float* output_left, float* output_right) {
 
   int read_size = static_cast<int>(last_write_polled_ - read_head);
 
+  float gain = GetGainAsAmplitude();
+
   n = std::min(n, read_size);
   for (int i = 0; i < n; i++) {
-    output_right[i] += buffer_r_[read_head % capacity_];
-    output_left[i] += buffer_l_[read_head++ % capacity_];
+    output_right[i] += buffer_r_[read_head % capacity_] * gain;
+    output_left[i] += buffer_l_[read_head++ % capacity_] * gain;
   }
 
   if (read_size < (capacity_ / 2)) {
@@ -78,10 +86,12 @@ int AudioBuffer::Peek(int n, float* output_left, float* output_right) {
   // number of samples which we can still read
   int read_size = static_cast<int>(last_write_polled_ - read_head);
 
+  float gain = GetGainAsAmplitude();
+
   n = std::min(n, read_size);
   for (int i = 0; i < n; i++) {
-    output_right[i] = buffer_r_[read_head % capacity_];
-    output_left[i] = buffer_l_[read_head++ % capacity_]; 
+    output_right[i] = buffer_r_[read_head % capacity_] * gain;
+    output_left[i] = buffer_l_[read_head++ % capacity_] * gain; 
   }
 
   if (read_size < (capacity_ / 2)) {
@@ -111,13 +121,23 @@ int AudioBuffer::Write(int n, float* input_left, float* input_right) {
   return n;
 }
 
+void AudioBuffer::ToggleLoop() {
+  looped_ = !looped_;
+}
 
+bool AudioBuffer::IsLooped() {
+  return looped_;
+}
+
+void AudioBuffer::SetGain(float db) {
+  gain_.store(db);
+}
 
 void AudioBuffer::WriteThreadFunc() {
-  std::unique_lock<std::mutex> threadlock(write_lock_);
   uint64_t bw_local;
   // someone has to clear this to shut it up
   while (write_thread_flag_.test_and_set()) {
+    std::unique_lock<std::mutex> threadlock(write_lock_);
     bw_local = bytes_written_.load(std::memory_order_acquire);
     // buffer is full -- get up to date data
     if (bw_local == (last_read_polled_ + capacity_)) {
@@ -243,10 +263,11 @@ AudioBuffer::AudioBuffer(AudioBuffer&& other) : capacity_(other.capacity_) {
 void AudioBuffer::DestroyWriteThread() {
   if (running_) {
     std::unique_lock<std::mutex> moved_thread_lock(write_lock_);
+    running_ = false;
     write_thread_flag_.clear();
     write_cv_.notify_all();
     moved_thread_lock.unlock();
-    running_ = false;
+    // no guarantee that the thread has spun down already
   }
 }
 

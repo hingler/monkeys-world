@@ -290,33 +290,32 @@ bool Mesh<storage::VertexPacket3D>::AddPolygon(const std::vector<unsigned int>& 
   int ac = (sorting_axis + 1) % 3;
   int bc = (sorting_axis + 2) % 3;
 
-  // ignore anchor, sort all others in fan order relative to anchor
-  std::sort(vertices.begin() + 1,
+  // sorting is an n log n task :(
+
+  // find the vertex COM (inside the shape if we assume convex)
+  glm::vec2 com;
+  for (auto vert : vertices) {
+    com += glm::vec2(vert.second.position[ac], vert.second.position[bc]);
+  }
+
+  // sort in ccw order about the center of mass
+  com /= vertices.size();
+  std::sort(vertices.begin(),
             vertices.end(),
-            [sorting_axis, &anchor, ac, bc]
-            (std::pair<unsigned int, storage::VertexPacket3D> a,
-             std::pair<unsigned int, storage::VertexPacket3D> b) -> bool {
-              // sorting axis = plane of greatest change
-              glm::vec3 a_vec = a.second.position - anchor;
-              glm::vec3 b_vec = b.second.position - anchor;
-              float atan_a = glm::atan(a_vec[bc],
-                                       a_vec[ac]);
-              float atan_b = glm::atan(b_vec[bc],
-                                       b_vec[ac]);
+            [sorting_axis, com, ac, bc] (const std::pair<unsigned int, storage::VertexPacket3D>& a,
+                                         const std::pair<unsigned int, storage::VertexPacket3D>& b) -> bool {
+                                           glm::vec3 ap = a.second.position;
+                                           glm::vec3 bp = b.second.position;
+                                           glm::vec2 dist_a = glm::vec2(ap[ac] - com.x, ap[bc] - com.y);
+                                           glm::vec2 dist_b = glm::vec2(bp[ac] - com.x, bp[bc] - com.y);
 
-              float diff = atan_b - atan_a;
-              if (diff > glm::pi<float>()) {
-                // b is very positive, a is negative -- by our rule, b comes before a.
-                return false;
-              } else if (diff < -glm::pi<float>()) {
-                // a is very positive, b is very negative -- by our rule, a comes before b
-                return true;
-              }
-              // both are on the same side of our axes -- return the rational thing.
-              return (atan_b > atan_a);
-            }
-  );
+                                           float atan_a = glm::atan(dist_a[bc], dist_a[ac]);
+                                           float atan_b = glm::atan(dist_b[bc], dist_b[ac]);
 
+                                           return (atan_b > atan_a);
+
+            });
+  // treat the first ordered vertex as the anchor, and create tris between it and the remaining vertices.
   for (int i = 2; i < vertices.size(); i++) {
     AddPolygon(vertices[0].first, vertices[i - 1].first, vertices[i].first);
   }

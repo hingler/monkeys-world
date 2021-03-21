@@ -51,6 +51,18 @@ class Texture {
    */ 
   GLuint GetTextureDescriptor() const;
 
+  int GetWidth() const {
+    return width_;
+  }
+
+  int GetHeight() const {
+    return height_;
+  }
+
+  int GetChannelCount() const {
+    return channels_;
+  }
+
   /**
    *  Returns the size of this texture, in bytes.
    *  Returns 0 if the size is unknown.
@@ -67,6 +79,7 @@ class Texture {
   unsigned char* tex_cache_;
   GLuint tex_;
   // tex dims
+  // TODO: these ought to be const and public
   int width_;
   int height_;
   int channels_;

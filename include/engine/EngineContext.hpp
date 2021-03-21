@@ -70,7 +70,7 @@ class EngineContext : public Context {
   // (deprecated)
   std::shared_ptr<file::CachedFileLoader> GetCachedFileLoader() override;
 
-  std::shared_ptr<input::WindowEventManager> GetEventManager() override;
+  std::shared_ptr<input::EventManager> GetEventManager() override;
 
   std::shared_ptr<audio::AudioManager> GetAudioManager() override;
 
@@ -84,6 +84,8 @@ class EngineContext : public Context {
   std::shared_ptr<shader::Framebuffer> GetCurrentFrame();
   
   void GetFramebufferSize(int* width, int* height) override;
+
+  glm::ivec2 GetFramebufferSize() override;
 
   std::shared_ptr<SceneSwap> SwapScene(Scene* scene) override;
 

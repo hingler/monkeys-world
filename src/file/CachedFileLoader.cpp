@@ -19,6 +19,7 @@ CachedFileLoader::CachedFileLoader(const std::string& cache_name) {
   cache_path_ = "resources/cache/" + cache_name + ".cache";
   auto cache = ReadCacheFileToVector(cache_path_);
   thread_pool_ = std::make_shared<LoaderThreadPool>(8);
+  audio_loader_ = std::make_unique<AudioLoader>(thread_pool_, cache);
   file_loader_ = std::make_unique<FileLoader>(thread_pool_, cache);
   model_loader_ = std::make_unique<ModelLoader>(thread_pool_, cache);
   font_loader_ = std::make_unique<FontLoader>(thread_pool_, cache);
@@ -54,6 +55,14 @@ loader_progress CachedFileLoader::GetLoaderProgress() {
   res.bytes_sum += temp.bytes_sum;
 
   return res;
+}
+
+std::shared_ptr<audio::AudioBuffer> CachedFileLoader::LoadAudio(const std::string& path) {
+  return audio_loader_->LoadFile(path);
+}
+
+std::future<std::shared_ptr<audio::AudioBuffer>> CachedFileLoader::LoadAudioAsync(const std::string& path) {
+  return audio_loader_->LoadFileAsync(path);
 }
 
 CacheStreambuf CachedFileLoader::LoadFile(const std::string& path) {
@@ -146,12 +155,14 @@ CachedFileLoader::~CachedFileLoader() {
   std::vector<cache_record> fonts = font_loader_->GetCache();
   std::vector<cache_record> textures = texture_loader_->GetCache();
   std::vector<cache_record> cubemaps = cubemap_loader_->GetCache();
+  std::vector<cache_record> sounds = audio_loader_->GetCache();
   cache.reserve(files.size() + meshes.size() + fonts.size() + textures.size() + cubemaps.size());
   cache.insert(cache.end(), files.begin(), files.end());
   cache.insert(cache.end(), meshes.begin(), meshes.end());
   cache.insert(cache.end(), fonts.begin(), fonts.end());
   cache.insert(cache.end(), textures.begin(), textures.end());
   cache.insert(cache.end(), cubemaps.begin(), cubemaps.end());
+  cache.insert(cache.end(), sounds.begin(), sounds.end());
   BOOST_LOG_TRIVIAL(debug) << "cacheing " << cache.size() << " files";
 
   cache_output.seekp(0);

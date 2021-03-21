@@ -3,6 +3,7 @@
 
 #include <file/CachedFileLoader.hpp>
 
+#include <atomic>
 #include <condition_variable>
 #include <memory>
 #include <mutex>
@@ -32,6 +33,11 @@ class SceneSwap {
   file::loader_progress GetLoaderProgress();
 
   /**
+   *  @returns true if the next scene has been initialized, and false otherwise.
+   */ 
+  bool Initialized();
+
+  /**
    *  Swaps scenes if the next context is ready to be used.
    *  Otherwise, waits until the next scene is initialized, then swaps.
    */ 
@@ -46,7 +52,7 @@ class SceneSwap {
   std::shared_ptr<Context> ctx_;
   std::shared_ptr<std::mutex> mutex_;
   std::shared_ptr<std::condition_variable> load_cv_;
-  bool swap_ready_;
+  std::atomic_bool swap_ready_;
 
 };
 

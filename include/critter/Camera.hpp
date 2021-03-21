@@ -35,6 +35,13 @@ class Camera {
    */ 
   virtual camera_info GetCameraInfo() const = 0;
 
+  /**
+   *  Converts a 3d coordinate to one in screen space, relative to this camera.
+   *  @param input - the 3d coordinate input.
+   *  @returns the pixel position of that 3d point, relative to top left corner.
+   */ 
+  virtual glm::vec2 ToScreenCoords(glm::vec3 input) const = 0;
+
 };
 
 }

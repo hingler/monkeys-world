@@ -3,6 +3,7 @@
 
 #include <file/CacheStreambuf.hpp>
 #include <file/CachedFileLoader.hpp>
+#include <file/AudioLoader.hpp>
 #include <file/CachedLoader.hpp>
 #include <file/ModelLoader.hpp>
 #include <file/FileLoader.hpp>
@@ -51,6 +52,11 @@ class CachedFileLoader {
    */ 
   loader_progress GetLoaderProgress();
 
+  std::shared_ptr<audio::AudioBuffer> LoadAudio(const std::string& path);
+
+  
+  std::future<std::shared_ptr<audio::AudioBuffer>> LoadAudioAsync(const std::string& path);
+
   /**
    *  Loads a file from cache.
    *  @param path - path to the desired file.
@@ -95,6 +101,7 @@ class CachedFileLoader {
   
   std::shared_ptr<LoaderThreadPool> thread_pool_;
   std::string cache_path_;
+  std::unique_ptr<AudioLoader> audio_loader_;
   std::unique_ptr<FileLoader> file_loader_;
   std::unique_ptr<ModelLoader> model_loader_;
   std::unique_ptr<FontLoader> font_loader_;
