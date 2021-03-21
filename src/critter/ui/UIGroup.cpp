@@ -145,7 +145,6 @@ void UIGroup::Layout(glm::vec2 size) {
           break;
         default:
           BOOST_LOG_TRIVIAL(error) << "Invalid face provided for ID " << id << "'s top margin -- ignoring...";
-          return;
         // all others are invalid
       }
 
@@ -165,7 +164,6 @@ void UIGroup::Layout(glm::vec2 size) {
           break;
         default:
           BOOST_LOG_TRIVIAL(error) << "Invalid face provided for ID " << id << "'s bottom margin -- ignoring...";
-          return;
       }
 
       if (params.top.anchor_id == 0) {
@@ -185,7 +183,6 @@ void UIGroup::Layout(glm::vec2 size) {
           break;
         default:
           BOOST_LOG_TRIVIAL(error) << "Invalid face provided for ID " << id << "'s left margin -- ignoring...";
-          return;
       }
 
       if (params.right.anchor_id == 0) {
@@ -204,7 +201,6 @@ void UIGroup::Layout(glm::vec2 size) {
           break;
         default:
           BOOST_LOG_TRIVIAL(error) << "Invalid face provided for ID " << id << "'s right margin -- ignoring...";
-          return;
       }
 
       if (params.left.anchor_id == 0) {
@@ -244,20 +240,12 @@ void UIGroup::Layout(glm::vec2 size) {
       b.left += x_squeeze;
       b.right -= x_squeeze;
     } else {
-      if (params.right.anchor_id != 0) {
-        b.right -= params.right.margin.dist;
-        if (params.left.anchor_id == 0) {
-          b.left = b.right - child_dims.x;
-        }
-      }
-
       if (params.left.anchor_id != 0) {
         b.left += params.left.margin.dist;
         if (params.right.anchor_id == 0) {
           b.right += params.left.margin.dist;
         }
       }
-    }
 
       if (params.right.anchor_id != 0) {
         b.right -= params.right.margin.dist;
@@ -275,13 +263,11 @@ void UIGroup::Layout(glm::vec2 size) {
     // BOOST_LOG_TRIVIAL(trace) << b.top << ", " << b.bottom << ", " << b.left << ", " << b.right;
   }
 
-
   // once this has run for all components, our bounding boxes are defined for every component.
   // now we can lay them out!
   for (const auto& e : bounding_boxes) {
     auto child = std::dynamic_pointer_cast<UIObject>(GetChild(e.first));
     auto bb = e.second;
-    // we ought to round to the nearest int for these bounding boxes
     child->SetPosition(glm::vec2(bb.left, bb.top));
     child->SetDimensions(glm::vec2(bb.right - bb.left, bb.bottom - bb.top));
   }
