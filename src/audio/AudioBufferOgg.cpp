@@ -71,6 +71,8 @@ int AudioBufferOgg::WriteFromFile(int n) {
                                                        buffers_,
                                                        static_cast<int>(packet.capacity));
     
+    IncrementWriteHead(samples_written);
+
     if (packet.capacity == 0) {
       // we're all out of space!!!
       // cut our losses and return what we could read

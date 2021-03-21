@@ -14,6 +14,8 @@ AudioBuffer::AudioBuffer(int capacity) : capacity_(capacity) {
   last_read_polled_ = 0;
   running_ = false;
   write_thread_flag_.test_and_set();
+
+  gain_.store(0.0f);
 }
 
 float AudioBuffer::GetGainAsAmplitude() {
@@ -91,7 +93,7 @@ int AudioBuffer::Peek(int n, float* output_left, float* output_right) {
   n = std::min(n, read_size);
   for (int i = 0; i < n; i++) {
     output_right[i] = buffer_r_[read_head % capacity_] * gain;
-    output_left[i] = buffer_l_[read_head++ % capacity_] * gain; 
+    output_left[i] = buffer_l_[read_head++ % capacity_] * gain;
   }
 
   if (read_size < (capacity_ / 2)) {
@@ -181,8 +183,11 @@ AudioBufferPacket AudioBuffer::GetBufferSpace(uint64_t n) {
   float* l_offset = &buffer_l_[write_head % capacity_];
   float* r_offset = &buffer_r_[write_head % capacity_];
 
-  bytes_written_.store(write_head + read_size, std::memory_order_release);
   return {l_offset, r_offset, read_size};
+}
+
+void AudioBuffer::IncrementWriteHead(int n) {
+  bytes_written_.fetch_add(n, std::memory_order_release);
 }
 
 /**

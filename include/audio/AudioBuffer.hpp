@@ -145,6 +145,11 @@ class AudioBuffer {
    */ 
   AudioBufferPacket GetBufferSpace(uint64_t request);
 
+  /**
+   *  Increments the write head once the writer is done.
+   */ 
+  void IncrementWriteHead(int n);
+
 
   /**
    *  Seeks the underlying file so that it matches the write head.
