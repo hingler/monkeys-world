@@ -71,8 +71,8 @@ void WindowEventManager::ProcessWaitingEvents() {
       MouseEvent e;
       // prepare mouse event
       glfwGetCursorPos(window_, &x_pos, &y_pos);
-      e.absolute_pos.x = x_pos;
-      e.absolute_pos.y = y_pos;
+      e.absolute_pos.x = static_cast<float>(x_pos);
+      e.absolute_pos.y = static_cast<float>(y_pos);
       e.button = event.key;
       e.action = event.action;
       e.mods = event.mods;
