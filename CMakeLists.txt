@@ -192,11 +192,11 @@ if(compile_tests)
   add_test(NAME object-test COMMAND object-test
               WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world-components>)
 
-  add_executable(events-test test/EventManagerTest.cpp)
-  target_include_directories(events-test PRIVATE ${INC_DIR})
-  target_link_libraries(events-test GTest::gtest_main monkeys-world-components)
-  add_test(NAME events-test COMMAND events-test
-              WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world-components>)
+  # add_executable(events-test test/EventManagerTest.cpp)
+  # target_include_directories(events-test PRIVATE ${INC_DIR})
+  # target_link_libraries(events-test GTest::gtest_main monkeys-world-components)
+  # add_test(NAME events-test COMMAND events-test
+  #             WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world-components>)
 
   add_executable(audio-buffer-test test/AudioBufferTest.cpp)
   target_include_directories(audio-buffer-test PRIVATE ${INC_DIR})
