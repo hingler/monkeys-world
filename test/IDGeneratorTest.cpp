@@ -8,7 +8,7 @@ using ::monkeysworld::utils::IDGenerator;
 TEST(IDGeneratorTests, GetSingleID) {
   IDGenerator gen;
   uint64_t id = gen.GetUniqueId();
-  ASSERT_EQ(1, id);
+  ASSERT_EQ(2, id);
 }
 
 TEST(IDGeneratorTests, GenerateMultipleIDs) {
@@ -17,7 +17,7 @@ TEST(IDGeneratorTests, GenerateMultipleIDs) {
     gen.GetUniqueId();
   }
 
-  ASSERT_EQ(129, gen.GetUniqueId());
+  ASSERT_EQ(130, gen.GetUniqueId());
 }
 
 void WasteIDs(IDGenerator& gen) {
@@ -39,22 +39,22 @@ TEST(IDGeneratorTests, MultiThreadGeneration) {
     threads[i].join();
   }
 
-  ASSERT_EQ(129, gen.GetUniqueId());
+  ASSERT_EQ(130, gen.GetUniqueId());
 
 }
 
 TEST(IDGeneratorTests, AvoidAddedID) {
   IDGenerator gen;
-  gen.RegisterUniqueId(1);
   gen.RegisterUniqueId(2);
+  gen.RegisterUniqueId(3);
   gen.RegisterUniqueId(27);
-  ASSERT_EQ(3, gen.GetUniqueId());
+  ASSERT_EQ(4, gen.GetUniqueId());
   for (int i = 0; i < 32; i++) {
     gen.GetUniqueId();
   }
 
   // 33 gens with 3 skips -- the next thing we see should be 
-  ASSERT_EQ(37, gen.GetUniqueId());
+  ASSERT_EQ(38, gen.GetUniqueId());
 }
 
 TEST(IDGeneratorTests, EnsureIDsUnique) {
