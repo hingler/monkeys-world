@@ -26,6 +26,8 @@ add_library(monkeys-world-components
                                     ${SRC_DIR}/shader/materials/UIGroupMaterial.cpp
                                     ${SRC_DIR}/shader/materials/TextureXferMaterial.cpp
 
+                                    ${SRC_DIR}/shader/color/Gradient.cpp
+
                                     ${SRC_DIR}/model/FullscreenQuad.cpp
 
                                     ${SRC_DIR}/file/CacheStreambuf.cpp
@@ -250,6 +252,11 @@ if(compile_tests)
   add_executable(graph-test test/ObjectGraphTest.cpp)
   target_link_libraries(graph-test GTest::gtest_main monkeys-world-components)
   add_test(NAME graph-test COMMAND graph-test
+              WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world-components>)
+
+  add_executable(gradient-test test/GradientTest.cpp)
+  target_link_libraries(gradient-test GTest::gtest_main monkeys-world-components)
+  add_test(NAME gradient-test COMMAND gradient-test
               WORKING_DIRECTORY $<TARGET_FILE_DIR:monkeys-world-components>)
 
 endif()
