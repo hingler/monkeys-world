@@ -347,7 +347,7 @@ void UIGroup::DrawUI(glm::vec2 min, glm::vec2 max, shader::Canvas canvas) {
       mesh_.PointToVertexAttribs();
       mat_.UseMaterial();
       glDrawElements(GL_TRIANGLES, static_cast<int>(mesh_.GetIndexCount()), GL_UNSIGNED_INT, (void*)0);
-
+      mesh_.Clear();
       index = 0;
     }
   }
