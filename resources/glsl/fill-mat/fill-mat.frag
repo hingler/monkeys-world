@@ -27,7 +27,7 @@ float fade(float t) {
 vec4 calculateLineGradient(Gradient grad) {
   // use frag color to get position along gradient
   vec2 dist_max = grad.end - grad.start;
-  vec2 dist_actual = gl_FragCoord - grad.start;
+  vec2 dist_actual = gl_FragCoord.xy - grad.start;
   float stop = dot(normalize(dist_max), normalize(dist_actual)) * (length(dist_actual) / length(dist_max));
   // we are before the first stop
   if (colors[0].stop > stop) {

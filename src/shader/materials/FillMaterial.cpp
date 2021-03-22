@@ -17,12 +17,18 @@ FillMaterial::FillMaterial() {
   use_gradient_ = false;
 }
 FillMaterial::FillMaterial(Context* context) {
-  auto loader = context->GetCachedFileLoader();
-  fill_prog_ = ShaderProgramBuilder(loader)
-                 .WithVertexShader("resources/glsl/fill-mat/fill-mat.vert")
-                 .WithFragmentShader("resources/glsl/fill-mat/fill-mat.frag")
-                 .Build();
+  auto exec = context->GetExecutor();
+  auto prog_func = [&] {
+    fill_prog_ = ShaderProgramBuilder(context->GetCachedFileLoader())
+                  .WithVertexShader("resources/glsl/fill-mat/fill-mat.vert")
+                  .WithFragmentShader("resources/glsl/fill-mat/fill-mat.frag")
+                  .Build();
+  };
+
+  exec->ScheduleOnMainThread(prog_func).wait();
+
   color_cache_ = glm::vec4(glm::vec3(0.0), 1.0);
+  use_gradient_ = false;
 }
 
 void FillMaterial::UseMaterial() {
