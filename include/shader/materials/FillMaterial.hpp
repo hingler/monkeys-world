@@ -4,6 +4,7 @@
 #include <engine/Context.hpp>
 #include <shader/Material.hpp>
 #include <shader/ShaderProgram.hpp>
+#include <shader/color/Gradient.hpp>
 
 namespace monkeysworld {
 namespace shader {
@@ -20,9 +21,13 @@ class FillMaterial : public ::monkeysworld::shader::Material {
    *  @param col - the desired color, in RGBA.
    */ 
   void SetColor(const glm::vec4& col);
+  void SetColor(const color::Gradient& grad);
  private:
   ShaderProgram fill_prog_;
+  bool use_gradient_;
   glm::vec4 color_cache_;
+  color::Gradient gradient_;
+
 };
 
 }
