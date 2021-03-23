@@ -64,6 +64,11 @@ class ShaderProgramBuilder {
   GLuint CreateShaderFromFile(const std::string& shader_path, GLenum shader_type);
 
   /**
+   *  Parses the contents of a shader file.
+   */ 
+  std::string GetFileContents(const std::string& shader_path);
+
+  /**
    *  Attaches the shader if its value is non-zero.
    */ 
   void AttachIfNonZero(GLuint prog, GLuint shader);

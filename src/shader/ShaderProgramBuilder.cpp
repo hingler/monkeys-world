@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 
 #include <boost/log/trivial.hpp>
+#include <boost/regex.hpp>
 
 #include <fstream>
 
@@ -113,30 +114,9 @@ void ShaderProgramBuilder::DeleteIfNonZero(GLuint shader) {
 // todo: separate file reading into a separate class? it's a bit trivial though :/
 GLuint ShaderProgramBuilder::CreateShaderFromFile(const std::string& shader_path, GLenum shader_type) {
   GLuint shader = glCreateShader(shader_type);
-  file::CacheStreambuf buffer;
-  std::istream* shader_file;
-  // if the loader does not exist: read from an ifstream
-  // other
-  if (!loader_) {
-    shader_file = new std::ifstream(shader_path);
-  } else {
-    buffer = loader_->LoadFile(shader_path);
-    shader_file = new std::istream(&buffer);
-  }
-  
-  if (!shader_file->good()) {
-    // could not read file path
-    glDeleteShader(shader);
-    BOOST_LOG_TRIVIAL(error) << "Invalid shader path " << shader_path;
-    throw std::invalid_argument("Invalid shader path " + shader_path);
-  }
 
-  std::string contents;
-  shader_file->seekg(0, ios_base::end);
-  std::streamoff file_size = shader_file->tellg();
-  shader_file->seekg(0, ios_base::beg);
-  contents.resize(file_size);
-  shader_file->read(&contents[0], file_size);
+  std::string contents = GetFileContents(shader_path);
+  // factor this reading part out into a separate method
 
   const char* shader_data = contents.c_str();
   glShaderSource(shader, 1, &shader_data, NULL);
@@ -156,8 +136,62 @@ GLuint ShaderProgramBuilder::CreateShaderFromFile(const std::string& shader_path
     throw InvalidShaderException("Shader failed to compile: " + error_msg);
   }
 
-  delete shader_file;
   return shader;
+}
+
+std::string ShaderProgramBuilder::GetFileContents(const std::string& shader_path) {
+  std::string output;
+  std::istream* shader_file;
+  file::CacheStreambuf buffer;
+
+  if (!loader_) {
+    shader_file = new std::ifstream(shader_path);
+  } else {
+    buffer = loader_->LoadFile(shader_path);
+    shader_file = new std::istream(&buffer);
+  }
+
+  if (!shader_file->good()) {
+    // denote failure condition
+    // probably throw an exception
+    return "";
+  }
+
+  // https://github.com/tntmeijs/GLSL-Shader-Includes/blob/master/Shadinclude.hpp
+
+  size_t dir = shader_path.find_last_of("/\\");
+  std::string local_dir = shader_path.substr(0, dir + 1);
+
+  std::string line;
+  std::string include_head = "#include ";
+  while (!shader_file->eof()) {
+    std::getline(*shader_file, line);
+    // check if the line needs to be parsed
+    if (line.find(include_head) != line.npos) {
+      BOOST_LOG_TRIVIAL(trace) << "found";
+      BOOST_LOG_TRIVIAL(trace) << line;
+      // extract path from quotes
+      boost::regex expr("\\s*#include\\s+\\\"(.*)\\\".*");
+      boost::smatch match;
+
+      // if it matches...
+      if (boost::regex_match(line, match, expr)) {
+        BOOST_LOG_TRIVIAL(trace) << "ok!";
+        // extract include path and load it recursively
+        // circular logic will crash it :(
+        // just don't do that
+        std::string relative_path = match[1];
+        output.append(GetFileContents(local_dir + relative_path));
+        continue;
+      }
+    }
+
+    output.append(line);
+    output.append("\n");
+  }
+
+  delete shader_file;
+  return output;
 }
 
 } // namespace shader
