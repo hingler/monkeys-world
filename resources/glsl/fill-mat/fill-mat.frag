@@ -36,7 +36,7 @@ vec4 calculateLineGradient(Gradient grad) {
   // use frag color to get position along gradient
   vec2 dist_max = grad.end - grad.start;
   // smooth out some banding in noise
-  vec2 dist_actual = (gl_FragCoord.xy - grad.start) + vec2(rand2d(gl_FragCoord.xy) * 4.0);
+  vec2 dist_actual = (gl_FragCoord.xy - grad.start);
   float stop = dot(normalize(dist_max), normalize(dist_actual)) * (length(dist_actual) / length(dist_max));
   // we are before the first stop
   if (colors[0].stop > stop) {
