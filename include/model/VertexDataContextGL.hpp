@@ -52,8 +52,13 @@ class VertexDataContextGL : public VertexDataContext<Packet> {
     if (ab_size > array_buffer_size_) {
       glBufferData(GL_ARRAY_BUFFER,
                   sizeof(Packet) * data.size(),
-                  data.data(),
+                  NULL,
                   GL_DYNAMIC_DRAW);
+      // orphan 
+      glBufferSubData(GL_ARRAY_BUFFER,
+                      0,
+                      ab_size,
+                      data.data());
       uint64_t* ab_size_nonconst_ = const_cast<uint64_t*>(&array_buffer_size_);
       *ab_size_nonconst_ = ab_size;
       BOOST_LOG_TRIVIAL(trace) << "buffer " << array_buffer_ << " reallocated";
@@ -70,12 +75,19 @@ class VertexDataContextGL : public VertexDataContext<Packet> {
     if (ib_size > index_buffer_size_) {
       glBufferData(GL_ELEMENT_ARRAY_BUFFER,
                   sizeof(unsigned int) * indices.size(),
-                  reinterpret_cast<const void*>(indices.data()),
+                  NULL,
                   GL_DYNAMIC_DRAW);
+      glBufferSubData(GL_ELEMENT_ARRAY_BUFFER,
+                    0,
+                    ib_size,
+                    indices.data());
       uint64_t* ib_size_nonconst_ = const_cast<uint64_t*>(&index_buffer_size_);
       *ib_size_nonconst_ = ib_size;
       BOOST_LOG_TRIVIAL(trace) << "index buffer " << element_buffer_ << " reallocated";
     } else {
+      // https://www.khronos.org/opengl/wiki/Buffer_Object_Streaming
+      // some suggestion of recreating buffers in this case...
+      // http://hacksoflife.blogspot.com/2015/06/glmapbuffer-no-longer-cool.html
       glBufferSubData(GL_ELEMENT_ARRAY_BUFFER,
                     0,
                     ib_size,
